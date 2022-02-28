@@ -7,7 +7,7 @@ createServer((page) => createInertiaApp({
   page,
   render: renderToString,
   resolve: name => require(`./Pages/${name}`),
-  title: title => title ? `${title} - Ping CRM` : 'Ping CRM',
+  title: title => title ? `${title} - Строительная компания` : 'Строительная компания',
   setup({ app, props, plugin }) {
     return createSSRApp({
       render: () => h(app, props),
