@@ -14,16 +14,16 @@ class OrganizationsController extends Controller
     {
         return Inertia::render('Organizations/Index', [
             'filters' => Request::all('search', 'trashed'),
-            'organizations' => Auth::user()->account->organizations()
-                ->orderBy('name')
+            'organizations' => Organization::orderByDesc('id')
                 ->filter(Request::only('search', 'trashed'))
                 ->paginate(10)
                 ->withQueryString()
                 ->through(fn ($organization) => [
                     'id' => $organization->id,
                     'name' => $organization->name,
+                    'address' => $organization->address,
                     'phone' => $organization->phone,
-                    'city' => $organization->city,
+                    'created_at' => $organization->created_at->format('H:i d.m.Y'),
                     'deleted_at' => $organization->deleted_at,
                 ]),
         ]);
@@ -36,20 +36,15 @@ class OrganizationsController extends Controller
 
     public function store()
     {
-        Auth::user()->account->organizations()->create(
+        Organization::create(
             Request::validate([
                 'name' => ['required', 'max:100'],
-                'email' => ['nullable', 'max:50', 'email'],
                 'phone' => ['nullable', 'max:50'],
                 'address' => ['nullable', 'max:150'],
-                'city' => ['nullable', 'max:50'],
-                'region' => ['nullable', 'max:50'],
-                'country' => ['nullable', 'max:2'],
-                'postal_code' => ['nullable', 'max:25'],
             ])
         );
 
-        return Redirect::route('organizations')->with('success', 'Organization created.');
+        return Redirect::route('organizations')->with('success', 'Организация, созданная.');
     }
 
     public function edit(Organization $organization)
@@ -58,15 +53,10 @@ class OrganizationsController extends Controller
             'organization' => [
                 'id' => $organization->id,
                 'name' => $organization->name,
-                'email' => $organization->email,
                 'phone' => $organization->phone,
                 'address' => $organization->address,
-                'city' => $organization->city,
-                'region' => $organization->region,
-                'country' => $organization->country,
-                'postal_code' => $organization->postal_code,
                 'deleted_at' => $organization->deleted_at,
-                'contacts' => $organization->contacts()->orderByName()->get()->map->only('id', 'name', 'city', 'phone'),
+                'contacts' => collect([])
             ],
         ]);
     }
@@ -76,30 +66,25 @@ class OrganizationsController extends Controller
         $organization->update(
             Request::validate([
                 'name' => ['required', 'max:100'],
-                'email' => ['nullable', 'max:50', 'email'],
                 'phone' => ['nullable', 'max:50'],
                 'address' => ['nullable', 'max:150'],
-                'city' => ['nullable', 'max:50'],
-                'region' => ['nullable', 'max:50'],
-                'country' => ['nullable', 'max:2'],
-                'postal_code' => ['nullable', 'max:25'],
             ])
         );
 
-        return Redirect::back()->with('success', 'Organization updated.');
+        return Redirect::back()->with('success', 'Организация обновлено.');
     }
 
     public function destroy(Organization $organization)
     {
         $organization->delete();
 
-        return Redirect::back()->with('success', 'Organization deleted.');
+        return Redirect::back()->with('success', 'Организация удалена.');
     }
 
     public function restore(Organization $organization)
     {
         $organization->restore();
 
-        return Redirect::back()->with('success', 'Organization restored.');
+        return Redirect::back()->with('success', 'Организация восстановлена.');
     }
 }

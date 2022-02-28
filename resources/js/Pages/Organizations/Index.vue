@@ -1,28 +1,29 @@
 <template>
   <div>
-    <Head title="Organizations" />
-    <h1 class="mb-8 text-3xl font-bold">Organizations</h1>
+    <Head title="Организации" />
+    <h1 class="mb-8 text-3xl font-bold">Организации</h1>
     <div class="flex items-center justify-between mb-6">
       <search-filter v-model="form.search" class="mr-4 w-full max-w-md" @reset="reset">
-        <label class="block text-gray-700">Trashed:</label>
+        <label class="block text-gray-700">Удаленные:</label>
         <select v-model="form.trashed" class="form-select mt-1 w-full">
           <option :value="null" />
-          <option value="with">With Trashed</option>
-          <option value="only">Only Trashed</option>
+          <option value="with">Все</option>
+          <option value="only">Только Удаленные</option>
         </select>
       </search-filter>
       <Link class="btn-indigo" href="/organizations/create">
-        <span>Create</span>
-        <span class="hidden md:inline">&nbsp;Organization</span>
+        <span>Создать</span>
+        <span class="hidden md:inline">&nbsp;Организацию</span>
       </Link>
     </div>
     <div class="bg-white rounded-md shadow overflow-x-auto">
       <table class="w-full whitespace-nowrap">
         <thead>
           <tr class="text-left font-bold">
-            <th class="pb-4 pt-6 px-6">Name</th>
-            <th class="pb-4 pt-6 px-6">City</th>
-            <th class="pb-4 pt-6 px-6" colspan="2">Phone</th>
+            <th class="pb-4 pt-6 px-6">Название</th>
+            <th class="pb-4 pt-6 px-6">Телефон</th>
+            <th class="pb-4 pt-6 px-6">Адресс</th>
+            <th class="pb-4 pt-6 px-6" colspan="2">Дата создания</th>
           </tr>
         </thead>
         <tbody>
@@ -34,13 +35,18 @@
               </Link>
             </td>
             <td class="border-t">
-              <Link class="flex items-center px-6 py-4" :href="`/organizations/${organization.id}/edit`" tabindex="-1">
-                {{ organization.city }}
+              <Link class="flex items-center px-6 py-4 focus:text-indigo-500" :href="`/organizations/${organization.id}/edit`">
+                {{ organization.phone }}
               </Link>
             </td>
             <td class="border-t">
-              <Link class="flex items-center px-6 py-4" :href="`/organizations/${organization.id}/edit`" tabindex="-1">
-                {{ organization.phone }}
+              <Link class="flex items-center px-6 py-4 focus:text-indigo-500" :href="`/organizations/${organization.id}/edit`">
+                {{ organization.address }}
+              </Link>
+            </td>
+            <td class="border-t">
+              <Link class="flex items-center px-6 py-4 focus:text-indigo-500" :href="`/organizations/${organization.id}/edit`">
+                {{ organization.created_at }}
               </Link>
             </td>
             <td class="w-px border-t">
@@ -50,7 +56,7 @@
             </td>
           </tr>
           <tr v-if="organizations.data.length === 0">
-            <td class="px-6 py-4 border-t" colspan="4">No organizations found.</td>
+            <td class="px-6 py-4 border-t" colspan="4">Организаций не найдено.</td>
           </tr>
         </tbody>
       </table>

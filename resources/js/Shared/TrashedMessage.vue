@@ -6,7 +6,7 @@
         <slot />
       </div>
     </div>
-    <button class="text-yellow-800 hover:underline text-sm" tabindex="-1" type="button" @click="$emit('restore')">Restore</button>
+    <button class="text-yellow-800 hover:underline text-sm" tabindex="-1" type="button" @click="$emit('restore')">Восстановить</button>
   </div>
 </template>
 

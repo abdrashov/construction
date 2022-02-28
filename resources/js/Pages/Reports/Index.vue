@@ -1,7 +1,7 @@
 <template>
   <div>
-    <Head title="Reports" />
-    <h1 class="mb-8 text-3xl font-bold">Reports</h1>
+    <Head title="Отчеты" />
+    <h1 class="mb-8 text-3xl font-bold">Отчеты</h1>
   </div>
 </template>
 

@@ -6,7 +6,8 @@
         <div class="md:flex md:flex-shrink-0">
           <div class="flex items-center justify-between px-6 py-4 bg-indigo-900 md:flex-shrink-0 md:justify-center md:w-56">
             <Link class="mt-1" href="/">
-              <logo class="fill-white" width="120" height="28" />
+              <!-- <logo class="fill-white" width="120" height="28" /> -->
+              <div style="height: 28px"></div>
             </Link>
             <dropdown class="md:hidden" placement="bottom-end">
               <template #default>
@@ -20,7 +21,7 @@
             </dropdown>
           </div>
           <div class="md:text-md flex items-center justify-between p-4 w-full text-sm bg-white border-b md:px-12 md:py-0">
-            <div class="mr-4 mt-1">{{ auth.user.account.name }}</div>
+            <div class="mr-4 mt-1">Строительная компания</div>
             <dropdown class="mt-1" placement="bottom-end">
               <template #default>
                 <div class="group flex items-center cursor-pointer select-none">
@@ -33,9 +34,8 @@
               </template>
               <template #dropdown>
                 <div class="mt-2 py-2 text-sm bg-white rounded shadow-xl">
-                  <Link class="block px-6 py-2 hover:text-white hover:bg-indigo-500" :href="`/users/${auth.user.id}/edit`">My Profile</Link>
-                  <Link class="block px-6 py-2 hover:text-white hover:bg-indigo-500" href="/users">Manage Users</Link>
-                  <Link class="block px-6 py-2 w-full text-left hover:text-white hover:bg-indigo-500" href="/logout" method="delete" as="button">Logout</Link>
+                  <Link class="block px-6 py-2 hover:text-white hover:bg-indigo-500" :href="`/users/${auth.user.id}/edit`">Мой Профиль</Link>
+                  <Link class="block px-6 py-2 w-full text-left hover:text-white hover:bg-indigo-500" href="/logout" method="delete" as="button">Выйти из системы</Link>
                 </div>
               </template>
             </dropdown>

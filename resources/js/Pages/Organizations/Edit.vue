@@ -2,30 +2,21 @@
   <div>
     <Head :title="form.name" />
     <h1 class="mb-8 text-3xl font-bold">
-      <Link class="text-indigo-400 hover:text-indigo-600" href="/organizations">Organizations</Link>
+      <Link class="text-indigo-400 hover:text-indigo-600" href="/organizations">Организации</Link>
       <span class="text-indigo-400 font-medium">/</span>
       {{ form.name }}
     </h1>
-    <trashed-message v-if="organization.deleted_at" class="mb-6" @restore="restore"> This organization has been deleted. </trashed-message>
+    <trashed-message v-if="organization.deleted_at" class="mb-6" @restore="restore"> Эта организация была удалена. </trashed-message>
     <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
       <form @submit.prevent="update">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
-          <text-input v-model="form.name" :error="form.errors.name" class="pb-8 pr-6 w-full lg:w-1/2" label="Name" />
-          <text-input v-model="form.email" :error="form.errors.email" class="pb-8 pr-6 w-full lg:w-1/2" label="Email" />
-          <text-input v-model="form.phone" :error="form.errors.phone" class="pb-8 pr-6 w-full lg:w-1/2" label="Phone" />
-          <text-input v-model="form.address" :error="form.errors.address" class="pb-8 pr-6 w-full lg:w-1/2" label="Address" />
-          <text-input v-model="form.city" :error="form.errors.city" class="pb-8 pr-6 w-full lg:w-1/2" label="City" />
-          <text-input v-model="form.region" :error="form.errors.region" class="pb-8 pr-6 w-full lg:w-1/2" label="Province/State" />
-          <select-input v-model="form.country" :error="form.errors.country" class="pb-8 pr-6 w-full lg:w-1/2" label="Country">
-            <option :value="null" />
-            <option value="CA">Canada</option>
-            <option value="US">United States</option>
-          </select-input>
-          <text-input v-model="form.postal_code" :error="form.errors.postal_code" class="pb-8 pr-6 w-full lg:w-1/2" label="Postal code" />
+          <text-input v-model="form.name" :error="form.errors.name" class="pb-8 pr-6 w-full" label="Название" />
+          <text-input v-model="form.phone" :error="form.errors.phone" class="pb-8 pr-6 w-full" label="Телефон" />
+          <text-input v-model="form.address" :error="form.errors.address" class="pb-8 pr-6 w-full" label="Адресс" />
         </div>
         <div class="flex items-center px-8 py-4 bg-gray-50 border-t border-gray-100">
-          <button v-if="!organization.deleted_at" class="text-red-600 hover:underline" tabindex="-1" type="button" @click="destroy">Delete Organization</button>
-          <loading-button :loading="form.processing" class="btn-indigo ml-auto" type="submit">Update Organization</loading-button>
+          <button v-if="!organization.deleted_at" class="text-red-600 hover:underline" tabindex="-1" type="button" @click="destroy">Удалить Организацию</button>
+          <loading-button :loading="form.processing" class="btn-indigo ml-auto" type="submit">Обновить организацию</loading-button>
         </div>
       </form>
     </div>
@@ -111,12 +102,12 @@ export default {
       this.form.put(`/organizations/${this.organization.id}`)
     },
     destroy() {
-      if (confirm('Are you sure you want to delete this organization?')) {
+      if (confirm('Вы уверены, что хотите удалить эту организацию?')) {
         this.$inertia.delete(`/organizations/${this.organization.id}`)
       }
     },
     restore() {
-      if (confirm('Are you sure you want to restore this organization?')) {
+      if (confirm('Вы уверены, что хотите восстановить эту организацию?')) {
         this.$inertia.put(`/organizations/${this.organization.id}/restore`)
       }
     },
