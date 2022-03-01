@@ -44,12 +44,12 @@
                             </Link>
                         </td>
                         <td class="w-px border-t">
-                            <div class="flex pr-1">
-                                <Link class="flex items-center justify-center bg-gray-100 rounded w-7 h-7 hover:bg-indigo-100 focus-within:bg-indigo-100" :href="`/organizations/${organization.id}/edit`" tabindex="-1">
-                                    <icon name="edit" class="block w-4 h-4 fill-gray-400" />
+                            <div class="flex pr-2">
+                                <Link class="flex items-center justify-center bg-gray-100 rounded w-7 h-7 hover:bg-orange-100 focus-within:bg-orange-100" :href="`/organizations/${organization.id}/edit`" tabindex="-1">
+                                    <icon name="edit" class="block w-4 h-4 fill-gray-500" />
                                 </Link>
-                                <Link class="flex items-center justify-center ml-1 bg-gray-100 rounded w-7 h-7 hover:bg-indigo-100 focus-within:bg-indigo-100" :href="`/organizations/${organization.id}`" tabindex="-1">
-                                    <icon name="cheveron-right" class="block w-5 h-5 fill-gray-400" />
+                                <Link class="flex items-center justify-center ml-1 bg-gray-100 text-gray-500 rounded text-xs px-2 h-7 hover:bg-orange-100 focus-within:bg-orange-100" :href="`/organizations/${organization.id}/invoices`" tabindex="-1">
+                                    Накладные
                                 </Link>
                             </div>
                         </td>

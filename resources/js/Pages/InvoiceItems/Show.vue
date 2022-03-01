@@ -6,7 +6,7 @@
             <span class="font-medium text-indigo-400">/</span>
             {{ organization.name }}
         </h1>
-        <trashed-message v-if="organization.deleted_at" class="mb-6" @restore="restore"> Эта объект была удалена. </trashed-message>
+
         <div class="max-w-3xl overflow-hidden bg-white rounded-md shadow">
             <form @submit.prevent="update">
                 <div class="flex flex-wrap p-8 -mb-8 -mr-6">
@@ -41,7 +41,7 @@
                     <th class="px-6 pt-6 pb-4">Статус</th>
                     <th class="px-6 pt-6 pb-4" colspan="2">Дата</th>
                 </tr>
-                <tr v-for="invoice in organization.invoices" :key="invoice.id">
+                <tr >
                     <td class="border-t">
                         <Link class="flex items-center px-6 py-4 focus:text-indigo-500" :href="`/contacts/${invoice.id}/edit`">
                             {{ invoice.name }}

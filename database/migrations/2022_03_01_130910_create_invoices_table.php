@@ -25,6 +25,8 @@ class CreateInvoicesTable extends Migration
             $table->string('supplier', 255);
             $table->string('accepted', 255);
 
+            $table->string('file', 255)->nullable();
+
             $table->timestamps();
             $table->softDeletes();
         });

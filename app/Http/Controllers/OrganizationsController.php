@@ -32,26 +32,6 @@ class OrganizationsController extends Controller
         return Inertia::render('Organizations/Create');
     }
 
-    public function show(Organization $organization)
-    {
-        return Inertia::render('Organizations/Show', [
-            'organization' => [
-                'id' => $organization->id,
-                'name' => $organization->name,
-                'address' => $organization->address,
-                'deleted_at' => $organization->deleted_at,
-                'invoices' => $organization->invoices()->orderBy('name')->get()->transform(fn ($invoice) => [
-                    'id' => $invoice->id,
-                    'name' => $invoice->name,
-                    'status' => $invoice->status,
-                    'date' => $invoice->date->format('d.m.Y'),
-                    'supplier' => $invoice->supplier,
-                    'accepted' => $invoice->accepted
-                ]),
-            ],
-        ]);
-    }
-
     public function store()
     {
         Organization::create(

@@ -3,8 +3,11 @@
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ImagesController;
+use App\Http\Controllers\InvoiceItemsController;
 use App\Http\Controllers\InvoicesController;
 use App\Http\Controllers\OrganizationsController;
+use App\Http\Controllers\Reference\AcceptedController;
+use App\Http\Controllers\Reference\SuppliersController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\UsersController;
 use Illuminate\Support\Facades\Route;
@@ -35,49 +38,76 @@ Route::delete('logout', [AuthenticatedSessionController::class, 'destroy'])
 
 Route::middleware('auth')->group(function () {
 
-// Dashboard
+    // Dashboard
 
     Route::get('/', [DashboardController::class, 'index'])
         ->name('dashboard')
         ->middleware('auth');
 
-// Users
+    // Users
 
     Route::prefix('users')->name('users')->controller(UsersController::class)->group(function () {
         Route::get('{user}/edit', 'edit')->name('.edit');
         Route::put('{user}', 'update')->name('.update');
     });
 
-// Organizations
+    // Organizations
 
     Route::prefix('organizations')->name('organizations')->controller(OrganizationsController::class)->group(function () {
         Route::get('', 'index');
         Route::get('create', 'create')->name('.create');
         Route::post('', 'store')->name('.store');
-        Route::get('{organization}', 'show')->name('.show');
         Route::get('{organization}/edit', 'edit')->name('.edit');
         Route::put('{organization}', 'update')->name('.update');
         Route::delete('{organization}', 'destroy')->name('.destroy');
         Route::put('{organization}/restore', 'restore')->name('.restore');
     });
 
-// Invoice
+    // Invoice
 
     Route::prefix('organizations/{organization}/invoices')->name('invoices')->controller(InvoicesController::class)->group(function () {
-        Route::get('', 'create')->name('.create');
+        Route::get('', 'index');
         Route::post('', 'store')->name('.store');
         Route::get('{invoice}', 'show')->name('.show');
     });
 
-// Reports
+    // InvoiceItem
+
+    Route::prefix('invoices/{invoice}/invoice-items')->name('invoice-items')->controller(InvoiceItemsController::class)->group(function () {
+        Route::get('', 'index');
+        Route::post('', 'store')->name('.store');
+        Route::get('{invoice_item}', 'show')->name('.show');
+    });
+
+    // Reports
 
     Route::get('reports', [ReportsController::class, 'index'])
         ->name('reports');
 
-// Images
+    // Images
 
     Route::get('/img/{path}', [ImagesController::class, 'show'])
         ->where('path', '.*')
         ->name('image');
 
+    // Reference 
+
+    Route::prefix('reference')->name('reference')->group(function () {
+
+        // Suppliers
+
+        Route::prefix('suppliers')->name('suppliers')->controller(SuppliersController::class)->group(function () {
+            Route::get('', 'index');
+            Route::post('', 'store')->name('.store');
+            Route::get('{invoice_item}', 'show')->name('.show');
+        });
+
+        // Suppliers
+
+        Route::prefix('accepted')->name('accepted')->controller(AcceptedController::class)->group(function () {
+            Route::get('', 'index');
+            Route::post('', 'store')->name('.store');
+            Route::get('{invoice_item}', 'show')->name('.show');
+        });
+    });
 });
