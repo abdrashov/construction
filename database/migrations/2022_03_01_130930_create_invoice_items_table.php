@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateOrganizationsTable extends Migration
+class CreateInvoiceItemsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,19 @@ class CreateOrganizationsTable extends Migration
      */
     public function up()
     {
-        Schema::create('organizations', function (Blueprint $table) {
+        Schema::create('invoice_items', function (Blueprint $table) {
             $table->increments('id');
+
+            $table->unsignedInteger('invoice_id');
+            $table->foreign('invoice_id')->references('id')->on('invoices');
+
             $table->string('name', 255);
-            $table->string('address', 255)->nullable();
+
+            $table->integer('count');
+            $table->integer('price');
+
+            $table->string('measurement')->nullable();
+
             $table->timestamps();
             $table->softDeletes();
         });
@@ -29,6 +38,6 @@ class CreateOrganizationsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('organizations');
+        Schema::dropIfExists('invoice_items');
     }
 }

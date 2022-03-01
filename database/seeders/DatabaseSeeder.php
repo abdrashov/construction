@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Organization;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -23,5 +24,31 @@ class DatabaseSeeder extends Seeder
 
         User::factory(5)->create();
 
+
+        $organization = Organization::create([
+            'name' => 'ЖК что-то',
+            'address' => 'Рыскулов 5/8',
+        ]);
+
+        $organization->invoices()->create([
+            'name' => 'Накладной 1',
+            'status' => false,
+            'date' => now(),
+            'supplier' => 'Поставшик ',
+            'accepted' => 'Принял',
+        ])->invoiceItems()->createMany([
+            [
+                'name' => 'Темір',
+                'count' => 12,
+                'price' => 50000,
+                'measurement' => 'кг'
+            ],
+            [
+                'name' => 'Ағаш',
+                'count' => 50,
+                'price' => 12000,
+                'measurement' => 'кг'
+            ],
+        ]);
     }
 }
