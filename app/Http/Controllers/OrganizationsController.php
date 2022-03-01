@@ -40,6 +40,14 @@ class OrganizationsController extends Controller
                 'name' => $organization->name,
                 'address' => $organization->address,
                 'deleted_at' => $organization->deleted_at,
+                'invoices' => $organization->invoices()->orderBy('name')->get()->transform(fn ($invoice) => [
+                    'id' => $invoice->id,
+                    'name' => $invoice->name,
+                    'status' => $invoice->status,
+                    'date' => $invoice->date->format('d.m.Y'),
+                    'supplier' => $invoice->supplier,
+                    'accepted' => $invoice->accepted
+                ]),
             ],
         ]);
     }
@@ -48,7 +56,7 @@ class OrganizationsController extends Controller
     {
         Organization::create(
             Request::validate([
-                'name' => ['required', 'max:100'],
+                'name' => ['required', 'max:255'],
                 'address' => ['nullable', 'max:150'],
             ])
         );
@@ -72,7 +80,7 @@ class OrganizationsController extends Controller
     {
         $organization->update(
             Request::validate([
-                'name' => ['required', 'max:100'],
+                'name' => ['required', 'max:255'],
                 'address' => ['nullable', 'max:150'],
             ])
         );

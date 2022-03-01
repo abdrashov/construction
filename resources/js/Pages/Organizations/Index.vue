@@ -28,27 +28,27 @@
                 <tbody>
                     <tr v-for="organization in organizations.data" :key="organization.id">
                         <td class="border-t">
-                            <p class="flex items-center px-6 py-4">
+                            <Link :href="`/organizations/${organization.id}`" class="flex items-center px-6 py-4">
                                 {{ organization.name }}
                                 <icon v-if="organization.deleted_at" name="trash" class="flex-shrink-0 w-3 h-3 ml-2 fill-gray-400" />
-                            </p>
+                            </Link>
                         </td>
                         <td class="border-t">
-                            <p class="flex items-center px-6 py-4">
+                            <Link :href="`/organizations/${organization.id}`" class="flex items-center px-6 py-4">
                                 {{ organization.address }}
-                            </p>
+                            </Link>
                         </td>
                         <td class="border-t">
-                            <p class="flex items-center px-6 py-4">
+                            <Link :href="`/organizations/${organization.id}`" class="flex items-center px-6 py-4">
                                 {{ organization.created_at }}
-                            </p>
+                            </Link>
                         </td>
                         <td class="w-px border-t">
                             <div class="flex pr-1">
                                 <Link class="flex items-center justify-center bg-gray-100 rounded w-7 h-7 hover:bg-indigo-100 focus-within:bg-indigo-100" :href="`/organizations/${organization.id}/edit`" tabindex="-1">
                                     <icon name="edit" class="block w-4 h-4 fill-gray-400" />
                                 </Link>
-                                <Link class="flex items-center justify-center ml-1 bg-gray-100 rounded w-7 h-7 hover:bg-indigo-100 focus-within:bg-indigo-100" :href="`/organizations/${organization.id}/edit`" tabindex="-1">
+                                <Link class="flex items-center justify-center ml-1 bg-gray-100 rounded w-7 h-7 hover:bg-indigo-100 focus-within:bg-indigo-100" :href="`/organizations/${organization.id}`" tabindex="-1">
                                     <icon name="cheveron-right" class="block w-5 h-5 fill-gray-400" />
                                 </Link>
                             </div>

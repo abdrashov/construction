@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ImagesController;
+use App\Http\Controllers\InvoicesController;
 use App\Http\Controllers\OrganizationsController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\UsersController;
@@ -51,20 +52,21 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('organizations')->name('organizations')->controller(OrganizationsController::class)->group(function () {
         Route::get('', 'index');
-
         Route::get('create', 'create')->name('.create');
-
         Route::post('', 'store')->name('.store');
-
         Route::get('{organization}', 'show')->name('.show');
-
         Route::get('{organization}/edit', 'edit')->name('.edit');
-
         Route::put('{organization}', 'update')->name('.update');
-
         Route::delete('{organization}', 'destroy')->name('.destroy');
-
         Route::put('{organization}/restore', 'restore')->name('.restore');
+    });
+
+// Invoice
+
+    Route::prefix('organizations/{organization}/invoices')->name('invoices')->controller(InvoicesController::class)->group(function () {
+        Route::get('', 'create')->name('.create');
+        Route::post('', 'store')->name('.store');
+        Route::get('{invoice}', 'show')->name('.show');
     });
 
 // Reports
