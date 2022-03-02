@@ -90,14 +90,14 @@
                     </div>
                 </div>
                 <form @submit.prevent="store">
-                    <input class="relative w-full px-4 py-2 border-b focus:shadow-outline" autocomplete="off" type="text" name="search" placeholder="Поиск…" v-model="search" />
+                    <input @keyup="searchItem" class="relative w-full px-4 py-2 border-b focus:shadow-outline" autocomplete="off" type="text" name="search" placeholder="Поиск…" v-model="search" />
                     <div class="h-64 my-5 overflow-y-scroll">
                         <table class="w-full">
                             <tr class="font-bold text-left">
                                 <th class="p-2 px-4">Название</th>
                                 <th class="p-2 px-4 text-right">Измерения</th>
                             </tr>
-                            <tr v-for="item in items" :key="item.id" class="hover:bg-gray-100 focus:bg-gray-100">
+                            <tr v-for="item in search_items" :key="item.id" class="hover:bg-gray-100 focus:bg-gray-100">
                                 <td class="border-t">
                                     <div class="flex items-center px-4 py-2">
                                         {{ item.name }}
@@ -156,6 +156,7 @@ export default {
     data() {
         return {
             search: '',
+            search_items: this.items,
             handler: {
                 price: '',
                 count: '',
@@ -207,6 +208,11 @@ export default {
                 let price = document.getElementById(`item_${id}_price`).value
                 this.$inertia.put(`/invoices/${this.invoice.id}/invoice-items/${id}`, pickBy({ price: price }), { preserveState: true })
             }, 750)
+        },
+        searchItem() {
+            this.search_items = this.items.filter((item) => {
+                return item.name.includes(this.search)
+            })
         },
     },
 }
