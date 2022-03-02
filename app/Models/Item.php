@@ -12,8 +12,13 @@ class Item extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'name', 'measurement'
+        'name', 'measurement_id'
     ];
+
+    public function measurement()
+    {
+        return $this->belongsTo(Measurement::class);
+    }
 
     public function resolveRouteBinding($value, $field = null)
     {

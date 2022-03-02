@@ -16,7 +16,10 @@ class CreateItemsTable extends Migration
         Schema::create('items', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name', 255);
-            $table->string('measurement')->nullable();
+
+            $table->unsignedInteger('measurement_id')->nullable();
+            $table->foreign('measurement_id')->references('id')->on('measurements');
+
             $table->timestamps();
             $table->softDeletes();
         });

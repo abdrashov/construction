@@ -20,11 +20,16 @@ class CreateInvoiceItemsTable extends Migration
             $table->foreign('invoice_id')->references('id')->on('invoices');
 
             $table->string('name', 255);
+            $table->unsignedInteger('item_id');
+            $table->foreign('item_id')->references('id')->on('items');
 
             $table->integer('count')->default(0)->unsigned();
             $table->integer('price')->default(0)->unsigned();
 
             $table->string('measurement')->nullable();
+
+            $table->unsignedInteger('measurement_id');
+            $table->foreign('measurement_id')->references('id')->on('measurements');
 
             $table->timestamps();
             $table->softDeletes();

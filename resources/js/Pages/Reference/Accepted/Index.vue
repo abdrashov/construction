@@ -124,17 +124,17 @@ export default {
         form: {
             deep: true,
             handler: throttle(function () {
-            this.$inertia.get('', pickBy(this.form), { preserveState: true })
+            this.$inertia.get('/reference/accepted', pickBy(this.form), { preserveState: true })
             }, 150),
         },
     },
-    remember: 'form',
+    remember: 'form_create',
     methods: {
         reset() {
             this.form = mapValues(this.form, () => null)
         },
         store() {
-            this.form_create.post('', {
+            this.form_create.post('/reference/accepted', {
                 onSuccess: () => {
                     this.form_create.reset('lastname')
                     this.form_create.reset('firstname')

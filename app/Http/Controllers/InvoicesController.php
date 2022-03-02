@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Accepted;
 use App\Models\Invoice;
 use App\Models\Organization;
+use App\Models\Supplier;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
 use Inertia\Inertia;
@@ -18,7 +20,7 @@ class InvoicesController extends Controller
                 'name' => $organization->name,
                 'address' => $organization->address,
                 'deleted_at' => $organization->deleted_at,
-                'invoices' => $organization->invoices()->orderByDesc('date')->get()->transform(fn($invoice) => [
+                'invoices' => $organization->invoices()->orderByDesc('date')->get()->transform(fn ($invoice) => [
                     'id' => $invoice->id,
                     'name' => $invoice->name,
                     'status' => $invoice->status,
@@ -37,6 +39,8 @@ class InvoicesController extends Controller
                 'id' => $organization->id,
                 'name' => $organization->name,
             ],
+            'accepteds' => Accepted::orderBy('lastname')->get(),
+            'suppliers' => Supplier::orderBy('name')->get(),
         ]);
     }
 
@@ -44,13 +48,18 @@ class InvoicesController extends Controller
     {
         Request::validate([
             'name' => ['required', 'max:255'],
-            'date' => ['required', 'date', 'date_format:Y-m-d'],
-            'supplier' => ['required', 'max:255'],
-            'accepted' => ['required', 'max:255'],
+            'date' => ['required', 'date'],
+            'supplier_id' => ['required', 'max:255'],
+            'accepted_id' => ['required', 'max:255'],
             'file' => ['nullable'],
         ]);
 
-        $invoice = $organization->invoices()->create(Request::only('name', 'date', 'supplier', 'accepted'));
+        $supplier = Supplier::findOrFail(Request::input('supplier_id'));
+        $accepted = Accepted::findOrFail(Request::input('accepted_id'));
+
+        Request::merge(['supplier' => $supplier->name, 'accepted' => $accepted->lastname . ' ' . $accepted->firstname]);
+
+        $invoice = $organization->invoices()->create(Request::only('name', 'date', 'supplier_id', 'accepted_id', 'supplier', 'accepted'));
 
         if (Request::file('file')) {
             $invoice->update(['file' => Request::file('file')->store('invoices')]);
@@ -64,12 +73,17 @@ class InvoicesController extends Controller
         Request::validate([
             'name' => ['required', 'max:255'],
             'date' => ['required', 'date', 'date_format:Y-m-d'],
-            'supplier' => ['required', 'max:255'],
-            'accepted' => ['required', 'max:255'],
+            'supplier_id' => ['required', 'max:255'],
+            'accepted_id' => ['required', 'max:255'],
             'file' => ['nullable'],
         ]);
 
-        $invoice->update(Request::only('name', 'date', 'supplier', 'accepted'));
+        $supplier = Supplier::findOrFail(Request::input('supplier_id'));
+        $accepted = Accepted::findOrFail(Request::input('accepted_id'));
+
+        Request::merge(['supplier' => $supplier->name, 'accepted' => $accepted->lastname . ' ' . $accepted->firstname]);
+
+        $invoice->update(Request::only('name', 'date', 'supplier_id', 'accepted_id', 'supplier', 'accepted'));
 
         if (Request::file('file')) {
             $invoice->update(['file' => Request::file('file')->store('invoices')]);

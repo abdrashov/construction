@@ -2,7 +2,11 @@
 
 namespace Database\Seeders;
 
+use App\Models\Accepted;
+use App\Models\Item;
+use App\Models\Measurement;
 use App\Models\Organization;
+use App\Models\Supplier;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -23,33 +27,20 @@ class DatabaseSeeder extends Seeder
         ]);
 
         User::factory(5)->create();
-
-        $organization = Organization::create([
-            'name' => 'ЖК что-то',
-            'address' => 'Рыскулов 5/8',
+        
+        Measurement::create([
+            'name' => 'кг'
+        ]);
+        Measurement::create([
+            'name' => 'т'
+        ]);
+        Measurement::create([
+            'name' => 'м'
         ]);
 
-        Organization::factory(8)->create();
-
-        $organization->invoices()->create([
-            'name' => 'Накладной 1',
-            'status' => false,
-            'date' => now(),
-            'supplier' => 'Поставшик ',
-            'accepted' => 'Принял',
-        ])->invoiceItems()->createMany([
-            [
-                'name' => 'Темір',
-                'count' => 12,
-                'price' => 50000,
-                'measurement' => 'кг'
-            ],
-            [
-                'name' => 'Ағаш',
-                'count' => 50,
-                'price' => 12000,
-                'measurement' => 'кг'
-            ],
-        ]);
+        Item::factory(1000)->create();
+        Supplier::factory(30)->create();
+        Accepted::factory(10)->create();
+        Organization::factory(3)->create();
     }
 }

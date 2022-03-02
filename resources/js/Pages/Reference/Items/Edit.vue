@@ -3,27 +3,22 @@
         <Head :title="form.name" />
         <h1 class="mb-8 text-3xl font-bold">
             <Link class="text-indigo-400 hover:text-indigo-600" href="/reference/items">Товары</Link>
-            <span class="font-medium text-indigo-400">/</span>
+            <span class="text-indigo-400 font-medium">/</span>
             {{ form.name }}
         </h1>
         <trashed-message v-if="item.deleted_at" class="mb-6" @restore="restore"> Этот товар был удален. </trashed-message>
-        <div class="max-w-3xl overflow-hidden bg-white rounded-md shadow">
+        <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
             <form @submit.prevent="update">
-                <div class="flex flex-wrap p-8 -mb-8 -mr-6">
-                    <text-input v-model="form.name" :error="form.errors.name" class="w-full pb-8 pr-6" label="Фамилия" />
-                    <select-input v-model="form.measurement" :error="form.errors.measurement" class="w-full pb-5" label="Измерение">
+                <div class="flex flex-wrap -mb-8 -mr-6 p-8">
+                    <text-input v-model="form.name" :error="form.errors.name" class="pb-8 pr-6 w-full" label="Фамилия" />
+                    <select-input v-model="form.measurement_id" :error="form.errors.measurement_id" class="pb-5 w-full" label="Измерение">
                         <option :value="null"></option>
-                        <option value="кг">кг</option>
-                        <option value="ц">ц</option>
-                        <option value="т">т</option>
-                        <option value="км">км</option>
-                        <option value="см">см</option>
-                        <option value="м">м</option>
+                        <option v-for="measurement in measurements" :key="measurement.id" :value="measurement.id">{{ measurement.name }}</option>
                     </select-input>
                 </div>
-                <div class="flex items-center px-8 py-4 border-t border-gray-100 bg-gray-50">
+                <div class="flex items-center px-8 py-4 bg-gray-50 border-t border-gray-100">
                     <button v-if="!item.deleted_at" class="text-red-600 hover:underline" tabindex="-1" type="button" @click="destroy">Удалить</button>
-                    <loading-button :loading="form.processing" class="ml-auto btn-indigo" type="submit">Обновить</loading-button>
+                    <loading-button :loading="form.processing" class="btn-indigo ml-auto" type="submit">Обновить</loading-button>
                 </div>
             </form>
         </div>
@@ -52,13 +47,14 @@ export default {
     layout: Layout,
     props: {
         item: Object,
+        measurements: Object,
     },
     remember: 'form',
     data() {
         return {
             form: this.$inertia.form({
                 name: this.item.name,
-                measurement: this.item.measurement,
+                measurement_id: this.item.measurement_id,
             }),
         }
     },

@@ -17,7 +17,7 @@
             </Link>
         </div>
         <div class="overflow-x-auto bg-white rounded-md shadow">
-            <table class="w-full whitespace-nowrap">
+            <table class="w-full">
                 <thead>
                     <tr class="font-bold text-left">
                         <th class="px-6 pt-6 pb-4">Название</th>

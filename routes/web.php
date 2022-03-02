@@ -8,6 +8,7 @@ use App\Http\Controllers\InvoicesController;
 use App\Http\Controllers\OrganizationsController;
 use App\Http\Controllers\Reference\AcceptedController;
 use App\Http\Controllers\Reference\ItemController;
+use App\Http\Controllers\Reference\MeasurementsController;
 use App\Http\Controllers\Reference\SuppliersController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\UsersController;
@@ -78,7 +79,9 @@ Route::middleware('auth')->group(function () {
     Route::prefix('invoices/{invoice}/invoice-items')->name('invoice-items')->controller(InvoiceItemsController::class)->group(function () {
         Route::get('', 'index');
         Route::post('', 'store')->name('.store');
-        Route::put('{invoice_item}', 'update')->name('.update');
+        Route::post('confirm', 'confirm')->name('.confirm');
+        Route::put('', 'update')->name('.update');
+        Route::delete('', 'delete')->name('.delete');
     });
 
     // Reports
@@ -119,7 +122,7 @@ Route::middleware('auth')->group(function () {
         });
 
         // Item
-
+        
         Route::prefix('items')->name('.items')->controller(ItemController::class)->group(function () {
             Route::get('', 'index');
             Route::post('', 'store')->name('.store');
@@ -127,6 +130,17 @@ Route::middleware('auth')->group(function () {
             Route::put('{item}', 'update')->name('.update');
             Route::delete('{item}', 'destroy')->name('.destroy');
             Route::put('{item}/restore', 'restore')->name('.restore');
+        });
+
+        // Measurement
+
+        Route::prefix('measurements')->name('.measurements')->controller(MeasurementsController::class)->group(function () {
+            Route::get('', 'index');
+            Route::post('', 'store')->name('.store');
+            Route::get('{measurement}/edit', 'edit')->name('.edit');
+            Route::put('{measurement}', 'update')->name('.update');
+            Route::delete('{measurement}', 'destroy')->name('.destroy');
+            Route::put('{measurement}/restore', 'restore')->name('.restore');
         });
     });
 });

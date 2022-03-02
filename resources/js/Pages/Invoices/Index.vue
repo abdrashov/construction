@@ -33,7 +33,7 @@
         </div>
 
         <div class="mt-6 overflow-x-auto bg-white rounded shadow">
-            <table class="w-full whitespace-nowrap">
+            <table class="w-full">
                 <tr class="font-bold text-left">
                     <th class="px-6 pt-6 pb-4">Название</th>
                     <th class="px-6 pt-6 pb-4">Поставщик</th>
