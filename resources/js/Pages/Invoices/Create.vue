@@ -75,7 +75,7 @@ export default {
     },
     methods: {
         store() {
-            if (this.form.date.toString().length > 9) {
+            if (this.form.date.toString().length > 10) {
                 const day = this.form.date.getDate()
                 const month = this.form.date.getMonth()+1
                 const year = this.form.date.getFullYear()

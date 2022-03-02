@@ -224,15 +224,15 @@ export default {
     },
     methods: {
         update() {
-            if (this.form_invoice.date.toString().length > 9) {
-                const day = this.form.date.getDate()
-                const month = this.form.date.getMonth() + 1
-                const year = this.form.date.getFullYear()
+            if (this.form_invoice.date.toString().length > 10) {
+                const day = this.form_invoice.date.getDate()
+                const month = this.form_invoice.date.getMonth() + 1
+                const year = this.form_invoice.date.getFullYear()
 
                 this.form_invoice.date = `${year}-${month}-${day}`
             }
             this.form_invoice.post(`/organizations/${this.organization.id}/invoices/${this.invoice.id}`, {
-                onSuccess: () => this.form.reset('file'),
+                onSuccess: () => this.form_invoice.reset('file'),
             })
         },
         storeItem(item_id) {

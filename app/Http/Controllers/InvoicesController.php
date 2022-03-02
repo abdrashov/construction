@@ -72,7 +72,7 @@ class InvoicesController extends Controller
     {
         Request::validate([
             'name' => ['required', 'max:255'],
-            'date' => ['required', 'date', 'date_format:Y-m-d'],
+            'date' => ['required', 'date'],
             'supplier_id' => ['required', 'max:255'],
             'accepted_id' => ['required', 'max:255'],
             'file' => ['nullable'],

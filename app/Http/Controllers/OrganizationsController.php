@@ -17,7 +17,7 @@ class OrganizationsController extends Controller
                 ->filter(Request::only('search', 'trashed'))
                 ->paginate(10)
                 ->withQueryString()
-                ->through(fn($organization) => [
+                ->through(fn ($organization) => [
                     'id' => $organization->id,
                     'name' => $organization->name,
                     'address' => $organization->address,
@@ -34,12 +34,16 @@ class OrganizationsController extends Controller
 
     public function store()
     {
-        Organization::create(
-            Request::validate([
-                'name' => ['required', 'max:255'],
-                'address' => ['nullable', 'max:150'],
-            ])
-        );
+        $request = Request::validate([
+            'name' => ['required', 'max:255'],
+            'address' => ['nullable', 'max:150'],
+            'users.*.lastname' => ['required', 'max:150'],
+            'users.*.firstname' => ['required', 'max:150'],
+            'users.*.middlename' => ['nullable', 'max:150'],
+            'users.*.default' => ['boolean'],
+        ]);
+
+        Organization::create($request);
 
         return Redirect::route('organizations')->with('success', 'Объект, создано.');
     }
