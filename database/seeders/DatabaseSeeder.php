@@ -24,11 +24,12 @@ class DatabaseSeeder extends Seeder
 
         User::factory(5)->create();
 
-
         $organization = Organization::create([
             'name' => 'ЖК что-то',
             'address' => 'Рыскулов 5/8',
         ]);
+
+        Organization::factory(8)->create();
 
         $organization->invoices()->create([
             'name' => 'Накладной 1',

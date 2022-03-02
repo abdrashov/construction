@@ -41,7 +41,7 @@ class OrganizationsController extends Controller
             ])
         );
 
-        return Redirect::route('organizations')->with('success', 'Объект, созданная.');
+        return Redirect::route('organizations')->with('success', 'Объект, создано.');
     }
 
     public function edit(Organization $organization)

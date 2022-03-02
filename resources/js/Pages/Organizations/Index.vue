@@ -28,18 +28,18 @@
                 <tbody>
                     <tr v-for="organization in organizations.data" :key="organization.id">
                         <td class="border-t">
-                            <Link :href="`/organizations/${organization.id}`" class="flex items-center px-6 py-4">
+                            <Link :href="`/organizations/${organization.id}/edit`" class="flex items-center px-6 py-4">
                                 {{ organization.name }}
                                 <icon v-if="organization.deleted_at" name="trash" class="flex-shrink-0 w-3 h-3 ml-2 fill-gray-400" />
                             </Link>
                         </td>
                         <td class="border-t">
-                            <Link :href="`/organizations/${organization.id}`" class="flex items-center px-6 py-4">
+                            <Link :href="`/organizations/${organization.id}/edit`" class="flex items-center px-6 py-4">
                                 {{ organization.address }}
                             </Link>
                         </td>
                         <td class="border-t">
-                            <Link :href="`/organizations/${organization.id}`" class="flex items-center px-6 py-4">
+                            <Link :href="`/organizations/${organization.id}/edit`" class="flex items-center px-6 py-4">
                                 {{ organization.created_at }}
                             </Link>
                         </td>
@@ -48,7 +48,7 @@
                                 <Link class="flex items-center justify-center bg-gray-100 rounded w-7 h-7 hover:bg-orange-100 focus-within:bg-orange-100" :href="`/organizations/${organization.id}/edit`" tabindex="-1">
                                     <icon name="edit" class="block w-4 h-4 fill-gray-500" />
                                 </Link>
-                                <Link class="flex items-center justify-center ml-1 bg-gray-100 text-gray-500 rounded text-xs px-2 h-7 hover:bg-orange-100 focus-within:bg-orange-100" :href="`/organizations/${organization.id}/invoices`" tabindex="-1">
+                                <Link class="flex items-center justify-center px-2 ml-1 text-xs text-gray-500 bg-gray-100 rounded h-7 hover:bg-orange-100 focus-within:bg-orange-100" :href="`/organizations/${organization.id}/invoices`" tabindex="-1">
                                     Накладные
                                 </Link>
                             </div>

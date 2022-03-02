@@ -7,6 +7,7 @@ use App\Http\Controllers\InvoiceItemsController;
 use App\Http\Controllers\InvoicesController;
 use App\Http\Controllers\OrganizationsController;
 use App\Http\Controllers\Reference\AcceptedController;
+use App\Http\Controllers\Reference\ItemController;
 use App\Http\Controllers\Reference\SuppliersController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\UsersController;
@@ -68,7 +69,8 @@ Route::middleware('auth')->group(function () {
     Route::prefix('organizations/{organization}/invoices')->name('invoices')->controller(InvoicesController::class)->group(function () {
         Route::get('', 'index');
         Route::post('', 'store')->name('.store');
-        Route::get('{invoice}', 'show')->name('.show');
+        Route::put('{invoice}', 'update')->name('.update');
+        Route::get('create', 'create')->name('.create');
     });
 
     // InvoiceItem
@@ -76,7 +78,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('invoices/{invoice}/invoice-items')->name('invoice-items')->controller(InvoiceItemsController::class)->group(function () {
         Route::get('', 'index');
         Route::post('', 'store')->name('.store');
-        Route::get('{invoice_item}', 'show')->name('.show');
+        Route::put('{invoice_item}', 'update')->name('.update');
     });
 
     // Reports
@@ -90,24 +92,41 @@ Route::middleware('auth')->group(function () {
         ->where('path', '.*')
         ->name('image');
 
-    // Reference 
+    // Reference
 
     Route::prefix('reference')->name('reference')->group(function () {
 
         // Suppliers
 
-        Route::prefix('suppliers')->name('suppliers')->controller(SuppliersController::class)->group(function () {
+        Route::prefix('suppliers')->name('.suppliers')->controller(SuppliersController::class)->group(function () {
             Route::get('', 'index');
             Route::post('', 'store')->name('.store');
-            Route::get('{invoice_item}', 'show')->name('.show');
+            Route::get('{supplier}/edit', 'edit')->name('.edit');
+            Route::put('{supplier}', 'update')->name('.update');
+            Route::delete('{supplier}', 'destroy')->name('.destroy');
+            Route::put('{supplier}/restore', 'restore')->name('.restore');
         });
 
-        // Suppliers
+        // Accepted
 
-        Route::prefix('accepted')->name('accepted')->controller(AcceptedController::class)->group(function () {
+        Route::prefix('accepted')->name('.accepted')->controller(AcceptedController::class)->group(function () {
             Route::get('', 'index');
             Route::post('', 'store')->name('.store');
-            Route::get('{invoice_item}', 'show')->name('.show');
+            Route::get('{accepted}/edit', 'edit')->name('.edit');
+            Route::put('{accepted}', 'update')->name('.update');
+            Route::delete('{accepted}', 'destroy')->name('.destroy');
+            Route::put('{accepted}/restore', 'restore')->name('.restore');
+        });
+
+        // Item
+
+        Route::prefix('items')->name('.items')->controller(ItemController::class)->group(function () {
+            Route::get('', 'index');
+            Route::post('', 'store')->name('.store');
+            Route::get('{item}/edit', 'edit')->name('.edit');
+            Route::put('{item}', 'update')->name('.update');
+            Route::delete('{item}', 'destroy')->name('.destroy');
+            Route::put('{item}/restore', 'restore')->name('.restore');
         });
     });
 });

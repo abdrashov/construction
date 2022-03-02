@@ -18,14 +18,24 @@ class InvoicesController extends Controller
                 'name' => $organization->name,
                 'address' => $organization->address,
                 'deleted_at' => $organization->deleted_at,
-                'invoices' => $organization->invoices()->orderByDesc('date')->get()->transform(fn ($invoice) => [
+                'invoices' => $organization->invoices()->orderByDesc('date')->get()->transform(fn($invoice) => [
                     'id' => $invoice->id,
                     'name' => $invoice->name,
                     'status' => $invoice->status,
-                    'date' => $invoice->date->format('d.m.Y'),
+                    'date' => $invoice->date->format('Y-m-d'),
                     'supplier' => $invoice->supplier,
-                    'accepted' => $invoice->accepted
+                    'accepted' => $invoice->accepted,
                 ]),
+            ],
+        ]);
+    }
+
+    public function create(Organization $organization)
+    {
+        return Inertia::render('Invoices/Create', [
+            'organization' => [
+                'id' => $organization->id,
+                'name' => $organization->name,
             ],
         ]);
     }
@@ -46,24 +56,25 @@ class InvoicesController extends Controller
             $invoice->update(['file' => Request::file('file')->store('invoices')]);
         }
 
-        return Redirect::route('invoices', $organization->id)->with('success', 'Накладной, создано.');
+        return Redirect::route('invoice-items', $invoice->id)->with('success', 'Накладной, создано.');
     }
 
-    public function show(Organization $organization, Invoice $invoice)
+    public function update(Organization $organization, Invoice $invoice)
     {
-        return Inertia::render('Invoices/Show', [
-            'organization' => [
-                'id' => $organization->id,
-                'name' => $organization->name,
-            ],
-            'invoice' => [
-                'id' => $invoice->id,
-                'name' => $invoice->name,
-                'status' => $invoice->status,
-                'date' => $invoice->date->format('d.m.Y'),
-                'supplier' => $invoice->supplier,
-                'accepted' => $invoice->accepted
-            ],
+        Request::validate([
+            'name' => ['required', 'max:255'],
+            'date' => ['required', 'date', 'date_format:Y-m-d'],
+            'supplier' => ['required', 'max:255'],
+            'accepted' => ['required', 'max:255'],
+            'file' => ['nullable'],
         ]);
+
+        $invoice->update(Request::only('name', 'date', 'supplier', 'accepted'));
+
+        if (Request::file('file')) {
+            $invoice->update(['file' => Request::file('file')->store('invoices')]);
+        }
+
+        return Redirect::back()->with('success', 'Накладной, обновлено.');
     }
 }

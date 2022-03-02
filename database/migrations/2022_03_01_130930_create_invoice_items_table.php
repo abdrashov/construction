@@ -21,8 +21,8 @@ class CreateInvoiceItemsTable extends Migration
 
             $table->string('name', 255);
 
-            $table->integer('count');
-            $table->integer('price');
+            $table->integer('count')->default(0)->unsigned();
+            $table->integer('price')->default(0)->unsigned();
 
             $table->string('measurement')->nullable();
 
