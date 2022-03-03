@@ -84,14 +84,14 @@
                     </td>
                     <td class="w-1/6 border-l border-t">
                         <div class="flex items-center px-4 py-1">
-                            <input type="number" v-model="item.count" v-on:input="countHandler(index)" :name="`item[${index}][count]`" class="mr-1 border-b border-dashed border-blue-300" />
+                            <input type="number" v-model.lazy="item.count" v-on:input="countHandler(index)" :name="`item[${index}][count]`" class="mr-1 border-b border-dashed border-blue-300" />
                             <span class="hidden">{{ (sum.count += item.count) }}</span>
                             <span>{{ item.measurement }}</span>
                         </div>
                     </td>
                     <td class="w-1/6 border-l border-t">
                         <div class="flex items-center px-4 py-1">
-                            <input type="number" v-model="item.price" v-on:input="priceHandler(index)" :name="`item[${index}][price]`" class="border-b border-dashed border-blue-300" />
+                            <input type="number" v-model.lazy="item.price" v-on:input="priceHandler(index)" :name="`item[${index}][price]`" class="border-b border-dashed border-blue-300" />
                             <span class="hidden">{{ (sum.price += item.price) }}</span>
                         </div>
                     </td>
@@ -313,8 +313,7 @@ export default {
                 cancelButtonText: 'Отмена',
             }).then((result) => {
                 if (result.isConfirmed) {
-                    this.$inertia.post(
-                        `/invoices/${this.invoice.id}/invoice-items/confirm`,
+                    this.$inertia.post(`/invoices/${this.invoice.id}/invoice-items/confirm`,
                         pickBy({
                             items: this.invoice_items,
                         }),

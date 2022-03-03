@@ -17,10 +17,10 @@ class ReportsController extends Controller
                 'organizations.name',
                 'organizations.created_at',
                 DB::raw(
-                    '(SELECT COUNT(invoices.status) from invoices where organizations.id = invoices.organization_id and invoices.status = 1) as confirmed'
+                    '(SELECT COUNT(invoices.status) FROM `invoices` WHERE `organizations`.`id` = `invoices`.`organization_id` AND `invoices`.`status` = 1) as confirmed'
                 ),
                 DB::raw(
-                    '(SELECT COUNT(invoices.status) from invoices where organizations.id = invoices.organization_id and invoices.status = 0) as not_confirmed'
+                    '(SELECT COUNT(invoices.status) FROM `invoices` WHERE `organizations`.`id` = `invoices`.`organization_id` AND `invoices`.`status` = 0) as not_confirmed'
                 ),
                 DB::raw(
                     'SUM(invoice_items.price * invoice_items.count) as sum_price'
