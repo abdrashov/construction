@@ -1,7 +1,7 @@
 <template>
     <div>
         <Head title="Измерение" />
-        <h1 class="mb-8 text-3xl font-bold">Измерение</h1>
+        <h1 class="mb-6 text-2xl font-bold">Измерение</h1>
         <div class="flex items-center justify-between mb-6">
             <search-filter v-model="form.search" class="w-full max-w-md mr-4" @reset="reset">
                 <label class="block text-gray-700">Удаленные:</label>
@@ -15,17 +15,17 @@
                 <span>Создать</span>
             </button>
         </div>
-        <div class="overflow-x-auto bg-white rounded-md shadow">
+        <div class="overflow-x-auto text-sm bg-white rounded-md shadow">
             <table class="w-full whitespace-nowrap">
                 <thead>
                     <tr class="font-bold text-left">
-                        <th class="px-6 pt-6 pb-4">Названия</th>
+                        <th class="px-5 pt-5 pb-3">Названия</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="measurement in measurements.data" :key="measurement.id">
                         <td class="border-t">
-                            <Link :href="`/reference/measurements/${measurement.id}/edit`" class="flex items-center px-6 py-4">
+                            <Link :href="`/reference/measurements/${measurement.id}/edit`" class="flex items-center px-5 py-2">
                                 {{ measurement.name }}
                                 <icon v-if="measurement.deleted_at" name="trash" class="flex-shrink-0 w-3 h-3 ml-2 fill-gray-400" />
                             </Link>

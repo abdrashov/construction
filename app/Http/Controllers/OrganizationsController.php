@@ -66,6 +66,10 @@ class OrganizationsController extends Controller
             Request::validate([
                 'name' => ['required', 'max:255'],
                 'address' => ['nullable', 'max:150'],
+                'users.*.lastname' => ['required', 'max:150'],
+                'users.*.firstname' => ['required', 'max:150'],
+                'users.*.middlename' => ['nullable', 'max:150'],
+                'users.*.default' => ['boolean'],
             ])
         );
 

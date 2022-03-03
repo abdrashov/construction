@@ -122,7 +122,7 @@ Route::middleware('auth')->group(function () {
         });
 
         // Item
-        
+
         Route::prefix('items')->name('.items')->controller(ItemController::class)->group(function () {
             Route::get('', 'index');
             Route::post('', 'store')->name('.store');

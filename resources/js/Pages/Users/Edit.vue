@@ -10,11 +10,11 @@
     <div class="max-w-3xl overflow-hidden bg-white rounded-md shadow">
       <form @submit.prevent="update">
         <div class="flex flex-wrap p-8 -mb-8 -mr-6">
-          <text-input v-model="form.first_name" :error="form.errors.first_name" class="w-full pb-8 pr-6 lg:w-1/2" label="Имя" />
-          <text-input v-model="form.last_name" :error="form.errors.last_name" class="w-full pb-8 pr-6 lg:w-1/2" label="Фамилия" />
-          <text-input v-model="form.email" :error="form.errors.email" class="w-full pb-8 pr-6 lg:w-1/2" label="Почта" />
-          <text-input v-model="form.password" :error="form.errors.password" class="w-full pb-8 pr-6 lg:w-1/2" type="password" autocomplete="new-password" label="Пароль" />
-          <!-- <file-input v-model="form.photo" :error="form.errors.photo" class="w-full pb-8 pr-6 lg:w-1/2" type="file" accept="image/*" label="Photo" /> -->
+          <text-input v-model="form.first_name" :error="form.errors.first_name" class="w-full pb-4 pr-6 text-sm lg:w-1/2" label="Имя" />
+          <text-input v-model="form.last_name" :error="form.errors.last_name" class="w-full pb-4 pr-6 text-sm lg:w-1/2" label="Фамилия" />
+          <text-input v-model="form.email" :error="form.errors.email" class="w-full pb-4 pr-6 text-sm lg:w-1/2" label="Почта" />
+          <text-input v-model="form.password" :error="form.errors.password" class="w-full pb-4 pr-6 text-sm lg:w-1/2" type="password" autocomplete="new-password" label="Пароль" />
+          <!-- <file-input v-model="form.photo" :error="form.errors.photo" class="w-full pb-4 pr-6 text-sm lg:w-1/2" type="file" accept="image/*" label="Photo" /> -->
         </div>
         <div class="flex items-center px-8 py-4 border-t border-gray-100 bg-gray-50">
           <loading-button :loading="form.processing" class="ml-auto btn-indigo" type="submit">Обновить</loading-button>

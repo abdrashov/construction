@@ -19,6 +19,7 @@ class InvoicesController extends Controller
                 'id' => $organization->id,
                 'name' => $organization->name,
                 'address' => $organization->address,
+                'users' => $organization->users,
                 'deleted_at' => $organization->deleted_at,
                 'invoices' => $organization->invoices()->orderByDesc('date')->get()->transform(fn ($invoice) => [
                     'id' => $invoice->id,
@@ -38,8 +39,8 @@ class InvoicesController extends Controller
             'organization' => [
                 'id' => $organization->id,
                 'name' => $organization->name,
+                'users' => $organization->users,
             ],
-            'accepteds' => Accepted::orderBy('lastname')->get(),
             'suppliers' => Supplier::orderBy('name')->get(),
         ]);
     }
@@ -50,16 +51,15 @@ class InvoicesController extends Controller
             'name' => ['required', 'max:255'],
             'date' => ['required', 'date'],
             'supplier_id' => ['required', 'max:255'],
-            'accepted_id' => ['required', 'max:255'],
+            'accepted' => ['required', 'max:255'],
             'file' => ['nullable'],
         ]);
 
         $supplier = Supplier::findOrFail(Request::input('supplier_id'));
-        $accepted = Accepted::findOrFail(Request::input('accepted_id'));
 
-        Request::merge(['supplier' => $supplier->name, 'accepted' => $accepted->lastname . ' ' . $accepted->firstname]);
+        Request::merge(['supplier' => $supplier->name]);
 
-        $invoice = $organization->invoices()->create(Request::only('name', 'date', 'supplier_id', 'accepted_id', 'supplier', 'accepted'));
+        $invoice = $organization->invoices()->create(Request::only('name', 'date', 'supplier_id', 'accepted', 'supplier'));
 
         if (Request::file('file')) {
             $invoice->update(['file' => Request::file('file')->store('invoices')]);
@@ -74,16 +74,15 @@ class InvoicesController extends Controller
             'name' => ['required', 'max:255'],
             'date' => ['required', 'date'],
             'supplier_id' => ['required', 'max:255'],
-            'accepted_id' => ['required', 'max:255'],
+            'accepted' => ['required', 'max:255'],
             'file' => ['nullable'],
         ]);
 
         $supplier = Supplier::findOrFail(Request::input('supplier_id'));
-        $accepted = Accepted::findOrFail(Request::input('accepted_id'));
 
-        Request::merge(['supplier' => $supplier->name, 'accepted' => $accepted->lastname . ' ' . $accepted->firstname]);
+        Request::merge(['supplier' => $supplier->name]);
 
-        $invoice->update(Request::only('name', 'date', 'supplier_id', 'accepted_id', 'supplier', 'accepted'));
+        $invoice->update(Request::only('name', 'date', 'supplier_id', 'supplier', 'accepted'));
 
         if (Request::file('file')) {
             $invoice->update(['file' => Request::file('file')->store('invoices')]);

@@ -17,15 +17,17 @@ class InvoiceItemsController extends Controller
     public function Index(Invoice $invoice)
     {
         $item_ids = array_map(
-            fn ($item_id) => $item_id['id'],
-            $invoice->invoiceItems()->select('id')->get()->toArray()
+            fn ($item_id) => $item_id['item_id'],
+            $invoice->invoiceItems()->select('id', 'item_id')->get()->toArray()
         );
 
         if (!$invoice->status)
             return Inertia::render('InvoiceItems/Index', [
+                'filters' => Request::only('search', 'page'),
                 'organization' => [
                     'id' => $invoice->organization->id,
                     'name' => $invoice->organization->name,
+                    'users' => $invoice->organization->users,
                 ],
                 'invoice' => [
                     'id' => $invoice->id,
@@ -33,7 +35,7 @@ class InvoiceItemsController extends Controller
                     'status' => $invoice->status,
                     'date' => $invoice->date->format('Y-m-d'),
                     'supplier_id' => $invoice->supplier_id,
-                    'accepted_id' => $invoice->accepted_id,
+                    'accepted' => $invoice->accepted,
                     'file' => $invoice->file ? Storage::url($invoice->file) : '',
                 ],
                 'invoice_items' => $invoice->invoiceItems->transform(fn ($item) => [
@@ -44,16 +46,16 @@ class InvoiceItemsController extends Controller
                     'measurement' => $item->measurement,
                 ]),
                 'items' => Item::orderBy('name')
+                    ->filter(Request::only('search'))
                     ->whereNotIn('id', $item_ids)
-                    ->get()
-                    ->transform(fn ($item) => [
+                    ->paginate(10)
+                    ->withQueryString()
+                    ->through(fn ($item) => [
                         'id' => $item->id,
                         'name' => $item->name,
                         'measurement' => $item->measurement ? $item->measurement->name : 'Удален!',
                     ]),
-                'accepteds' => Accepted::orderBy('lastname')->get(),
                 'suppliers' => Supplier::orderBy('name')->get(),
-                'current_date' => now()->format('Y-m-d')
             ]);
 
         return Inertia::render('InvoiceItems/Show', [
@@ -143,7 +145,7 @@ class InvoiceItemsController extends Controller
         Request::validate([
             'item_id' => ['required', 'max:255'],
         ]);
-        
+
         $invoice->invoiceItems()->where('id', Request::input('item_id'))->delete();
 
         return Redirect::back()->with('success', 'Товар, удален.');

@@ -1,42 +1,49 @@
 <template>
     <div>
         <Head title="Создать Объект" />
-        <h1 class="mb-8 text-3xl font-bold">
+        <h1 class="mb-6 text-2xl font-bold">
             <Link class="text-indigo-400 hover:text-indigo-600" href="/organizations">Объекты</Link>
-            <span class="text-indigo-400 font-medium">/</span> Создать
+            <span class="font-medium text-indigo-400">/</span> Создать
         </h1>
-        <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
+        <div class="w-full overflow-hidden bg-white rounded-md shadow">
             <form @submit.prevent="store">
-                <div class="flex flex-wrap -mb-8 -mr-6 p-8">
-                    <text-input v-model="form.name" class="pb-8 pr-6 w-full" label="Название" />
-                    <text-input v-model="form.address" class="pb-8 pr-6 w-full" label="Адрес" />
-                    <label class="form-label">Зав складом:</label>
-                    <div v-for="(user, index) in user_form" :key="index" class="flex">
-                        <text-input v-model="user.lastname" class="pb-4 pr-4 w-full" placeholder="Фамилия" />
-                        <text-input v-model="user.firstname" class="pb-4 pr-4 w-full" placeholder="Имя" />
-                        <text-input v-model="user.middlename" class="pb-4 pr-4 w-full" placeholder="Отчество" />
+
+                <div class="items-start pb-4 lg:flex">
+                    <div class="flex flex-wrap w-full p-5 -mb-8 -mr-6 lg:w-1/2">
+                      <text-input v-model="form.name" class="w-full pb-4 text-sm" label="Название" />
+                      <text-input v-model="form.address" class="w-full pb-4 text-sm" label="Адрес" />
+                    </div>
+                    <div class="flex flex-wrap w-full p-5 -mb-8 lg:w-1/2">
+                        <label class="w-full text-sm form-label">Зав склад:</label>
+                        <div v-for="(user, index) in user_form" :key="index" class="flex w-full">
+                        <text-input v-model="user.lastname" class="w-1/3 pb-2 pr-2 text-sm" placeholder="Фамилия" />
+                        <text-input v-model="user.firstname" class="w-1/3 pb-2 pr-2 text-sm" placeholder="Имя" />
+                        <text-input v-model="user.middlename" class="w-1/3 pb-2 pr-2 text-sm" placeholder="Отчество" />
                         <button
                             v-if="index !== 0"
                             type="submit"
                             @click.prevent="deleteUser(index)"
-                            class="focus:shadow-outline-gray flex items-center justify-end mb-4 px-2 py-2 text-gray-500 hover:text-red-400 text-sm font-medium leading-5 bg-gray-100 hover:bg-red-100 rounded-lg focus:outline-none duration-200"
+                            class="flex items-center justify-end px-2 py-2 mb-4 text-sm font-medium leading-5 text-gray-500 duration-200 bg-gray-100 rounded-lg focus:shadow-outline-gray hover:text-red-400 hover:bg-red-100 focus:outline-none"
                             aria-label="Delete"
                         >
                             <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
                             </svg>
                         </button>
-                        <div v-if="index === 0" class="focus:shadow-outline-gray flex items-center justify-end mb-4 px-2 py-2 text-yellow-500 text-sm font-medium leading-5 bg-yellow-100 rounded-lg focus:outline-none">
+                        <div v-if="index === 0" class="flex items-center justify-end px-2 py-2 mb-4 text-sm font-medium leading-5 text-yellow-500 bg-yellow-100 rounded-lg focus:shadow-outline-gray focus:outline-none">
                             <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
                                 <path
                                     d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
                                 ></path>
                             </svg>
                         </div>
+                        </div>
+                        <div class="w-full text-right">
+                            <button @click.prevent="addUser()" class="px-2 py-1 mb-8 mr-6 text-xs font-bold leading-4 text-white bg-green-500 rounded whitespace-nowrap hover:bg-orange-400 focus:bg-orange-400">Добавить поля</button>
+                        </div>
                     </div>
-                    <button @click.prevent="addUser()" class="mb-8 ml-auto mr-6 px-2 py-1 text-white whitespace-nowrap text-xs font-bold leading-4 bg-green-500 hover:bg-orange-400 focus:bg-orange-400 rounded">Добавить поля</button>
                 </div>
-                <div class="flex items-center justify-end px-8 py-4 bg-gray-50 border-t border-gray-100">
+                <div class="flex items-center justify-end px-5 py-3 border-t border-gray-100 bg-gray-50">
                     <loading-button :loading="form.processing" class="btn-indigo" type="submit">Создать Объект</loading-button>
                 </div>
             </form>

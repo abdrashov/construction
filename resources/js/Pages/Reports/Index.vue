@@ -1,7 +1,7 @@
 <template>
   <div>
     <Head title="Отчеты" />
-    <h1 class="mb-8 text-3xl font-bold">Отчеты</h1>
+    <h1 class="mb-6 text-2xl font-bold">Отчеты</h1>
   </div>
 </template>
 

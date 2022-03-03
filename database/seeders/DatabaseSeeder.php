@@ -27,7 +27,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         User::factory(5)->create();
-        
+
         Measurement::create([
             'name' => 'кг'
         ]);
@@ -38,7 +38,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'м'
         ]);
 
-        Item::factory(1000)->create();
+        Item::factory(20)->create();
         Supplier::factory(30)->create();
         Accepted::factory(10)->create();
         Organization::factory(3)->create();

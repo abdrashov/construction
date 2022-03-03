@@ -1,32 +1,34 @@
 <template>
     <div>
         <Head title="Создать Накладной" />
-        <h1 class="mb-8 text-3xl font-bold">
+        <h1 class="mb-6 text-2xl font-bold">
             <Link class="text-indigo-400 hover:text-indigo-600" href="/organizations">Объекты</Link>
-            <span class="text-indigo-400 font-medium">/</span>
+            <span class="font-medium text-indigo-400">/</span>
             <Link class="text-indigo-400 hover:text-indigo-600" :href="`/organizations/${organization.id}/invoices`">{{ organization.name }}</Link>
-            <span class="text-indigo-400 font-medium">/</span> Создать
+            <span class="font-medium text-indigo-400">/</span> Создать
         </h1>
-        <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
+        <div class="max-w-3xl overflow-hidden bg-white rounded-md shadow">
             <form @submit.prevent="store">
-                <div class="flex flex-wrap -mb-8 -mr-6 p-8">
-                    <text-input v-model="form.name" :error="form.errors.name" class="pb-5 pr-6 w-full" label="Название" />
-                    <select-input v-model="form.supplier_id" :error="form.errors.supplier_id" class="pb-5 pr-6 w-full md:w-1/2" label="Поставщик">
+                <div class="flex flex-wrap p-5 -mb-8 -mr-6 text-sm">
+                    <text-input v-model="form.name" :error="form.errors.name" class="w-full pb-5 pr-6" label="Название" />
+                    <select-input v-model="form.supplier_id" :error="form.errors.supplier_id" class="w-full pb-5 pr-6 md:w-1/2" label="Поставщик">
                         <option :value="null"></option>
                         <option v-for="supplier in suppliers" :key="supplier.id" :value="supplier.id">{{ supplier.name }}</option>
                     </select-input>
-                    <select-input v-model="form.accepted_id" :error="form.errors.accepted_id" class="pb-5 pr-6 w-full md:w-1/2" label="Принял">
-                        <option :value="null"></option>
-                        <option v-for="accepted in accepteds" :key="accepted.id" :value="accepted.id">{{ accepted.lastname }} {{ accepted.firstname }}</option>
+                    {{  organization.user }}
+                    <select-input v-model="form.accepted" :error="form.errors.accepted" class="w-full pb-5 pr-6 md:w-1/2" label="Принял">
+                        <option v-for="(user, index) in organization.users" :key="index" :value="user.lastname + ' ' + user.firstname">
+                          {{ user.lastname }} {{ user.firstname }}
+                        </option>
                     </select-input>
-                    <div class="pb-5 pr-6 w-full md:w-1/2">
+                    <div class="w-full pb-5 pr-6 md:w-1/2">
                         <label class="form-label">Дата:</label>
                         <Datepicker v-model="form.date" :format="date_format" locale="ru" cancelText="Отмена" selectText="Выбрать"></Datepicker>
                         <div v-if="form.errors.date" class="form-error">{{ form.errors.date }}</div>
                     </div>
-                    <file-input v-model="form.file" :error="form.errors.file" class="pb-8 pr-6 w-full md:w-1/2" type="file" accept="file/*" label="Файл" />
+                    <file-input v-model="form.file" :error="form.errors.file" class="w-full pb-8 pr-6 md:w-1/2" type="file" accept="file/*" label="Файл" />
                 </div>
-                <div class="flex items-center justify-end px-8 py-4 bg-gray-50 border-t border-gray-100">
+                <div class="flex items-center justify-end px-8 py-4 border-t border-gray-100 bg-gray-50">
                     <loading-button :loading="form.processing" class="btn-indigo" type="submit">Создать Накладной</loading-button>
                 </div>
             </form>
@@ -59,7 +61,6 @@ export default {
     remember: 'form',
     props: {
         organization: Object,
-        accepteds: Object,
         suppliers: Object,
     },
     data() {
@@ -68,7 +69,7 @@ export default {
                 name: null,
                 date: ref(new Date().getFullYear() + '-' + (new Date().getMonth() + 1) + '-' + new Date().getDate()),
                 supplier_id: null,
-                accepted_id: null,
+                accepted: this.organization.users ? this.organization.users[0].lastname + ' ' + this.organization.users[0].firstname : null,
                 file: null,
             }),
         }

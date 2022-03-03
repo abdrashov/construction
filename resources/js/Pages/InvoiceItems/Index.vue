@@ -1,40 +1,39 @@
 <template>
     <div>
         <Head :title="invoice.name" />
-        <h1 class="mb-8 text-3xl font-bold">
+        <h1 class="mb-6 text-2xl font-bold">
             <Link class="text-indigo-400 hover:text-indigo-600" href="/organizations">Объекты</Link>
-            <span class="text-indigo-400 font-medium">/</span>
+            <span class="font-medium text-indigo-400">/</span>
             <Link class="text-indigo-400 hover:text-indigo-600" :href="`/organizations/${organization.id}/invoices`">{{ organization.name }}</Link>
-            <span class="text-indigo-400 font-medium">/</span>
+            <span class="font-medium text-indigo-400">/</span>
             {{ invoice.name }}
         </h1>
         <div class="w-full lg:flex">
-            <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
+            <div class="max-w-3xl overflow-hidden bg-white rounded-md shadow">
                 <form @submit.prevent="update">
-                    <div class="flex flex-wrap -mb-8 -mr-6 p-8">
-                        <text-input v-model="form_invoice.name" :error="form_invoice.errors.name" class="pb-5 pr-6 w-full" label="Название" />
-                        <select-input v-model="form_invoice.supplier_id" :error="form_invoice.errors.supplier_id" class="pb-5 pr-6 w-full md:w-1/2" label="Поставщик">
+                    <div class="flex flex-wrap p-5 -mb-8 -mr-6 text-sm">
+                        <text-input v-model="form_invoice.name" :error="form_invoice.errors.name" class="w-full pb-5 pr-6" label="Название" />
+                        <select-input v-model="form_invoice.supplier_id" :error="form_invoice.errors.supplier_id" class="w-full pb-5 pr-6 md:w-1/2" label="Поставщик">
                             <option :value="null"></option>
                             <option v-for="supplier in suppliers" :key="supplier.id" :value="supplier.id">{{ supplier.name }}</option>
                         </select-input>
-                        <select-input v-model="form_invoice.accepted_id" :error="form_invoice.errors.accepted_id" class="pb-5 pr-6 w-full md:w-1/2" label="Принял">
-                            <option :value="null"></option>
-                            <option v-for="accepted in accepteds" :key="accepted.id" :value="accepted.id">{{ accepted.lastname }} {{ accepted.firstname }}</option>
+                        <select-input v-model="form_invoice.accepted" :error="form_invoice.errors.accepted" class="w-full pb-5 pr-6 md:w-1/2" label="Принял">
+                            <option v-for="(user, index) in organization.users" :key="index" :value="user.lastname + ' ' + user.firstname">{{ user.lastname }} {{ user.firstname }}</option>
                         </select-input>
-                        <div class="pb-5 pr-6 w-full md:w-1/2">
+                        <div class="w-full pb-5 pr-6 md:w-1/2">
                             <label class="form-label">Дата:</label>
                             <Datepicker v-model="form_invoice.date" :format="date_format" locale="ru" cancelText="Отмена" selectText="Выбрать"></Datepicker>
                             <div v-if="form_invoice.errors.date" class="form-error">{{ form_invoice.errors.date }}</div>
                         </div>
-                        <file-input v-model="form_invoice.file" :error="form_invoice.errors.file" class="pb-8 pr-6 w-full md:w-1/2" type="file" accept="file/*" label="Файл" />
+                        <file-input v-model="form_invoice.file" :error="form_invoice.errors.file" class="w-full pb-4 pr-6 text-sm md:w-1/2" type="file" accept="file/*" label="Файл" />
                     </div>
-                    <div class="flex items-center justify-end px-8 py-4 bg-gray-50 border-t border-gray-100">
+                    <div class="flex items-center justify-end px-6 py-3 border-t border-gray-100 bg-gray-50">
                         <loading-button :loading="form_invoice.processing" class="btn-indigo" type="submit">Обновить Накладной</loading-button>
                     </div>
                 </form>
             </div>
-            <div v-if="invoice.file" class="mt-4 w-full break-words bg-white rounded-md shadow lg:ml-4 lg:mt-0 lg:w-1/3">
-                <div class="flex flex-wrap -mb-8 p-8">
+            <div v-if="invoice.file" class="w-full mt-4 break-words bg-white rounded-md shadow lg:ml-4 lg:mt-0 lg:w-1/3">
+                <div class="flex flex-wrap p-8 -mb-8">
                     <div class="w-20 text-center">
                         <img src="/pdf.svg" class="w-full" alt="" />
                         <a :href="invoice.file" target="_blank" class="pt-2 hover:underline"> Файл </a>
@@ -43,62 +42,62 @@
             </div>
         </div>
 
-        <div class="items-center justify-between mb-6 mt-12 lg:flex">
-            <div class="mr-4 w-full max-w-md">
+        <div class="items-center justify-between mt-8 mb-5 lg:flex">
+            <div class="w-full max-w-md mr-4">
                 <h2 class="text-2xl font-bold">Товары</h2>
             </div>
             <div class="lg:flex">
-                <button @click.prevent="confirm()" type="submit" class="mb-1 mr-2 px-6 py-3 text-white whitespace-nowrap text-sm font-bold leading-4 bg-green-600 hover:bg-orange-400 focus:bg-orange-400 rounded">
+                <button @click.prevent="confirm()" type="submit" class="px-6 py-3 mb-1 mr-2 text-sm font-bold leading-4 text-white bg-green-600 rounded whitespace-nowrap hover:bg-orange-400 focus:bg-orange-400">
                     <span>Подтвердить</span>
                     <span class="hidden md:inline">&nbsp;Накладной</span>
                 </button>
-                <button @click.prevent="store()" type="submit" class="btn-indigo mb-1 mr-2">
+                <button @click.prevent="store()" type="submit" class="mb-1 mr-2 btn-indigo">
                     <span>Сохранить</span>
                 </button>
-                <button @click="create.modal = true" class="btn-indigo mb-1">
+                <button @click="create.modal = true" class="mb-1 btn-indigo">
                     <span>Добавить</span>
                     <span class="hidden md:inline">&nbsp;Товар</span>
                 </button>
             </div>
         </div>
 
-        <div class="mt-6 bg-white rounded shadow overflow-x-auto">
+        <div class="mt-6 overflow-x-auto text-sm bg-white rounded shadow">
             <table class="w-full whitespace-nowrap">
-                <tr class="text-left font-bold">
-                    <th class="pb-4 pt-6 px-6">Название</th>
-                    <th class="pb-4 pt-6 px-6">Количество</th>
-                    <th class="pb-4 pt-6 px-6">Цена</th>
-                    <th class="pb-4 pt-6 px-6" colspan="2">Сумма</th>
+                <tr class="font-bold text-left">
+                    <th class="px-5 pt-5 pb-3">Название</th>
+                    <th class="px-5 pt-5 pb-3">Количество</th>
+                    <th class="px-5 pt-5 pb-3">Цена</th>
+                    <th class="px-5 pt-5 pb-3" colspan="2">Сумма</th>
                 </tr>
                 <tr v-for="(item, index) in invoice_items" :key="item.id">
                     <td class="border-t">
-                        <div class="flex items-center px-6 py-4 focus:text-indigo-500">
+                        <div class="flex items-center px-5 py-2">
                             {{ item.name }}
-                            <icon v-if="item.deleted_at" name="trash" class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400" />
+                            <icon v-if="item.deleted_at" name="trash" class="flex-shrink-0 w-3 h-3 ml-2 fill-gray-400" />
                         </div>
                     </td>
                     <td class="border-t">
-                        <div class="flex items-center px-6 py-4">
-                            <input type="number" v-model="item.count" :name="`item[${index}][count]`" class="form-input w-full" />
-                            {{ item.measurement }}
+                        <div class="flex items-center px-5 py-2">
+                            <input type="number" v-model="item.count" :name="`item[${index}][count]`" class="w-32 mr-1 form-input" />
+                            <span>{{ item.measurement }}</span>
                         </div>
                     </td>
                     <td class="border-t">
-                        <div class="flex items-center px-6 py-4">
-                            <input type="number" v-model="item.price" :name="`item[${index}][price]`" class="form-input w-full" />
+                        <div class="flex items-center px-5 py-2">
+                            <input type="number" v-model="item.price" :name="`item[${index}][price]`" class="w-32 form-input" />
                         </div>
                     </td>
                     <td class="border-t">
-                        <div class="flex items-center px-6 py-4">
+                        <div class="flex items-center px-5 py-2 w-36">
                             {{ (item.count * item.price).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
                         </div>
                     </td>
                     <td class="border-t">
-                        <div class="flex items-center py-4">
+                        <div class="flex items-center">
                             <button
                                 type="submit"
                                 @click.prevent="deleteItem(item.id)"
-                                class="focus:shadow-outline-gray flex items-center justify-end px-2 py-2 text-gray-500 hover:text-red-400 text-sm font-medium leading-5 bg-gray-100 hover:bg-red-100 rounded-lg focus:outline-none duration-200"
+                                class="flex items-center justify-end px-2 py-2 text-sm font-medium leading-5 text-gray-500 duration-200 bg-gray-100 rounded-lg focus:shadow-outline-gray hover:text-red-400 hover:bg-red-100 focus:outline-none"
                                 aria-label="Delete"
                             >
                                 <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
@@ -117,9 +116,9 @@
         <Modal @close="create.modal = !create.modal" :isOpen="create.modal" :width="create.width">
             <div class="w-full">
                 <div class="flex flex-row items-start mb-8 text-xl font-medium">
-                    <div class="mw-auto flex flex-col pr-10 w-full text-left font-medium">Добавить Товар</div>
-                    <div class="flex flex-shrink-0 items-center ml-auto mr-0 text-indigo-900 font-bold space-x-4">
-                        <button @click="create.modal = false" type="submit" class="p-2 hover:text-gray-50 focus:text-gray-50 text-gray-800 bg-gray-100 hover:bg-gray-500 focus:bg-gray-500 rounded-full duration-200">
+                    <div class="flex flex-col w-full pr-10 font-medium text-left mw-auto">Добавить Товар</div>
+                    <div class="flex items-center flex-shrink-0 ml-auto mr-0 space-x-4 font-bold text-indigo-900">
+                        <button @click="create.modal = false" type="submit" class="p-2 text-gray-800 duration-200 bg-gray-100 rounded-full hover:text-gray-50 focus:text-gray-50 hover:bg-gray-500 focus:bg-gray-500">
                             <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
                                 <path opacity="0.4" d="M6 19.7C5.7 19.7 5.5 19.6 5.3 19.4C4.9 19 4.9 18.4 5.3 18L18 5.3C18.4 4.9 19 4.9 19.4 5.3C19.8 5.7 19.8 6.29999 19.4 6.69999L6.7 19.4C6.5 19.6 6.3 19.7 6 19.7Z" />
                                 <path d="M18.8 19.7C18.5 19.7 18.3 19.6 18.1 19.4L5.40001 6.69999C5.00001 6.29999 5.00001 5.7 5.40001 5.3C5.80001 4.9 6.40001 4.9 6.80001 5.3L19.5 18C19.9 18.4 19.9 19 19.5 19.4C19.3 19.6 19 19.7 18.8 19.7Z" />
@@ -127,30 +126,37 @@
                         </button>
                     </div>
                 </div>
-                <input @keyup="searchItem" class="relative px-4 py-2 w-full border-b focus:shadow-outline" autocomplete="off" type="text" name="search" placeholder="Поиск…" v-model="search" />
-                <div class="my-5 h-64 overflow-y-scroll">
-                    <table class="w-full">
-                        <tr class="text-left font-bold">
-                            <th class="p-2 px-4">Название</th>
-                            <th class="p-2 px-4 text-right">Измерения</th>
-                        </tr>
-                        <tr v-for="item in search_items" :key="item.id" class="hover:bg-gray-100 focus:bg-gray-100">
-                            <td class="border-t">
-                                <button type="submit" class="flex items-center px-4 py-2 w-full" @click.prevent="storeItem(item.id)">
-                                    {{ item.name }}
-                                </button>
-                            </td>
-                            <td class="border-t">
-                                <button type="submit" class="flex items-center justify-end px-4 py-2 w-full" @click.prevent="storeItem(item.id)">
-                                    {{ item.measurement }}
-                                </button>
-                            </td>
-                        </tr>
-                        <tr v-if="items.length === 0">
-                            <td class="px-4 py-2 border-t" colspan="2">Товары не найдены.</td>
-                        </tr>
-                    </table>
+                <input class="relative w-full px-6 py-3 rounded-r focus:shadow-outline" autocomplete="off" type="text" name="search" placeholder="Поиск…" v-model="form_search.search" @input="$emit('update:modelValue', $event.target.value)" />
+                <div class="my-5">
+                    <div class="overflow-y-scroll text-sm h-80">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="font-bold text-left">
+                                    <th class="p-2 px-4">Название</th>
+                                    <th class="p-2 px-4 text-right">Измерения</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="item in items.data" :key="item.id" class="duration-200 hover:bg-gray-100">
+                                    <td class="border-t">
+                                        <button type="submit" class="flex items-center w-full px-4 py-2" @click.prevent="storeItem(item.id)">
+                                            {{ item.name }}
+                                        </button>
+                                    </td>
+                                    <td class="border-t">
+                                        <button type="submit" class="flex items-center justify-end w-full px-4 py-2" @click.prevent="storeItem(item.id)">
+                                            {{ item.measurement }}
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr v-if="items.data.length === 0">
+                                    <td class="px-6 py-4 border-t" colspan="4">Товары не найдены.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
+                <pagination class="mt-6" :links="items.links" />
             </div>
         </Modal>
     </div>
@@ -168,6 +174,7 @@ import LoadingButton from '@/Shared/LoadingButton'
 import TrashedMessage from '@/Shared/TrashedMessage'
 import FileInput from '@/Shared/FileInput'
 import pickBy from 'lodash/pickBy'
+import Pagination from '@/Shared/Pagination'
 import throttle from 'lodash/throttle'
 import Datepicker from 'vue3-date-time-picker'
 import 'vue3-date-time-picker/dist/main.css'
@@ -184,27 +191,29 @@ export default {
         Modal,
         FileInput,
         Datepicker,
+        Pagination,
     },
     layout: Layout,
     props: {
+        filters: Object,
         organization: Object,
         invoice: Object,
         invoice_items: Object,
         items: Object,
-        accepteds: Object,
         suppliers: Object,
     },
     remember: ['form', 'form_invoice'],
     data() {
         return {
-            search: '',
-            search_items: this.items,
+            form_search: {
+                search: this.filters.search,
+            },
             handler: {
                 price: '',
                 count: '',
             },
             create: {
-                modal: false,
+                modal: this.filters.page ? true : false,
                 width: 'sm:max-w-4xl',
             },
             form: this.$inertia.form({
@@ -217,10 +226,18 @@ export default {
                 name: this.invoice.name,
                 date: this.invoice.date,
                 supplier_id: this.invoice.supplier_id,
-                accepted_id: this.invoice.accepted_id,
+                accepted: this.invoice.accepted,
                 file: null,
             }),
         }
+    },
+    watch: {
+        form_search: {
+            deep: true,
+            handler: throttle(function () {
+                this.$inertia.get(`/invoices/${this.invoice.id}/invoice-items`, pickBy(this.form_search), { preserveState: true })
+            }, 150),
+        },
     },
     methods: {
         update() {
@@ -259,11 +276,6 @@ export default {
                     { preserveState: true },
                 )
             }
-        },
-        searchItem() {
-            this.search_items = this.items.filter((item) => {
-                return item.name.includes(this.search)
-            })
         },
         deleteItem(item_id) {
             this.$inertia.post(`/invoices/${this.invoice.id}/invoice-items`, pickBy({ _method: 'delete', item_id: item_id }), { preserveState: true })

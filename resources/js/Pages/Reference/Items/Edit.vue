@@ -1,7 +1,7 @@
 <template>
     <div>
         <Head :title="form.name" />
-        <h1 class="mb-8 text-3xl font-bold">
+        <h1 class="mb-6 text-2xl font-bold">
             <Link class="text-indigo-400 hover:text-indigo-600" href="/reference/items">Товары</Link>
             <span class="text-indigo-400 font-medium">/</span>
             {{ form.name }}
@@ -9,7 +9,7 @@
         <trashed-message v-if="item.deleted_at" class="mb-6" @restore="restore"> Этот товар был удален. </trashed-message>
         <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
             <form @submit.prevent="update">
-                <div class="flex flex-wrap -mb-8 -mr-6 p-8">
+                <div class="flex flex-wrap p-5 -mb-8 -mr-6">
                     <text-input v-model="form.name" :error="form.errors.name" class="pb-8 pr-6 w-full" label="Фамилия" />
                     <select-input v-model="form.measurement_id" :error="form.errors.measurement_id" class="pb-5 w-full" label="Измерение">
                         <option :value="null"></option>

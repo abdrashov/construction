@@ -1,8 +1,8 @@
 <template>
   <div>
     <Head title="Панель управления" />
-    <h1 class="mb-8 text-3xl font-bold">Панель управления</h1>
-    
+    <h1 class="mb-6 text-2xl font-bold">Панель управления</h1>
+
   </div>
 </template>
 

@@ -24,12 +24,9 @@ class CreateInvoicesTable extends Migration
             $table->date('date');
             $table->string('supplier', 255);
             $table->string('accepted', 255);
-            
+
             $table->unsignedInteger('supplier_id');
             $table->foreign('supplier_id')->references('id')->on('suppliers');
-            
-            $table->unsignedInteger('accepted_id');
-            $table->foreign('accepted_id')->references('id')->on('accepteds');
 
             $table->string('file', 255)->nullable();
 
