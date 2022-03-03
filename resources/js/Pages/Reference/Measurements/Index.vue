@@ -15,26 +15,22 @@
                 <span>Создать</span>
             </button>
         </div>
-        <div class="overflow-x-auto text-sm bg-white rounded-md shadow">
-            <table class="w-full whitespace-nowrap">
-                <thead>
-                    <tr class="font-bold text-left">
-                        <th class="px-5 pt-5 pb-3">Названия</th>
+        <div class="text-sm bg-white rounded-lg shadow overflow-x-auto">
+            <table class="w-full">
+                <tr class="text-left text-gray-500 text-xs font-semibold tracking-wide bg-gray-50 border-b uppercase">
+                        <th class="px-4 py-3">Названия</th>
                     </tr>
-                </thead>
-                <tbody>
                     <tr v-for="measurement in measurements.data" :key="measurement.id">
                         <td class="border-t">
-                            <Link :href="`/reference/measurements/${measurement.id}/edit`" class="flex items-center px-5 py-2">
+                            <Link :href="`/reference/measurements/${measurement.id}/edit`" class=" font-medium flex items-center px-4 py-2">
                                 {{ measurement.name }}
                                 <icon v-if="measurement.deleted_at" name="trash" class="flex-shrink-0 w-3 h-3 ml-2 fill-gray-400" />
                             </Link>
                         </td>
                     </tr>
                     <tr v-if="measurements.data.length === 0">
-                        <td class="px-6 py-4 border-t">Не найдено.</td>
+                        <td class="px-4 py-4 border-t">Не найдено.</td>
                     </tr>
-                </tbody>
             </table>
         </div>
         <pagination class="mt-6" :links="measurements.links" />

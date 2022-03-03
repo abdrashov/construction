@@ -82,14 +82,8 @@ class InvoiceItemsController extends Controller
         ]);
     }
 
-    public function store(Invoice $invoice)
+    public function store(Invoice $invoice, Item $item)
     {
-        Request::validate([
-            'item_id' => ['required', 'max:255'],
-        ]);
-
-        $item = Item::findOrFail(Request::input('item_id'));
-
         $invoice->invoiceItems()->create([
             'name' => $item->name,
             'item_id' => $item->id,

@@ -15,9 +15,8 @@
                     <div class="flex flex-wrap w-full px-4 py-3 mb-3 lg:w-1/2">
                         <label class="text-sm form-label">Зав склад:</label>
                         <div v-for="(user, index) in user_form" :key="index" class="flex w-full">
-                            <text-input v-model="user.lastname" class="w-1/3 pb-2 pr-2 text-sm" placeholder="Фамилия" />
-                            <text-input v-model="user.firstname" class="w-1/3 pb-2 pr-2 text-sm" placeholder="Имя" />
-                            <text-input v-model="user.middlename" class="w-1/3 pb-2 pr-2 text-sm" placeholder="Отчество" />
+                            <text-input v-model="user.lastname" class="w-1/2 pb-2 pr-2 text-sm" placeholder="Фамилия" />
+                            <text-input v-model="user.firstname" class="w-1/2 pb-2 pr-2 text-sm" placeholder="Имя" />
                             <button
                                 v-if="index !== 0"
                                 type="submit"
@@ -78,7 +77,6 @@ export default {
                 {
                     firstname: null,
                     lastname: null,
-                    middlename: null,
                     default: true,
                 },
             ],
@@ -99,7 +97,6 @@ export default {
             this.user_form.push({
                 firstname: null,
                 lastname: null,
-                middlename: null,
                 default: false,
             })
         },

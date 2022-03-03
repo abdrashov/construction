@@ -21,7 +21,7 @@
                     <text-input disabled v-model="invoice.accepted" class="w-full pb-4 pr-0 lg:pr-4 lg:w-1/3" label="Принял" />
 
                     <div v-if="invoice.file" class="flex items-center w-full py-2 pb-4 lg:w-1/3">
-                        <a :href="invoice.file" target="_blank" class="block"> <img src="/pdf.svg" class="w-6" alt="" /> </a>
+                        <a :href="invoice.file" target="_blank" class="block"> <img src="/img/pdf.svg" class="w-6" alt="" /> </a>
                         <a :href="invoice.file" target="_blank" class="block pl-2 hover:underline"> Сканер </a>
                     </div>
                 </div>
@@ -38,9 +38,9 @@
             <table class="w-full">
                 <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
                     <th class="px-4 py-3">Название</th>
-                    <th class="px-4 py-3">Количество</th>
-                    <th class="px-4 py-3">Цена</th>
-                    <th class="px-4 py-3">Сумма</th>
+                    <th class="px-4 py-3 border-l">Количество</th>
+                    <th class="px-4 py-3 border-l">Цена</th>
+                    <th class="px-4 py-3 border-l">Сумма</th>
                 </tr>
                 <tr v-for="item in invoice_items" :key="item.id">
                     <td class="border-t">
@@ -49,7 +49,7 @@
                             <icon v-if="item.deleted_at" name="trash" class="flex-shrink-0 w-3 h-3 ml-2 fill-gray-400" />
                         </div>
                     </td>
-                    <td class="border-t">
+                    <td class="border-t border-l">
                         <div class="flex items-center px-4 py-2 font-medium text-gray-700">
                             {{ item.count }}
                             <span class="pl-1 font-semibold text-gray-400">
@@ -57,12 +57,12 @@
                             </span>
                         </div>
                     </td>
-                    <td class="border-t">
+                    <td class="border-t border-l">
                         <div class="flex items-center px-4 py-2 font-medium text-gray-700">
                             {{ item.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
                         </div>
                     </td>
-                    <td class="border-t">
+                    <td class="border-t border-l">
                         <div class="flex items-center px-4 py-2 font-semibold text-indigo-800">
                             {{ (item.count * item.price).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
                         </div>

@@ -3,9 +3,9 @@
         <Head title="Объекты" />
         <h1 class="mb-6 text-2xl font-bold">Объекты</h1>
         <div class="flex items-center justify-between mb-6">
-            <search-filter v-model="form.search" class="w-full max-w-md mr-4" @reset="reset">
+            <search-filter v-model="form.search" class="mr-4 w-full max-w-md" @reset="reset">
                 <label class="block text-gray-700">Удаленные:</label>
-                <select v-model="form.trashed" class="w-full mt-1 form-select">
+                <select v-model="form.trashed" class="form-select mt-1 w-full">
                     <option :value="null" />
                     <option value="with">Все</option>
                     <option value="only">Только Удаленные</option>
@@ -16,15 +16,28 @@
                 <span class="hidden md:inline">&nbsp;Объект</span>
             </Link>
         </div>
+
         <div class="flex flex-wrap -m-4">
             <div v-for="organization in organizations.data" :key="organization.id" class="p-4 sm:w-1/2 lg:w-1/3">
-                <Link :href="`/organizations/${organization.id}/invoices`" :class="(!organization.deleted_at ? 'bg-white hover:bg-gray-100' : 'bg-red-50 hover:bg-red-300') + ' block w-full p-6 duration-200 border-gray-300 border-4 rounded-md '">
-                    <h1 class="mb-3 text-lg font-medium text-gray-900 title-font">
-                        {{ organization.name }}
-                    </h1>
-                    <p class="leading-relaxed">{{ organization.address }}.</p>
-                    <div class="text-sm font-medium text-right">
-                        {{ organization.created_at }}
+                <Link :href="`/organizations/${organization.id}/invoices`">
+                    <div class="flex flex-col hover:bg-gray-100 bg-white rounded-lg shadow-xl overflow-hidden duration-200">
+                        <div class="h-36">
+                            <img aria-hidden="true" class="w-full h-full object-cover object-center" src="/img/art_3.jpg" alt="" />
+                        </div>
+                        <div class="p-4">
+                            <h1 class="title-font mb-3 text-gray-900 text-base font-medium">
+                                {{ organization.name }}
+                            </h1>
+                            <p class="text-sm leading-relaxed">{{ organization.address }}.</p>
+                            <div class="flex justify-end text-sm font-medium">
+                                <div v-if="organization.deleted_at" class="mr-2 text-red-700">
+                                    {{ organization.deleted_at }}
+                                </div>
+                                <div>
+                                    {{ organization.created_at }}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </Link>
             </div>

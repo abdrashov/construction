@@ -18,9 +18,8 @@
                     <div class="flex flex-wrap w-full px-4 py-3 lg:w-1/2">
                         <label class="text-sm form-label">Зав склад:</label>
                         <div v-for="(user, index) in user_form" :key="index" class="flex w-full">
-                            <text-input v-model="user.lastname" class="w-1/3 pb-2 pr-2 text-sm" placeholder="Фамилия" />
-                            <text-input v-model="user.firstname" class="w-1/3 pb-2 pr-2 text-sm" placeholder="Имя" />
-                            <text-input v-model="user.middlename" class="w-1/3 pb-2 pr-2 text-sm" placeholder="Отчество" />
+                            <text-input v-model="user.lastname" class="w-1/2 pb-2 pr-2 text-sm" placeholder="Фамилия" />
+                            <text-input v-model="user.firstname" class="w-1/2 pb-2 pr-2 text-sm" placeholder="Имя" />
                             <button
                                 v-if="index !== 0"
                                 type="submit"
@@ -66,12 +65,12 @@
             <table class="w-full">
                 <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
                     <th class="px-4 py-3">Название</th>
-                    <th class="px-4 py-3">Поставщик</th>
-                    <th class="px-4 py-3">Принял</th>
-                    <th class="px-4 py-3">Статус</th>
-                    <th colspan="2" class="px-4 py-3">Дата</th>
+                    <th class="px-4 py-3 border-l">Поставщик</th>
+                    <th class="px-4 py-3 border-l">Принял</th>
+                    <th class="px-4 py-3 border-l">Статус</th>
+                    <th colspan="2" class="px-4 py-3 border-l">Дата</th>
                 </tr>
-                <tr v-for="invoice in organization.invoices" :key="invoice.id" class="bg-white divide-y">
+                <tr v-for="invoice in organization.invoices" :key="invoice.id">
                     <td class="border-t">
                         <Link class="flex items-center px-4 py-3 font-medium text-gray-900" :href="`/invoices/${invoice.id}/invoice-items`">
                             {{ invoice.name }}
@@ -79,28 +78,28 @@
                         </Link>
                     </td>
                     <td class="border-t">
-                        <Link class="flex items-center px-4 py-3" :href="`/invoices/${invoice.id}/invoice-items`" tabindex="-1">
+                        <Link class="flex items-center px-4 py-3 border-l" :href="`/invoices/${invoice.id}/invoice-items`" tabindex="-1">
                             {{ invoice.supplier }}
                         </Link>
                     </td>
                     <td class="border-t">
-                        <Link class="flex items-center px-4 py-3" :href="`/invoices/${invoice.id}/invoice-items`" tabindex="-1">
+                        <Link class="flex items-center px-4 py-3 border-l" :href="`/invoices/${invoice.id}/invoice-items`" tabindex="-1">
                             {{ invoice.accepted }}
                         </Link>
                     </td>
-                    <td class="border-t">
-                        <Link class="flex items-center text-xs" :href="`/invoices/${invoice.id}/invoice-items`" tabindex="-1">
+                    <td class="border-t border-l">
+                        <Link class="mx-4 flex items-center text-xs" :href="`/invoices/${invoice.id}/invoice-items`" tabindex="-1">
                             <span v-if="invoice.status" class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-full whitespace-nowrap dark:text-green-100 dark:bg-green-700"> Подвержен </span>
                             <span v-else class="px-2 py-1 font-semibold leading-tight text-gray-700 bg-gray-100 rounded-full whitespace-nowrap dark:text-gray-100 dark:bg-gray-700"> Не подтвержден </span>
                         </Link>
                     </td>
                     <td class="border-t">
-                        <Link class="flex items-center px-4 py-3" :href="`/invoices/${invoice.id}/invoice-items`" tabindex="-1">
+                        <Link class="flex items-center px-4 py-3 border-l" :href="`/invoices/${invoice.id}/invoice-items`" tabindex="-1">
                             {{ invoice.date }}
                         </Link>
                     </td>
-                    <td class="w-px border-t">
-                        <div class="pr-2">
+                    <td class="w-16 border-t border-l">
+                        <div class="flex items-center justify-end px-4 py-1">
                             <Link
                                 class="flex items-center justify-end px-2 py-2 ml-2 text-xs font-medium leading-5 text-gray-500 duration-200 bg-gray-100 rounded-lg focus:shadow-outline-gray hover:text-orange-400 hover:bg-orange-100 focus:outline-none"
                                 :href="`/invoices/${invoice.id}/invoice-items`"
@@ -169,20 +168,39 @@ export default {
             )
         },
         destroy() {
-            if (confirm('Вы уверены, что хотите удалить эту объект?')) {
-                this.$inertia.delete(`/organizations/${this.organization.id}`)
-            }
+            this.$swal({
+                title: 'Вы уверены, что хотите удалить эту объект?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#19ab4f',
+                cancelButtonColor: '#838383',
+                confirmButtonText: 'Да, удалить!',
+                cancelButtonText: 'Отмена',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    this.$inertia.delete(`/organizations/${this.organization.id}`)
+                }
+            })
         },
         restore() {
-            if (confirm('Вы уверены, что хотите восстановить эту объект?')) {
+            this.$swal({
+                title: 'Вы уверены, что хотите восстановить эту объект?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#19ab4f',
+                cancelButtonColor: '#838383',
+                confirmButtonText: 'Да, восстановить!',
+                cancelButtonText: 'Отмена',
+            }).then((result) => {
+                if (result.isConfirmed) {
                 this.$inertia.put(`/organizations/${this.organization.id}/restore`)
-            }
+                }
+            })
         },
         addUser() {
             this.user_form.push({
                 firstname: null,
                 lastname: null,
-                middlename: null,
                 default: false,
             })
         },

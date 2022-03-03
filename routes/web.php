@@ -49,9 +49,16 @@ Route::middleware('auth')->group(function () {
     // Users
 
     Route::prefix('users')->name('users')->controller(UsersController::class)->group(function () {
+        Route::get('', 'index');
+        Route::get('create', 'create')->name('create');
+        Route::post('', 'store')->name('store');
         Route::get('{user}/edit', 'edit')->name('.edit');
         Route::put('{user}', 'update')->name('.update');
+        Route::delete('{user}', 'destroy')->name('destroy');
+        Route::put('{user}/restore', 'restore')->name('restore');
     });
+
+    Route::get('auth/{user}', [UsersController::class, 'auth']);
 
     // Organizations
 
@@ -78,7 +85,7 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('invoices/{invoice}/invoice-items')->name('invoice-items')->controller(InvoiceItemsController::class)->group(function () {
         Route::get('', 'index');
-        Route::post('', 'store')->name('.store');
+        Route::post('{item}', 'store')->name('.store');
         Route::post('confirm', 'confirm')->name('.confirm');
         Route::put('', 'update')->name('.update');
         Route::delete('', 'delete')->name('.delete');

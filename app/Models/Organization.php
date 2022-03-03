@@ -40,6 +40,6 @@ class Organization extends Model
             } elseif ($trashed === 'only') {
                 $query->onlyTrashed();
             }
-        });
+        })->orderByDesc('organizations.created_at');
     }
 }
