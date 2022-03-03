@@ -7,29 +7,34 @@
             <Link class="text-indigo-400 hover:text-indigo-600" :href="`/organizations/${organization.id}/invoices`">{{ organization.name }}</Link>
             <span class="font-medium text-indigo-400">/</span> Создать
         </h1>
-        <div class="max-w-3xl overflow-hidden bg-white rounded-md shadow">
+
+        <div class="w-full overflow-hidden bg-white rounded-lg shadow">
             <form @submit.prevent="store">
-                <div class="flex flex-wrap p-5 -mb-8 -mr-6 text-sm">
-                    <text-input v-model="form.name" :error="form.errors.name" class="w-full pb-5 pr-6" label="Название" />
-                    <select-input v-model="form.supplier_id" :error="form.errors.supplier_id" class="w-full pb-5 pr-6 md:w-1/2" label="Поставщик">
-                        <option :value="null"></option>
-                        <option v-for="supplier in suppliers" :key="supplier.id" :value="supplier.id">{{ supplier.name }}</option>
-                    </select-input>
-                    {{  organization.user }}
-                    <select-input v-model="form.accepted" :error="form.errors.accepted" class="w-full pb-5 pr-6 md:w-1/2" label="Принял">
-                        <option v-for="(user, index) in organization.users" :key="index" :value="user.lastname + ' ' + user.firstname">
-                          {{ user.lastname }} {{ user.firstname }}
-                        </option>
-                    </select-input>
-                    <div class="w-full pb-5 pr-6 md:w-1/2">
-                        <label class="form-label">Дата:</label>
-                        <Datepicker v-model="form.date" :format="date_format" locale="ru" cancelText="Отмена" selectText="Выбрать"></Datepicker>
-                        <div v-if="form.errors.date" class="form-error">{{ form.errors.date }}</div>
+                <div class="items-start lg:flex">
+                    <div class="flex flex-wrap w-full px-4 py-3">
+                        <text-input v-model="form.name" :error="form.errors.name" class="w-full pb-4 pr-0 lg:pr-4 lg:w-1/2" label="Название" />
+
+                        <div class="w-full pb-4 lg:w-1/2">
+                            <label class="form-label">Дата:</label>
+                            <Datepicker v-model="form.date" :format="date_format" locale="ru" cancelText="Отмена" selectText="Выбрать"></Datepicker>
+                            <div v-if="form.errors.date" class="form-error">{{ form.errors.date }}</div>
+                        </div>
+
+                        <select-input v-model="form.supplier_id" :error="form.errors.supplier_id" class="w-full pb-4 pr-0 lg:pr-4 lg:w-1/3" label="Поставщик">
+                            <option :value="null"></option>
+                            <option v-for="supplier in suppliers" :key="supplier.id" :value="supplier.id">{{ supplier.name }}</option>
+                        </select-input>
+
+                        <select-input v-model="form.accepted" :error="form.errors.accepted" class="w-full pb-4 pr-0 lg:pr-4 lg:w-1/3" label="Принял">
+                            <option v-for="(user, index) in organization.users" :key="index" :value="user.lastname + ' ' + user.firstname">{{ user.lastname }} {{ user.firstname }}</option>
+                        </select-input>
+
+                        <file-input v-model="form.file" :error="form.errors.file" class="w-full pb-4 lg:w-1/3" type="file" accept="file/*" label="Сканер" />
+
                     </div>
-                    <file-input v-model="form.file" :error="form.errors.file" class="w-full pb-8 pr-6 md:w-1/2" type="file" accept="file/*" label="Файл" />
                 </div>
-                <div class="flex items-center justify-end px-8 py-4 border-t border-gray-100 bg-gray-50">
-                    <loading-button :loading="form.processing" class="btn-indigo" type="submit">Создать Накладной</loading-button>
+                <div class="flex items-center px-5 py-3 border-t border-gray-100 bg-gray-50">
+                    <loading-button :loading="form.processing" class="ml-auto btn-indigo" type="submit">Создать Накладной</loading-button>
                 </div>
             </form>
         </div>

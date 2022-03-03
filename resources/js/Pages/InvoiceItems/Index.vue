@@ -1,50 +1,51 @@
 <template>
     <div>
-        <Head :title="invoice.name" />
+        <Head :title="form_invoice.name" />
         <h1 class="mb-6 text-2xl font-bold">
             <Link class="text-indigo-400 hover:text-indigo-600" href="/organizations">Объекты</Link>
             <span class="font-medium text-indigo-400">/</span>
             <Link class="text-indigo-400 hover:text-indigo-600" :href="`/organizations/${organization.id}/invoices`">{{ organization.name }}</Link>
             <span class="font-medium text-indigo-400">/</span>
-            {{ invoice.name }}
+            {{ form_invoice.name }}
         </h1>
-        <div class="w-full lg:flex">
-            <div class="max-w-3xl overflow-hidden bg-white rounded-md shadow">
-                <form @submit.prevent="update">
-                    <div class="flex flex-wrap p-5 -mb-8 -mr-6 text-sm">
-                        <text-input v-model="form_invoice.name" :error="form_invoice.errors.name" class="w-full pb-5 pr-6" label="Название" />
-                        <select-input v-model="form_invoice.supplier_id" :error="form_invoice.errors.supplier_id" class="w-full pb-5 pr-6 md:w-1/2" label="Поставщик">
-                            <option :value="null"></option>
-                            <option v-for="supplier in suppliers" :key="supplier.id" :value="supplier.id">{{ supplier.name }}</option>
-                        </select-input>
-                        <select-input v-model="form_invoice.accepted" :error="form_invoice.errors.accepted" class="w-full pb-5 pr-6 md:w-1/2" label="Принял">
-                            <option v-for="(user, index) in organization.users" :key="index" :value="user.lastname + ' ' + user.firstname">{{ user.lastname }} {{ user.firstname }}</option>
-                        </select-input>
-                        <div class="w-full pb-5 pr-6 md:w-1/2">
+
+        <div class="w-full overflow-hidden bg-white rounded-lg shadow">
+            <form @submit.prevent="update">
+                <div class="items-start lg:flex">
+                    <div class="flex flex-wrap w-full px-4 py-3">
+                        <text-input v-model="form_invoice.name" :error="form_invoice.errors.name" class="w-full pb-4 pr-0 lg:pr-4 lg:w-1/2" label="Название" />
+
+                        <div class="w-full pb-4 lg:w-1/2">
                             <label class="form-label">Дата:</label>
                             <Datepicker v-model="form_invoice.date" :format="date_format" locale="ru" cancelText="Отмена" selectText="Выбрать"></Datepicker>
                             <div v-if="form_invoice.errors.date" class="form-error">{{ form_invoice.errors.date }}</div>
                         </div>
-                        <file-input v-model="form_invoice.file" :error="form_invoice.errors.file" class="w-full pb-4 pr-6 text-sm md:w-1/2" type="file" accept="file/*" label="Файл" />
-                    </div>
-                    <div class="flex items-center justify-end px-6 py-3 border-t border-gray-100 bg-gray-50">
-                        <loading-button :loading="form_invoice.processing" class="btn-indigo" type="submit">Обновить Накладной</loading-button>
-                    </div>
-                </form>
-            </div>
-            <div v-if="invoice.file" class="w-full mt-4 break-words bg-white rounded-md shadow lg:ml-4 lg:mt-0 lg:w-1/3">
-                <div class="flex flex-wrap p-8 -mb-8">
-                    <div class="w-20 text-center">
-                        <img src="/pdf.svg" class="w-full" alt="" />
-                        <a :href="invoice.file" target="_blank" class="pt-2 hover:underline"> Файл </a>
+
+                        <select-input v-model="form_invoice.supplier_id" :error="form_invoice.errors.supplier_id" class="w-full pb-4 pr-0 lg:pr-4 lg:w-1/3" label="Поставщик">
+                            <option :value="null"></option>
+                            <option v-for="supplier in suppliers" :key="supplier.id" :value="supplier.id">{{ supplier.name }}</option>
+                        </select-input>
+
+                        <select-input v-model="form_invoice.accepted" :error="form_invoice.errors.accepted" class="w-full pb-4 pr-0 lg:pr-4 lg:w-1/3" label="Принял">
+                            <option v-for="(user, index) in organization.users" :key="index" :value="user.lastname + ' ' + user.firstname">{{ user.lastname }} {{ user.firstname }}</option>
+                        </select-input>
+
+                        <file-input v-model="form_invoice.file" :error="form_invoice.errors.file" class="w-full pb-4 lg:w-1/3" type="file" accept="file/*" label="Сканер" />
                     </div>
                 </div>
-            </div>
+                <div class="flex items-center px-5 py-3 border-t border-gray-100 bg-gray-50">
+                    <div v-if="invoice.file" class="flex items-center">
+                        <a :href="invoice.file" target="_blank" class="block"> <img src="/pdf.svg" class="w-6" alt="" /> </a>
+                        <a :href="invoice.file" target="_blank" class="block pl-2 hover:underline"> Сканер </a>
+                    </div>
+                    <loading-button :loading="form.processing" class="ml-auto btn-indigo" type="submit">Обновить Накладной</loading-button>
+                </div>
+            </form>
         </div>
 
-        <div class="items-center justify-between mt-8 mb-5 lg:flex">
+        <div class="flex items-center justify-between mt-6 mb-3 text-xl">
             <div class="w-full max-w-md mr-4">
-                <h2 class="text-2xl font-bold">Товары</h2>
+                <h2 class="font-semibold text-gray-600">Товары</h2>
             </div>
             <div class="lg:flex">
                 <button @click.prevent="confirm()" type="submit" class="px-6 py-3 mb-1 mr-2 text-sm font-bold leading-4 text-white bg-green-600 rounded whitespace-nowrap hover:bg-orange-400 focus:bg-orange-400">
@@ -61,39 +62,39 @@
             </div>
         </div>
 
-        <div class="mt-6 overflow-x-auto text-sm bg-white rounded shadow">
-            <table class="w-full whitespace-nowrap">
-                <tr class="font-bold text-left">
-                    <th class="px-5 pt-5 pb-3">Название</th>
-                    <th class="px-5 pt-5 pb-3">Количество</th>
-                    <th class="px-5 pt-5 pb-3">Цена</th>
-                    <th class="px-5 pt-5 pb-3" colspan="2">Сумма</th>
+        <div class="overflow-x-auto text-sm bg-white rounded-lg shadow">
+            <table class="w-full">
+                <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
+                    <th class="px-4 py-3">Название</th>
+                    <th class="px-4 py-3">Количество</th>
+                    <th class="px-4 py-3">Цена</th>
+                    <th class="px-4 py-3" colspan="2">Сумма</th>
                 </tr>
                 <tr v-for="(item, index) in invoice_items" :key="item.id">
-                    <td class="border-t">
-                        <div class="flex items-center px-5 py-2">
+                    <td class="w-2/6 border-t">
+                        <div class="flex items-center px-4 py-1 font-medium text-gray-900">
                             {{ item.name }}
                             <icon v-if="item.deleted_at" name="trash" class="flex-shrink-0 w-3 h-3 ml-2 fill-gray-400" />
                         </div>
                     </td>
-                    <td class="border-t">
-                        <div class="flex items-center px-5 py-2">
-                            <input type="number" v-model="item.count" :name="`item[${index}][count]`" class="w-32 mr-1 form-input" />
+                    <td class="w-1/6 border-t border-l">
+                        <div class="flex items-center px-4 py-1">
+                            <input type="number" v-model="item.count" v-on:input="countHandler(index)" :name="`item[${index}][count]`" class="mr-1 border-b border-blue-300 border-dashed" />
                             <span>{{ item.measurement }}</span>
                         </div>
                     </td>
-                    <td class="border-t">
-                        <div class="flex items-center px-5 py-2">
-                            <input type="number" v-model="item.price" :name="`item[${index}][price]`" class="w-32 form-input" />
+                    <td class="w-1/6 border-t border-l">
+                        <div class="flex items-center px-4 py-1">
+                            <input type="number" v-model="item.price" v-on:input="priceHandler(index)" :name="`item[${index}][price]`" class="border-b border-blue-300 border-dashed" />
                         </div>
                     </td>
-                    <td class="border-t">
-                        <div class="flex items-center px-5 py-2 w-36">
+                    <td class="w-2/6 border-t border-l">
+                        <div class="flex items-center w-full px-4 py-1">
                             {{ (item.count * item.price).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
                         </div>
                     </td>
-                    <td class="border-t">
-                        <div class="flex items-center">
+                    <td class="w-16 border-t border-l">
+                        <div class="flex items-center justify-end px-4 py-1">
                             <button
                                 type="submit"
                                 @click.prevent="deleteItem(item.id)"
@@ -126,33 +127,37 @@
                         </button>
                     </div>
                 </div>
-                <input class="relative w-full px-6 py-3 rounded-r focus:shadow-outline" autocomplete="off" type="text" name="search" placeholder="Поиск…" v-model="form_search.search" @input="$emit('update:modelValue', $event.target.value)" />
+                <input class="relative w-full px-6 py-3 border rounded-md focus:shadow-outline" autocomplete="off" type="text" name="search" placeholder="Поиск…" v-model="form_search.search" @input="$emit('update:modelValue', $event.target.value)" />
                 <div class="my-5">
-                    <div class="overflow-y-scroll text-sm h-80">
+                    <div class="text-sm bg-white rounded-lg shadow">
                         <table class="w-full">
-                            <thead>
-                                <tr class="font-bold text-left">
-                                    <th class="p-2 px-4">Название</th>
-                                    <th class="p-2 px-4 text-right">Измерения</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="item in items.data" :key="item.id" class="duration-200 hover:bg-gray-100">
-                                    <td class="border-t">
-                                        <button type="submit" class="flex items-center w-full px-4 py-2" @click.prevent="storeItem(item.id)">
-                                            {{ item.name }}
-                                        </button>
-                                    </td>
-                                    <td class="border-t">
-                                        <button type="submit" class="flex items-center justify-end w-full px-4 py-2" @click.prevent="storeItem(item.id)">
-                                            {{ item.measurement }}
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr v-if="items.data.length === 0">
-                                    <td class="px-6 py-4 border-t" colspan="4">Товары не найдены.</td>
-                                </tr>
-                            </tbody>
+                            <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
+                                <th class="p-2 px-4">Название</th>
+                                <th class="p-2 px-4 text-right">Измерения</th>
+                            </tr>
+                            <tr>
+                                <th colspan="2">
+                                    <div class="h-64 overflow-y-auto">
+                                        <table class="w-full">
+                                            <tr v-for="item in items.data" :key="item.id" class="duration-200 hover:bg-gray-100">
+                                                <td class="border-t">
+                                                    <button type="submit" class="flex items-center w-full px-4 py-2 font-medium text-gray-900" @click.prevent="storeItem(item.id)">
+                                                        {{ item.name }}
+                                                    </button>
+                                                </td>
+                                                <td class="border-t">
+                                                    <button type="submit" class="flex items-center justify-end w-full px-4 py-2" @click.prevent="storeItem(item.id)">
+                                                        {{ item.measurement }}
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            <tr v-if="items.data.length === 0">
+                                                <td class="px-6 py-4 border-t" colspan="4">Товары не найдены.</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </th>
+                            </tr>
                         </table>
                     </div>
                 </div>
@@ -267,18 +272,59 @@ export default {
             )
         },
         confirm() {
-            if (confirm('Вы уверены, что хотите подтвердить этот счет?')) {
-                this.$inertia.post(
-                    `/invoices/${this.invoice.id}/invoice-items/confirm`,
-                    pickBy({
-                        items: this.invoice_items,
-                    }),
-                    { preserveState: true },
-                )
-            }
+            this.$swal({
+                title: 'Вы уверены, что хотите подтвердить этот счет?',
+                text: 'После того, как он будет сохранен, отредактировать его будет невозможно!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#19ab4f',
+                cancelButtonColor: '#838383',
+                confirmButtonText: 'Да, сохранить!',
+                cancelButtonText: 'Отмена',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    this.$inertia.post(
+                        `/invoices/${this.invoice.id}/invoice-items/confirm`,
+                        pickBy({
+                            items: this.invoice_items,
+                        }),
+                        { preserveState: true },
+                    )
+                }
+            })
         },
         deleteItem(item_id) {
             this.$inertia.post(`/invoices/${this.invoice.id}/invoice-items`, pickBy({ _method: 'delete', item_id: item_id }), { preserveState: true })
+        },
+        priceHandler(index) {
+            if (this.invoice_items[index].price > 4294967295) {
+                this.$swal.fire({
+                    icon: 'error',
+                    title: 'Упс...',
+                    text: 'Лимит превышен, максимальное число - 4294967295!',
+                })
+            } else if (this.invoice_items[index].price < 0) {
+                this.$swal.fire({
+                    icon: 'error',
+                    title: 'Упс...',
+                    text: 'Число не может быть меньше 0!',
+                })
+            }
+        },
+        countHandler(index) {
+            if (this.invoice_items[index].count > 4294967295) {
+                this.$swal.fire({
+                    icon: 'error',
+                    title: 'Упс...',
+                    text: 'Лимит превышен, максимальное число - 4294967295!',
+                })
+            } else if (this.invoice_items[index].count < 0) {
+                this.$swal.fire({
+                    icon: 'error',
+                    title: 'Упс...',
+                    text: 'Число не может быть меньше 0!',
+                })
+            }
         },
     },
     setup() {

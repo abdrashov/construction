@@ -16,46 +16,18 @@
                 <span class="hidden md:inline">&nbsp;Объект</span>
             </Link>
         </div>
-        <div class="overflow-x-auto text-sm bg-white rounded-md shadow">
-            <table class="w-full">
-                <thead>
-                    <tr class="font-bold text-left">
-                        <th class="px-5 pt-5 pb-3">Название</th>
-                        <th class="px-5 pt-5 pb-3">Адресс</th>
-                        <th class="px-5 pt-5 pb-3" colspan="2">Дата создания</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="organization in organizations.data" :key="organization.id">
-                        <td class="border-t">
-                            <Link :href="`/organizations/${organization.id}/invoices`" class="flex items-center px-5 py-2">
-                                {{ organization.name }}
-                                <icon v-if="organization.deleted_at" name="trash" class="flex-shrink-0 w-3 h-3 ml-2 fill-gray-400" />
-                            </Link>
-                        </td>
-                        <td class="border-t">
-                            <Link :href="`/organizations/${organization.id}/invoices`" class="flex items-center px-5 py-2">
-                                {{ organization.address }}
-                            </Link>
-                        </td>
-                        <td class="border-t">
-                            <Link :href="`/organizations/${organization.id}/invoices`" class="flex items-center px-5 py-2">
-                                {{ organization.created_at }}
-                            </Link>
-                        </td>
-                        <td class="w-px border-t">
-                            <div class="flex pr-2">
-                                <Link class="flex items-center justify-end px-2 py-2 text-sm font-medium leading-5 text-gray-500 duration-200 bg-gray-100 rounded-lg focus:shadow-outline-gray hover:text-orange-400 hover:bg-orange-100 focus:outline-none" :href="`/organizations/${organization.id}/invoices`" tabindex="-1">
-                                    <icon name="cheveron-right" class="block w-4 h-4" />
-                                </Link>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr v-if="organizations.data.length === 0">
-                        <td class="px-6 py-4 border-t" colspan="4">Объекты не найдено.</td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="flex flex-wrap -m-4">
+            <div v-for="organization in organizations.data" :key="organization.id" class="p-4 sm:w-1/2 lg:w-1/3">
+                <Link :href="`/organizations/${organization.id}/invoices`" :class="(!organization.deleted_at ? 'bg-white hover:bg-gray-100' : 'bg-red-50 hover:bg-red-300') + ' block w-full p-6 duration-200 border-gray-300 border-4 rounded-md '">
+                    <h1 class="mb-3 text-lg font-medium text-gray-900 title-font">
+                        {{ organization.name }}
+                    </h1>
+                    <p class="leading-relaxed">{{ organization.address }}.</p>
+                    <div class="text-sm font-medium text-right">
+                        {{ organization.created_at }}
+                    </div>
+                </Link>
+            </div>
         </div>
         <pagination class="mt-6" :links="organizations.links" />
     </div>

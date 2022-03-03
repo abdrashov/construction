@@ -13,15 +13,15 @@ class OrganizationsController extends Controller
     {
         return Inertia::render('Organizations/Index', [
             'filters' => Request::all('search', 'trashed'),
-            'organizations' => Organization::orderByDesc('id')
+            'organizations' => Organization::orderByDesc('created_at')
                 ->filter(Request::only('search', 'trashed'))
-                ->paginate(10)
+                ->paginate(20)
                 ->withQueryString()
                 ->through(fn ($organization) => [
                     'id' => $organization->id,
                     'name' => $organization->name,
                     'address' => $organization->address,
-                    'created_at' => $organization->created_at->format('H:i d.m.Y'),
+                    'created_at' => $organization->created_at->format('d.m.Y'),
                     'deleted_at' => $organization->deleted_at,
                 ]),
         ]);
