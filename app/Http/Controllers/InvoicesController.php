@@ -48,8 +48,7 @@ class InvoicesController extends Controller
 
     public function store(Organization $organization)
     {
-        if (Request::has('date')) Request::merge(['date' => (new Carbon(Request::input('date')))->format('Y-m-d')]);
-
+        if (Request::has('date')) Request::merge(['date' => (new Carbon(Request::input('date')))->addDay()->format('Y-m-d')]);
         Request::validate([
             'name' => ['required', 'max:255'],
             'date' => ['required', 'date', 'date_format:Y-m-d'],

@@ -27,6 +27,6 @@ class ImagesController extends Controller
         if (!Auth::check()) {
             return abort(404);
         }
-        return response()->file('storage\\' . $path);
+        return response()->file('storage/' . $path);
     }
 }
