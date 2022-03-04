@@ -1,35 +1,35 @@
 <template>
     <div>
         <Head title="Товары" />
-        <h1 class="mb-6 text-2xl font-bold">Товары</h1>
+        <h1 class="mb-6 text-2xl font-semibold">Товары</h1>
         <div class="flex items-center justify-between mb-6">
-            <search-filter v-model="form.search" class="mr-4 w-full max-w-md" @reset="reset">
+            <search-filter v-model="form.search" class="w-full max-w-md mr-4" @reset="reset">
                 <label class="block text-gray-700">Удаленные:</label>
-                <select v-model="form.trashed" class="form-select mt-1 w-full">
+                <select v-model="form.trashed" class="w-full mt-1 form-select">
                     <option :value="null" />
                     <option value="with">Все</option>
                     <option value="only">Только Удаленные</option>
                 </select>
             </search-filter>
-            <button @click="create.modal = true" class="btn-indigo">
+            <button @click="create.modal = true" class="btn-blue">
                 <span>Создать</span>
             </button>
         </div>
-        <div class="text-sm bg-white rounded-lg shadow overflow-x-auto">
+        <div class="overflow-x-auto text-sm bg-white shadow">
             <table class="w-full">
-                <tr class="text-left text-gray-500 text-xs font-semibold tracking-wide bg-gray-50 border-b uppercase">
+                <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
                     <th class="px-4 py-3">Название</th>
                     <th class="px-4 py-3">Измерения</th>
                 </tr>
                 <tr v-for="item in items.data" :key="item.id">
                     <td class="border-t">
-                        <Link :href="`/reference/items/${item.id}/edit`" class=" font-medium flex items-center px-4 py-2">
+                        <Link :href="`/reference/items/${item.id}/edit`" class="flex items-center px-4 py-2 font-medium ">
                             {{ item.name }}
-                            <icon v-if="item.deleted_at" name="trash" class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400" />
+                            <icon v-if="item.deleted_at" name="trash" class="flex-shrink-0 w-3 h-3 ml-2 fill-gray-400" />
                         </Link>
                     </td>
                     <td class="border-t">
-                        <Link :href="`/reference/items/${item.id}/edit`" class="flex items-center px-4 px-4 py-2">
+                        <Link :href="`/reference/items/${item.id}/edit`" class="flex items-center px-4 py-2">
                             {{ item.measurement }}
                         </Link>
                     </td>
@@ -43,9 +43,9 @@
         <Modal @close="create.modal = !create.modal" :isOpen="create.modal">
             <div class="w-full">
                 <div class="flex flex-row items-start mb-8 text-xl font-medium">
-                    <div class="mw-auto flex flex-col pr-10 w-full text-left font-medium">Создать</div>
-                    <div class="flex flex-shrink-0 items-center ml-auto mr-0 text-indigo-900 font-bold space-x-4">
-                        <button @click="create.modal = false" type="submit" class="p-2 hover:text-gray-50 focus:text-gray-50 text-gray-800 bg-gray-100 hover:bg-gray-500 focus:bg-gray-500 rounded-full duration-200">
+                    <div class="flex flex-col w-full pr-10 font-medium text-left mw-auto">Создать</div>
+                    <div class="flex items-center flex-shrink-0 ml-auto mr-0 space-x-4 font-bold text-indigo-900">
+                        <button @click="create.modal = false" type="submit" class="p-2 text-gray-800 duration-200 bg-gray-100 rounded-full hover:text-gray-50 focus:text-gray-50 hover:bg-gray-500 focus:bg-gray-500">
                             <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
                                 <path opacity="0.4" d="M6 19.7C5.7 19.7 5.5 19.6 5.3 19.4C4.9 19 4.9 18.4 5.3 18L18 5.3C18.4 4.9 19 4.9 19.4 5.3C19.8 5.7 19.8 6.29999 19.4 6.69999L6.7 19.4C6.5 19.6 6.3 19.7 6 19.7Z" />
                                 <path d="M18.8 19.7C18.5 19.7 18.3 19.6 18.1 19.4L5.40001 6.69999C5.00001 6.29999 5.00001 5.7 5.40001 5.3C5.80001 4.9 6.40001 4.9 6.80001 5.3L19.5 18C19.9 18.4 19.9 19 19.5 19.4C19.3 19.6 19 19.7 18.8 19.7Z" />
@@ -54,12 +54,12 @@
                     </div>
                 </div>
                 <form @submit.prevent="store">
-                    <text-input v-model="form_create.name" :error="form_create.errors.name" class="pb-5 w-full" label="Название" />
-                    <select-input v-model="form_create.measurement_id" :error="form_create.errors.measurement_id" class="pb-5 w-full" label="Измерение">
+                    <text-input v-model="form_create.name" :error="form_create.errors.name" class="w-full pb-5" label="Название" />
+                    <select-input v-model="form_create.measurement_id" :error="form_create.errors.measurement_id" class="w-full pb-5" label="Измерение">
                         <option :value="null"></option>
                         <option v-for="measurement in measurements" :key="measurement.id" :value="measurement.id">{{ measurement.name }}</option>
                     </select-input>
-                    <loading-button :loading="form_create.processing" class="btn-indigo" type="submit">Создать</loading-button>
+                    <loading-button :loading="form_create.processing" class="btn-blue" type="submit">Создать</loading-button>
                 </form>
             </div>
         </Modal>

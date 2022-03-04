@@ -1,7 +1,7 @@
 <template>
     <div>
         <Head title="Поставщики" />
-        <h1 class="mb-6 text-2xl font-bold">Поставщики</h1>
+        <h1 class="mb-6 text-2xl font-semibold">Поставщики</h1>
         <div class="flex items-center justify-between mb-6">
             <search-filter v-model="form.search" class="w-full max-w-md mr-4" @reset="reset">
                 <label class="block text-gray-700">Удаленные:</label>
@@ -11,18 +11,18 @@
                     <option value="only">Только Удаленные</option>
                 </select>
             </search-filter>
-            <button @click="create.modal = true" class="btn-indigo">
+            <button @click="create.modal = true" class="btn-blue">
                 <span>Создать</span>
             </button>
         </div>
-        <div class="text-sm bg-white rounded-lg shadow overflow-x-auto">
+        <div class="overflow-x-auto text-sm bg-white shadow">
             <table class="w-full">
-                <tr class="text-left text-gray-500 text-xs font-semibold tracking-wide bg-gray-50 border-b uppercase">
+                <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
                         <th class="px-4 py-3">Название</th>
                     </tr>
                     <tr v-for="supplier in suppliers.data" :key="supplier.id">
                         <td class="border-t">
-                            <Link :href="`/reference/suppliers/${supplier.id}/edit`" class=" font-medium flex items-center px-4 py-2">
+                            <Link :href="`/reference/suppliers/${supplier.id}/edit`" class="flex items-center px-4 py-2 font-medium ">
                                 {{ supplier.name }}
                                 <icon v-if="supplier.deleted_at" name="trash" class="flex-shrink-0 w-3 h-3 ml-2 fill-gray-400" />
                             </Link>
@@ -49,7 +49,7 @@
                 </div>
                 <form @submit.prevent="store">
                     <text-input v-model="form_create.name" :error="form_create.errors.name" class="w-full pb-5" label="Название" />
-                    <loading-button :loading="form_create.processing" class="btn-indigo" type="submit">Создать</loading-button>
+                    <loading-button :loading="form_create.processing" class="btn-blue" type="submit">Создать</loading-button>
                 </form>
             </div>
         </Modal>

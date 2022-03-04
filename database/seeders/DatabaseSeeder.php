@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Accepted;
 use App\Models\Item;
 use App\Models\Measurement;
 use App\Models\Organization;
@@ -40,7 +39,6 @@ class DatabaseSeeder extends Seeder
 
         Item::factory(20)->create();
         Supplier::factory(30)->create();
-        Accepted::factory(10)->create();
         Organization::factory(3)->create();
     }
 }

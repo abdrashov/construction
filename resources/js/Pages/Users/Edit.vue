@@ -1,28 +1,29 @@
 <template>
     <div>
         <Head :title="`${form.first_name} ${form.last_name}`" />
-        <h1 class="mb-6 text-2xl font-bold">
-            <Link class="text-indigo-400 hover:text-indigo-600" href="/users">Пользователи</Link>
-            <span class="text-indigo-400 font-medium">/</span>
+        <h1 class="mb-6 text-2xl font-semibold">
+            <Link class="text-sky-500 hover:text-sky-700" href="/users">Пользователи</Link>
+            <span class="font-medium text-sky-500">/</span>
             {{ form.first_name }} {{ form.last_name }}
         </h1>
         <trashed-message v-if="user.deleted_at" class="mb-6" @restore="restore"> Этот пользователь был удален. </trashed-message>
-        <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
+        <div class="max-w-3xl overflow-hidden bg-white rounded-md shadow">
             <form @submit.prevent="update">
                 <div class="flex flex-wrap px-4 py-3">
-                    <text-input v-model="form.first_name" :error="form.errors.first_name" class="pb-4 w-full" label="Имя" />
-                    <text-input v-model="form.last_name" :error="form.errors.last_name" class="pb-4 w-full" label="Фамилия" />
-                    <text-input v-model="form.login" :error="form.errors.login" class="pb-4 w-full" label="Логин" />
-                    <text-input v-model="form.password" :error="form.errors.password" class="pb-4 w-full" type="password" autocomplete="new-password" label="Password" />
-                    <select-input v-if="auth.user.id !== user.id" v-model="form.role" :error="form.errors.role" class="pb-4 w-full" label="Роль">
+                    <text-input v-model="form.first_name" :error="form.errors.first_name" class="w-full pb-4" label="Имя" />
+                    <text-input v-model="form.last_name" :error="form.errors.last_name" class="w-full pb-4" label="Фамилия" />
+                    <text-input v-model="form.login" :error="form.errors.login" class="w-full pb-4" label="Логин" />
+                    <text-input v-model="form.password" :error="form.errors.password" class="w-full pb-4" type="password" autocomplete="new-password" label="Пароль" />
+                    <text-input v-model="form.password_confirmation" :error="form.errors.password_confirmation" class="w-full pb-4" type="password" label="Повторите пароль" />
+                    <select-input v-if="auth.user.id !== user.id" v-model="form.role" :error="form.errors.role" class="w-full pb-4" label="Роль">
                         <option value="Администратор">Администратор</option>
                         <option value="Бухгалтер">Бухгалтер</option>
                         <option value="Кассир">Кассир</option>
                     </select-input>
                 </div>
-                <div class="flex items-center px-5 py-3 bg-gray-50 border-t border-gray-100">
-                    <button v-if="!user.deleted_at && auth.user.id !== user.id" class="text-red-600 hover:underline text-sm" tabindex="-1" type="button" @click="destroy">Удалить Пользователя</button>
-                    <loading-button :loading="form.processing" class="btn-indigo ml-auto" type="submit">Обновить пользователя</loading-button>
+                <div class="flex items-center px-5 py-3 border-t border-gray-100 bg-gray-50">
+                    <button v-if="!user.deleted_at && auth.user.id !== user.id" class="text-sm text-red-600 hover:underline" tabindex="-1" type="button" @click="destroy">Удалить Пользователя</button>
+                    <loading-button :loading="form.processing" class="ml-auto btn-green" type="submit">Обновить пользователя</loading-button>
                 </div>
             </form>
         </div>
@@ -62,6 +63,7 @@ export default {
                 last_name: this.user.last_name,
                 login: this.user.login,
                 password: '',
+                password_confirmation: '',
                 role: this.user.role,
             }),
         }

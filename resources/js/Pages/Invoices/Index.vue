@@ -1,14 +1,14 @@
 <template>
     <div>
         <Head :title="form.name" />
-        <h1 class="mb-6 text-2xl font-bold">
-            <Link class="text-indigo-400 hover:text-indigo-600" href="/organizations">Объекты</Link>
-            <span class="font-medium text-indigo-400">/</span>
+        <h1 class="mb-6 text-2xl font-semibold">
+            <Link class="text-sky-500 hover:text-sky-700" href="/organizations">Объекты</Link>
+            <span class="font-medium text-sky-500">/</span>
             {{ form.name }}
         </h1>
         <trashed-message v-if="organization.deleted_at" class="mb-6" @restore="restore"> Эта объект была удалена. </trashed-message>
 
-        <div class="w-full overflow-hidden bg-white rounded-lg shadow">
+        <div v-if="auth.user.role === 'Супер Администратор' || auth.user.role === 'Администратор'" class="w-full overflow-hidden bg-white rounded-lg shadow">
             <form @submit.prevent="update">
                 <div class="items-start lg:flex">
                     <div class="flex flex-wrap w-full px-4 py-3 lg:pr-0 lg:w-1/2">
@@ -40,13 +40,13 @@
                             </div>
                         </div>
                         <div class="w-full text-right">
-                            <button @click.prevent="addUser()" class="px-2 py-1 mr-6 text-xs font-semibold leading-4 text-white bg-blue-500 rounded whitespace-nowrap hover:bg-orange-400 focus:bg-orange-400">Добавить поля</button>
+                            <button @click.prevent="addUser()" class="px-2 py-1 mr-6 text-xs font-semibold leading-4 text-white bg-blue-400 rounded whitespace-nowrap hover:bg-orange-400 focus:bg-orange-400">Добавить поля</button>
                         </div>
                     </div>
                 </div>
                 <div class="flex items-center px-5 py-3 border-t border-gray-100 bg-gray-50">
                     <button v-if="!organization.deleted_at" class="text-sm text-red-600 hover:underline" tabindex="-1" type="button" @click="destroy">Удалить Объект</button>
-                    <loading-button :loading="form.processing" class="ml-auto btn-indigo" type="submit">Обновить Объект</loading-button>
+                    <loading-button :loading="form.processing" class="ml-auto btn-green" type="submit">Обновить Объект</loading-button>
                 </div>
             </form>
         </div>
@@ -55,13 +55,13 @@
             <div class="w-full max-w-md mr-4">
                 <h2 class="font-semibold text-gray-600">Накладные</h2>
             </div>
-            <Link class="btn-indigo" :href="`/organizations/${organization.id}/invoices/create`">
+            <Link class="btn-blue" :href="`/organizations/${organization.id}/invoices/create`">
                 <span>Создать</span>
                 <span class="hidden md:inline">&nbsp;Накладной</span>
             </Link>
         </div>
 
-        <div class="overflow-x-auto text-sm bg-white rounded-lg shadow">
+        <div class="overflow-x-auto text-sm bg-white shadow">
             <table class="w-full">
                 <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
                     <th class="px-4 py-3">Название</th>
@@ -88,7 +88,7 @@
                         </Link>
                     </td>
                     <td class="border-t border-l">
-                        <Link class="mx-4 flex items-center text-xs" :href="`/invoices/${invoice.id}/invoice-items`" tabindex="-1">
+                        <Link class="flex items-center mx-4 text-xs" :href="`/invoices/${invoice.id}/invoice-items`" tabindex="-1">
                             <span v-if="invoice.status" class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-full whitespace-nowrap dark:text-green-100 dark:bg-green-700"> Подвержен </span>
                             <span v-else class="px-2 py-1 font-semibold leading-tight text-gray-700 bg-gray-100 rounded-full whitespace-nowrap dark:text-gray-100 dark:bg-gray-700"> Не подтвержден </span>
                         </Link>
@@ -143,6 +143,7 @@ export default {
     },
     layout: Layout,
     props: {
+        auth: Object,
         organization: Object,
     },
     remember: 'form',

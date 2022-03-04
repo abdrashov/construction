@@ -1,11 +1,11 @@
 <template>
     <div>
         <Head title="Создать Накладной" />
-        <h1 class="mb-6 text-2xl font-bold">
-            <Link class="text-indigo-400 hover:text-indigo-600" href="/organizations">Объекты</Link>
-            <span class="font-medium text-indigo-400">/</span>
-            <Link class="text-indigo-400 hover:text-indigo-600" :href="`/organizations/${organization.id}/invoices`">{{ organization.name }}</Link>
-            <span class="font-medium text-indigo-400">/</span> Создать
+        <h1 class="mb-6 text-2xl font-semibold">
+            <Link class="text-sky-500 hover:text-sky-700" href="/organizations">Объекты</Link>
+            <span class="font-medium text-sky-500">/</span>
+            <Link class="text-sky-500 hover:text-sky-700" :href="`/organizations/${organization.id}/invoices`">{{ organization.name }}</Link>
+            <span class="font-medium text-sky-500">/</span> Создать
         </h1>
 
         <div class="w-full overflow-hidden bg-white rounded-lg shadow">
@@ -34,7 +34,7 @@
                     </div>
                 </div>
                 <div class="flex items-center px-5 py-3 border-t border-gray-100 bg-gray-50">
-                    <loading-button :loading="form.processing" class="ml-auto btn-indigo" type="submit">Создать Накладной</loading-button>
+                    <loading-button :loading="form.processing" class="ml-auto btn-blue" type="submit">Создать Накладной</loading-button>
                 </div>
             </form>
         </div>

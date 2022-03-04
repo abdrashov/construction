@@ -17,6 +17,8 @@ class CreateItemsTable extends Migration
             $table->increments('id');
             $table->string('name', 255);
 
+            $table->integer('sort')->default(0)->unsigned();
+
             $table->unsignedInteger('measurement_id')->nullable();
             $table->foreign('measurement_id')->references('id')->on('measurements');
 

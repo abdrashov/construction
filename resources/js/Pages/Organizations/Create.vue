@@ -1,9 +1,9 @@
 <template>
     <div>
         <Head title="Создать Объект" />
-        <h1 class="mb-6 text-2xl font-bold">
-            <Link class="text-indigo-400 hover:text-indigo-600" href="/organizations">Объекты</Link>
-            <span class="font-medium text-indigo-400">/</span> Создать
+        <h1 class="mb-6 text-2xl font-semibold">
+            <Link class="text-sky-500 hover:text-sky-700" href="/organizations">Объекты</Link>
+            <span class="font-medium text-sky-500">/</span> Создать
         </h1>
         <div class="w-full overflow-hidden bg-white rounded-md shadow">
             <form @submit.prevent="store">
@@ -37,12 +37,12 @@
                             </div>
                         </div>
                         <div class="w-full text-right">
-                            <button @click.prevent="addUser()" class="px-2 py-1 mr-6 text-xs font-semibold leading-4 text-white bg-blue-500 rounded whitespace-nowrap hover:bg-orange-400 focus:bg-orange-400">Добавить поля</button>
+                            <button @click.prevent="addUser()" class="px-2 py-1 mr-6 text-xs font-semibold leading-4 text-white bg-blue-400 rounded whitespace-nowrap hover:bg-orange-400 focus:bg-orange-400">Добавить поля</button>
                         </div>
                     </div>
                 </div>
                 <div class="flex items-center justify-end px-5 py-3 border-t border-gray-100 bg-gray-50">
-                    <loading-button :loading="form.processing" class="btn-indigo" type="submit">Создать Объект</loading-button>
+                    <loading-button :loading="form.processing" class="btn-blue" type="submit">Создать Объект</loading-button>
                 </div>
             </form>
         </div>

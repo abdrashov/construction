@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Accepted;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Item;
@@ -17,11 +16,11 @@ class InvoiceItemsController extends Controller
     public function Index(Invoice $invoice)
     {
         $item_ids = array_map(
-            fn ($item_id) => $item_id['item_id'],
+            fn($item_id) => $item_id['item_id'],
             $invoice->invoiceItems()->select('id', 'item_id')->get()->toArray()
         );
 
-        if (!$invoice->status)
+        if (!$invoice->status) {
             return Inertia::render('InvoiceItems/Index', [
                 'filters' => Request::only('search', 'page'),
                 'organization' => [
@@ -38,25 +37,25 @@ class InvoiceItemsController extends Controller
                     'accepted' => $invoice->accepted,
                     'file' => $invoice->file ? Storage::url($invoice->file) : '',
                 ],
-                'invoice_items' => $invoice->invoiceItems->transform(fn ($item) => [
+                'invoice_items' => $invoice->invoiceItems->transform(fn($item) => [
                     'id' => $item->id,
                     'name' => $item->name,
                     'count' => $item->count,
                     'price' => $item->price,
                     'measurement' => $item->measurement,
                 ]),
-                'items' => Item::orderBy('name')
-                    ->filter(Request::only('search'))
+                'items' => Item::filter(Request::only('search'))
                     ->whereNotIn('id', $item_ids)
                     ->paginate(10)
                     ->withQueryString()
-                    ->through(fn ($item) => [
+                    ->through(fn($item) => [
                         'id' => $item->id,
                         'name' => $item->name,
                         'measurement' => $item->measurement ? $item->measurement->name : 'Удален!',
                     ]),
                 'suppliers' => Supplier::orderBy('name')->get(),
             ]);
+        }
 
         return Inertia::render('InvoiceItems/Show', [
             'organization' => [
@@ -72,7 +71,7 @@ class InvoiceItemsController extends Controller
                 'accepted' => $invoice->accepted,
                 'file' => $invoice->file ? Storage::url($invoice->file) : '',
             ],
-            'invoice_items' => $invoice->invoiceItems->transform(fn ($item) => [
+            'invoice_items' => $invoice->invoiceItems->transform(fn($item) => [
                 'id' => $item->id,
                 'name' => $item->name,
                 'count' => $item->count,
@@ -84,12 +83,18 @@ class InvoiceItemsController extends Controller
 
     public function store(Invoice $invoice, Item $item)
     {
+        if ($invoice->invoiceItems()->where('item_id', $item->id)->exists()) {
+            return Redirect::back()->with('error', 'Товар уже добавлено.');
+        }
+
         $invoice->invoiceItems()->create([
             'name' => $item->name,
             'item_id' => $item->id,
             'measurement' => $item->measurement ? $item->measurement->name : 'Удален!',
             'measurement_id' => $item->measurement_id,
         ]);
+
+        $item->update(['sort' => $item->sort+1]);
 
         return Redirect::back()->with('success', 'Товар, добавлено.');
     }
@@ -128,7 +133,7 @@ class InvoiceItemsController extends Controller
         }
 
         $invoice->update([
-            'status' => true
+            'status' => true,
         ]);
 
         return Redirect::route('invoices', $invoice->organization_id)->with('success', 'Успешно подтвержден.');

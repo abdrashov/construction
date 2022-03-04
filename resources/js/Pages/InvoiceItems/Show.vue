@@ -1,11 +1,11 @@
 <template>
     <div>
         <Head :title="invoice.name" />
-        <h1 class="mb-6 text-2xl font-bold">
-            <Link class="text-indigo-400 hover:text-indigo-600" href="/organizations">Объекты</Link>
-            <span class="font-medium text-indigo-400">/</span>
-            <Link class="text-indigo-400 hover:text-indigo-600" :href="`/organizations/${organization.id}/invoices`">{{ organization.name }}</Link>
-            <span class="font-medium text-indigo-400">/</span>
+        <h1 class="mb-6 text-2xl font-semibold">
+            <Link class="text-sky-500 hover:text-sky-700" href="/organizations">Объекты</Link>
+            <span class="font-medium text-sky-500">/</span>
+            <Link class="text-sky-500 hover:text-sky-700" :href="`/organizations/${organization.id}/invoices`">{{ organization.name }}</Link>
+            <span class="font-medium text-sky-500">/</span>
             {{ invoice.name }}
         </h1>
 
@@ -34,7 +34,7 @@
             </div>
         </div>
 
-        <div class="overflow-x-auto text-sm bg-white rounded-lg shadow">
+        <div class="overflow-x-auto text-sm bg-white shadow">
             <table class="w-full">
                 <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
                     <th class="px-4 py-3">Название</th>

@@ -1,20 +1,20 @@
 <template>
     <div>
         <Head :title="form.name" />
-        <h1 class="mb-6 text-2xl font-bold">
-            <Link class="text-indigo-400 hover:text-indigo-600" href="/reference/measurements">Измерение</Link>
-            <span class="text-indigo-400 font-medium">/</span>
+        <h1 class="mb-6 text-2xl font-semibold">
+            <Link class="text-sky-500 hover:text-sky-700" href="/reference/measurements">Измерение</Link>
+            <span class="font-medium text-sky-500">/</span>
             {{ form.name }}
         </h1>
         <trashed-message v-if="measurement.deleted_at" class="mb-6" @restore="restore"> Этот принимающи был удален. </trashed-message>
-        <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
+        <div class="max-w-3xl overflow-hidden bg-white rounded-md shadow">
             <form @submit.prevent="update">
                 <div class="flex flex-wrap px-4 py-3 ">
-                    <text-input v-model="form.name" :error="form.errors.name" class="pb-4 w-full" label="Название" />
+                    <text-input v-model="form.name" :error="form.errors.name" class="w-full pb-4" label="Название" />
                 </div>
-                <div class="flex items-center px-5 py-3 bg-gray-50 border-t border-gray-100">
+                <div class="flex items-center px-5 py-3 border-t border-gray-100 bg-gray-50">
                     <button v-if="!measurement.deleted_at" class="text-sm text-red-600 hover:underline" tabindex="-1" type="button" @click="destroy">Удалить</button>
-                    <loading-button :loading="form.processing" class="btn-indigo ml-auto" type="submit">Обновить</loading-button>
+                    <loading-button :loading="form.processing" class="ml-auto btn-green" type="submit">Обновить</loading-button>
                 </div>
             </form>
         </div>

@@ -12,7 +12,7 @@ class Item extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'name', 'measurement_id'
+        'name', 'measurement_id', 'sort'
     ];
 
     public function measurement()
@@ -35,6 +35,6 @@ class Item extends Model
             } elseif ($trashed === 'only') {
                 $query->onlyTrashed();
             }
-        });
+        })->orderByDesc('sort')->orderBy('name');
     }
 }

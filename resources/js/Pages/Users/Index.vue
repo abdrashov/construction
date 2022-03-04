@@ -2,26 +2,26 @@
     <div>
         <Head title="Пользователи" />
 
-        <h1 class="mb-6 text-2xl font-bold">Пользователи</h1>
+        <h1 class="mb-6 text-2xl font-semibold">Пользователи</h1>
 
         <div class="flex items-center justify-between mb-6">
-            <search-filter v-model="form.search" class="mr-4 w-full max-w-md" @reset="reset">
+            <search-filter v-model="form.search" class="w-full max-w-md mr-4" @reset="reset">
                 <label class="block text-gray-700">Удаленные:</label>
-                <select v-model="form.trashed" class="form-select mt-1 w-full">
+                <select v-model="form.trashed" class="w-full mt-1 form-select">
                     <option :value="null" />
                     <option value="with">Все</option>
                     <option value="only">Только Удаленные</option>
                 </select>
             </search-filter>
-            <Link class="btn-indigo" href="/users/create">
+            <Link class="btn-blue" href="/users/create">
                 <span>Создать</span>
                 <span class="hidden md:inline">&nbsp;Пользователя</span>
             </Link>
         </div>
 
-        <div class="text-sm bg-white rounded-lg shadow overflow-x-auto">
+        <div class="overflow-x-auto text-sm bg-white shadow">
             <table class="w-full">
-                <tr class="text-left text-gray-500 text-xs font-semibold tracking-wide bg-gray-50 border-b uppercase">
+                <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
                     <th class="px-4 py-3">Фамилия</th>
                     <th class="px-4 py-3">Имя</th>
                     <th class="px-4 py-3">Логин</th>
@@ -31,7 +31,7 @@
                     <td class="border-t">
                         <Link class="flex items-center px-4 py-3" :href="`/users/${user.id}/edit`">
                             {{ user.lastname }}
-                            <icon v-if="user.deleted_at" name="trash" class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400" />
+                            <icon v-if="user.deleted_at" name="trash" class="flex-shrink-0 w-3 h-3 ml-2 fill-gray-400" />
                         </Link>
                     </td>
                     <td class="border-t">
@@ -51,7 +51,7 @@
                     </td>
                     <td class="w-16 border-t">
                         <div class="flex items-center justify-end px-4 py-1">
-                            <Link class="focus:shadow-outline-gray flex items-center justify-end ml-2 px-2 py-2 text-gray-500 hover:text-orange-400 text-xs font-medium leading-5 bg-gray-100 hover:bg-orange-100 rounded-lg focus:outline-none duration-200" :href="`/users/${user.id}/edit`">
+                            <Link class="flex items-center justify-end px-2 py-2 ml-2 text-xs font-medium leading-5 text-gray-500 duration-200 bg-gray-100 rounded-lg focus:shadow-outline-gray hover:text-orange-400 hover:bg-orange-100 focus:outline-none" :href="`/users/${user.id}/edit`">
                                 <icon name="right" class="w-4 h-4" />
                             </Link>
                         </div>

@@ -1,17 +1,17 @@
 <template>
     <div>
         <Head title="Объекты" />
-        <h1 class="mb-6 text-2xl font-bold">Объекты</h1>
+        <h1 class="mb-6 text-2xl font-semibold">Объекты</h1>
         <div class="flex items-center justify-between mb-6">
-            <search-filter v-model="form.search" class="mr-4 w-full max-w-md" @reset="reset">
+            <search-filter v-model="form.search" class="w-full max-w-md mr-4" @reset="reset">
                 <label class="block text-gray-700">Удаленные:</label>
-                <select v-model="form.trashed" class="form-select mt-1 w-full">
+                <select v-model="form.trashed" class="w-full mt-1 form-select">
                     <option :value="null" />
                     <option value="with">Все</option>
                     <option value="only">Только Удаленные</option>
                 </select>
             </search-filter>
-            <Link class="btn-indigo" href="/organizations/create">
+            <Link v-if="auth.user.role === 'Супер Администратор' || auth.user.role === 'Администратор'" class="btn-blue" href="/organizations/create">
                 <span>Создать</span>
                 <span class="hidden md:inline">&nbsp;Объект</span>
             </Link>
@@ -19,13 +19,13 @@
 
         <div class="flex flex-wrap -m-4">
             <div v-for="organization in organizations.data" :key="organization.id" class="p-4 sm:w-1/2 lg:w-1/3">
-                <Link :href="`/organizations/${organization.id}/invoices`">
-                    <div class="flex flex-col hover:bg-gray-100 bg-white rounded-lg shadow-xl overflow-hidden duration-200">
+                <Link :href="`/organizations/${organization.id}/`+(auth.user.role === 'Администратор' ? 'edit' : 'invoices')">
+                    <div class="flex flex-col overflow-hidden duration-200 bg-white rounded-lg shadow-xl hover:bg-gray-100">
                         <div class="h-36">
-                            <img aria-hidden="true" class="w-full h-full object-cover object-center" src="/img/art_3.jpg" alt="" />
+                            <img aria-hidden="true" class="object-cover object-center w-full h-full" src="/img/art_5.jpg" alt="" />
                         </div>
                         <div class="p-4">
-                            <h1 class="title-font mb-3 text-gray-900 text-base font-medium">
+                            <h1 class="mb-3 text-base font-medium text-gray-900 title-font">
                                 {{ organization.name }}
                             </h1>
                             <p class="text-sm leading-relaxed">{{ organization.address }}.</p>
@@ -66,6 +66,7 @@ export default {
     },
     layout: Layout,
     props: {
+        auth: Object,
         filters: Object,
         organizations: Object,
     },

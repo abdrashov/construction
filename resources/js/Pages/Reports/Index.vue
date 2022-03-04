@@ -1,26 +1,26 @@
 <template>
     <div>
         <Head title="Отчеты" />
-        <h1 class="mb-6 text-2xl font-bold">Отчеты</h1>
+        <h1 class="mb-6 text-2xl font-semibold">Отчеты</h1>
         <div class="flex justify-between mb-6">
-            <search-filter v-model="form.search" class="mr-4 w-full max-w-md" @reset="reset">
+            <search-filter v-model="form.search" class="w-full max-w-md mr-4" @reset="reset">
                 <label class="block text-gray-700">Удаленные:</label>
-                <select v-model="form.trashed" class="form-select mt-1 w-full">
+                <select v-model="form.trashed" class="w-full mt-1 form-select">
                     <option :value="null" />
                     <option value="with">Все</option>
                     <option value="only">Только Удаленные</option>
                 </select>
             </search-filter>
         </div>
-        <div class="text-sm bg-white rounded-lg shadow overflow-x-auto">
+        <div class="overflow-x-auto text-sm bg-white shadow">
             <table class="w-full">
-                <tr class="text-left text-gray-500 text-xs font-semibold tracking-wide bg-gray-50 border-b uppercase">
+                <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
                     <th class="px-4 py-3 border-r" rowspan="2">Название</th>
                     <th class="px-4 py-3 border-r" colspan="2">Накладные</th>
                     <th class="px-4 py-3 border-r" colspan="2">Товары</th>
                     <th class="px-4 py-3" rowspan="2">Создано</th>
                 </tr>
-                <tr class="text-left text-gray-500 text-xs font-semibold tracking-wide bg-gray-50 border-b uppercase">
+                <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
                     <th class="px-4 py-3 border-r">Подтвержден</th>
                     <th class="px-4 py-3 border-r">Не подтвержден</th>
                     <th class="px-4 py-3 border-r">Количество</th>
@@ -33,15 +33,15 @@
                         </div>
                     </td>
                     <td class="border-t border-l">
-                        <div class="flex px-4 text-xs py-2">
-                            <span class="px-2 py-1 text-green-700 font-semibold leading-tight bg-green-100  rounded-full"> 
+                        <div class="flex px-4 py-2 text-xs">
+                            <span class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-full">
                             {{ organization.confirmed }}
                              </span>
                         </div>
                     </td>
                     <td class="border-t border-l">
-                        <div class="flex px-4 text-xs py-2">
-                            <span class="px-2 py-1 text-gray-700 font-semibold leading-tight bg-gray-100 rounded-full"> 
+                        <div class="flex px-4 py-2 text-xs">
+                            <span class="px-2 py-1 font-semibold leading-tight text-gray-700 bg-gray-100 rounded-full">
                             {{ organization.not_confirmed }}
                              </span>
                         </div>

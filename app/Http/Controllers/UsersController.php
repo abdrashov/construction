@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\URL;
@@ -40,8 +41,8 @@ class UsersController extends Controller
         Request::validate([
             'first_name' => ['required', 'max:50'],
             'last_name' => ['required', 'max:50'],
-            'login' => ['required', 'max:50', Rule::unique('users')],
-            'password' => ['required', 'min:6'],
+            'login' => ['required', 'min:6', 'max:50', Rule::unique('users')],
+            'password' => ['required', 'min:6', 'confirmed'],
             'role' => ['required'],
         ]);
 
@@ -49,7 +50,7 @@ class UsersController extends Controller
             'first_name' => Request::get('first_name'),
             'last_name' => Request::get('last_name'),
             'login' => Request::get('login'),
-            'password' => Request::get('password'),
+            'password' => Hash::make(Request::input('password')),
             'role' => Request::get('role'),
         ]);
 
@@ -58,7 +59,9 @@ class UsersController extends Controller
 
     public function auth(User $user)
     {
-        return Inertia::render('Users/Edit', [
+        abort_if(Auth::id() != $user->id, 404);
+
+        return Inertia::render('Users/Auth', [
             'user' => [
                 'id' => $user->id,
                 'first_name' => $user->first_name,
@@ -67,6 +70,23 @@ class UsersController extends Controller
                 'deleted_at' => $user->deleted_at,
             ],
         ]);
+    }
+
+    public function password(User $user)
+    {
+        abort_if(Auth::id() != $user->id, 404);
+
+        Request::validate([
+            'password' => ['required', 'min:6', 'confirmed'],
+        ]);
+
+        if ( !Hash::check(Request::input('old_password'), Auth::user()->password) ) {
+            return Redirect::back()->withError('Старый пароль не соответствует нашим записям.');
+        }
+
+        $user->update(['password' => Hash::make(Request::input('password'))]);
+
+        return Redirect::route('auth', $user->id)->with('success', 'Пароль успешно изменен.');
     }
 
     public function edit(User $user)
@@ -89,14 +109,14 @@ class UsersController extends Controller
             'first_name' => ['required', 'max:50'],
             'last_name' => ['required', 'max:50'],
             'role' => ['required'],
-            'login' => ['required', 'max:50', Rule::unique('users')->ignore($user->id)],
-            'password' => ['nullable'],
+            'login' => ['required', 'min:6', 'max:50', Rule::unique('users')->ignore($user->id)],
+            'password' => ['nullable', 'min:6', 'confirmed'],
         ]);
 
         $user->update(Request::only('first_name', 'last_name', 'login', 'role'));
 
         if (Request::get('password')) {
-            $user->update(['password' => Request::get('password')]);
+            $user->update(['password' => Hash::make(Request::input('password'))]);
         }
 
         return Redirect::back()->with('success', 'Пользователь обновлен.');

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Accepted;
 use App\Models\Invoice;
 use App\Models\Organization;
 use App\Models\Supplier;

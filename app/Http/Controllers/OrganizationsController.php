@@ -54,6 +54,7 @@ class OrganizationsController extends Controller
                 'id' => $organization->id,
                 'name' => $organization->name,
                 'address' => $organization->address,
+                'users' => $organization->users,
                 'deleted_at' => $organization->deleted_at,
             ],
         ]);
