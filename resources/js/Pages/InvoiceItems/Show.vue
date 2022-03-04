@@ -33,7 +33,7 @@
                 <h2 class="font-semibold text-gray-600">Товары</h2>
             </div>
             <div class="lg:flex">
-                <button @click="pay()" class="mb-1 btn-cyan">
+                <button v-if="!invoice.pay" @click="pay()" class="mb-1 btn-cyan">
                     <span>Оплатить</span>
                 </button>
             </div>
@@ -94,8 +94,6 @@ import TrashedMessage from '@/Shared/TrashedMessage'
 import FileInput from '@/Shared/FileInput'
 import pickBy from 'lodash/pickBy'
 import throttle from 'lodash/throttle'
-import Datepicker from 'vue3-date-time-picker'
-import 'vue3-date-time-picker/dist/main.css'
 
 export default {
     components: {
@@ -108,7 +106,6 @@ export default {
         TrashedMessage,
         Modal,
         FileInput,
-        Datepicker,
     },
     layout: Layout,
     props: {

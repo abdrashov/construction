@@ -66,6 +66,7 @@ class InvoiceItemsController extends Controller
                 'id' => $invoice->id,
                 'name' => $invoice->name,
                 'status' => $invoice->status,
+                'pay' => $invoice->pay,
                 'date' => $invoice->date->format('Y-m-d'),
                 'supplier' => $invoice->supplier,
                 'accepted' => $invoice->accepted,

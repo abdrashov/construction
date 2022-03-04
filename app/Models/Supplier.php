@@ -22,13 +22,13 @@ class Supplier extends Model
 
     public function resolveRouteBinding($value, $field = null)
     {
-        return $this->where($field ?? 'id', $value)->withTrashed()->firstOrFail();
+        return $this->where($field ?? 'suppliers.id', $value)->withTrashed()->firstOrFail();
     }
 
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['search'] ?? null, function ($query, $search) {
-            $query->where('name', 'like', '%' . $search . '%');
+            $query->where('suppliers.name', 'like', '%' . $search . '%');
         })->when($filters['trashed'] ?? null, function ($query, $trashed) {
             if ($trashed === 'with') {
                 $query->withTrashed();

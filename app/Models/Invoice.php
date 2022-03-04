@@ -28,4 +28,13 @@ class Invoice extends Model
     {
         return $this->hasMany(InvoiceItem::class);
     }
+
+    public function scopeFilter($query, array $filters)
+    {
+        $query->when($filters['search'] ?? null, function ($query, $search) {
+            $query->where('name', 'like', '%' . $search . '%');
+        })->when($filters['pay'] ?? null, function ($query, $search) {
+            $query->where('pay', $search === '0000' ? 0 : $search);
+        });
+    }
 }

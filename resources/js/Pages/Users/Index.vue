@@ -29,23 +29,23 @@
                 </tr>
                 <tr v-for="user in users" :key="user.id">
                     <td class="border-t">
-                        <Link class="flex items-center px-4 py-3" :href="`/users/${user.id}/edit`">
+                        <Link class="flex items-center px-4 py-2" :href="`/users/${user.id}/edit`">
                             {{ user.lastname }}
                             <icon v-if="user.deleted_at" name="trash" class="flex-shrink-0 w-3 h-3 ml-2 fill-gray-400" />
                         </Link>
                     </td>
                     <td class="border-t">
-                        <Link class="flex items-center px-4 py-3" :href="`/users/${user.id}/edit`" tabindex="-1">
+                        <Link class="flex items-center px-4 py-2" :href="`/users/${user.id}/edit`" tabindex="-1">
                             {{ user.firstname }}
                         </Link>
                     </td>
                     <td class="border-t">
-                        <Link class="flex items-center px-4 py-3" :href="`/users/${user.id}/edit`" tabindex="-1">
+                        <Link class="flex items-center px-4 py-2" :href="`/users/${user.id}/edit`" tabindex="-1">
                             {{ user.login }}
                         </Link>
                     </td>
                     <td class="border-t">
-                        <Link class="flex items-center px-4 py-3" :href="`/users/${user.id}/edit`" tabindex="-1">
+                        <Link class="flex items-center px-4 py-2" :href="`/users/${user.id}/edit`" tabindex="-1">
                             {{ user.role }}
                         </Link>
                     </td>

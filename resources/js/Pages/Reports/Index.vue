@@ -2,85 +2,61 @@
     <div>
         <Head title="Отчеты" />
         <h1 class="mb-6 text-2xl font-semibold">Отчеты</h1>
-        <div class="flex justify-between mb-6">
-            <search-filter v-model="form.search" class="w-full max-w-md mr-4" @reset="reset">
-                <label class="block text-gray-700">Удаленные:</label>
-                <select v-model="form.trashed" class="w-full mt-1 form-select">
-                    <option :value="null" />
-                    <option value="with">Все</option>
-                    <option value="only">Только Удаленные</option>
+        <div class="flex items-center mb-6">
+            <div class="w-full md:rounded md:shadow md:flex md:w-3/4">
+                <input class="relative px-4 py-3 w-full md:rounded-l focus:shadow-outline md:w-1/3" autocomplete="off" type="text" name="search" placeholder="Поиск…" v-model="form.search" />
+                <select v-model="form.organization_id" class="form-select-icon relative mt-2 px-4 py-3 w-full md:border-l md:rounded-r focus:shadow-outline appearance-none md:mt-0 md:w-2/3">
+                    <option v-for="organization in organizations" :key="organization.id" :value="organization.id">{{ organization.name }}</option>
                 </select>
-            </search-filter>
+            </div>
+            <button class="hidden ml-3 w-8 text-gray-500 hover:text-gray-700 focus:text-indigo-500 text-sm md:block" type="button" @click="reset">Сброс</button>
         </div>
-        <div class="overflow-x-auto text-sm bg-white shadow">
+        <div class="text-sm bg-white shadow overflow-x-auto">
             <table class="w-full">
-                <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
-                    <th class="px-4 py-3 border-r" rowspan="2">Название</th>
-                    <th class="px-4 py-3 border-r" colspan="2">Накладные</th>
-                    <th class="px-4 py-3 border-r" colspan="2">Товары</th>
-                    <th class="px-4 py-3" rowspan="2">Создано</th>
+                <tr class="text-left text-gray-500 text-xs font-semibold tracking-wide bg-gray-50 border-b uppercase">
+                    <th class="px-4 py-3 w-1/2 border-r" rowspan="2">Название</th>
+                    <th class="px-4 py-3 w-1/2 border-r" colspan="2">Накладные</th>
                 </tr>
-                <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
-                    <th class="px-4 py-3 border-r">Подтвержден</th>
-                    <th class="px-4 py-3 border-r">Не подтвержден</th>
-                    <th class="px-4 py-3 border-r">Количество</th>
-                    <th class="px-4 py-3 border-r">Сума</th>
+                <tr class="text-left text-gray-500 text-xs font-semibold tracking-wide bg-gray-50 border-b uppercase">
+                    <th class="px-4 py-3 border-r">Оплачен</th>
+                    <th class="px-4 py-3 border-r">Не оплачен</th>
                 </tr>
-                <tr v-for="organization in organizations.data" :key="organization.id">
+                <tr v-for="report in reports" :key="report.id">
                     <td class="border-t">
-                        <div class="flex px-4 py-2 font-medium">
-                            {{ organization.name }}
-                        </div>
+                        <Link class="flex items-center font-medium px-4 py-2" :href="`/reports/${report.id}/${report.supplier_id}/all`">
+                            {{ report.supplier }}
+                        </Link>
                     </td>
-                    <td class="border-t border-l">
-                        <div class="flex px-4 py-2 text-xs">
-                            <span class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-full">
-                                {{ organization.confirmed }}
-                            </span>
-                        </div>
+                    <td class="border-l border-t">
+                        <Link class="flex items-center px-4 py-2 whitespace-nowrap font-semibold" :href="`/reports/${report.id}/${report.supplier_id}/all?pay=1`">
+                            {{ report.pay_sum?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
+                        </Link>
                     </td>
-                    <td class="border-t border-l">
-                        <div class="flex px-4 py-2 text-xs">
-                            <span class="px-2 py-1 font-semibold leading-tight text-gray-700 bg-gray-100 rounded-full">
-                                {{ organization.not_confirmed }}
-                            </span>
-                        </div>
-                    </td>
-                    <td class="border-t border-l">
-                        <div class="flex px-4 py-2 font-semibold whitespace-nowrap">
-                            {{ organization.sum_count.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
-                        </div>
-                    </td>
-                    <td class="border-t border-l">
-                        <div class="flex px-4 py-2 font-semibold whitespace-nowrap">
-                            {{ organization.sum_price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
-                        </div>
-                    </td>
-                    <td class="border-t border-l">
-                        <div class="flex px-4 py-2 whitespace-nowrap">
-                            {{ organization.created_at }}
-                        </div>
+                    <td class="border-l border-t">
+                        <Link class="flex items-center px-4 py-2 whitespace-nowrap font-semibold" :href="`/reports/${report.id}/${report.supplier_id}/all?pay=0000`">
+                            {{ report.not_pay_sum?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
+                        </Link>
                     </td>
                 </tr>
-                <tr v-if="organizations.data.length === 0">
-                    <td class="px-4 py-4 border-t" colspan="4">Не найдено.</td>
+                <tr v-if="reports.length === 0">
+                    <td class="px-4 py-4 border-t" colspan="3">Не найдено.</td>
                 </tr>
             </table>
         </div>
-        <pagination class="mt-6" :links="organizations.links" />
+        <!-- <pagination class="mt-6" :links="reports.links" /> -->
     </div>
 </template>
 
 <script>
 import { Head, Link } from '@inertiajs/inertia-vue3'
 import Icon from '@/Shared/Icon'
+import Dropdown from '@/Shared/Dropdown'
 import pickBy from 'lodash/pickBy'
 import Layout from '@/Shared/Layout'
 import throttle from 'lodash/throttle'
 import mapValues from 'lodash/mapValues'
 import Pagination from '@/Shared/Pagination'
 import LoadingButton from '@/Shared/LoadingButton'
-import SearchFilter from '@/Shared/SearchFilter'
 import TextInput from '@/Shared/TextInput'
 import SelectInput from '@/Shared/SelectInput'
 
@@ -88,9 +64,9 @@ export default {
     components: {
         Head,
         Icon,
+        Dropdown,
         Link,
         Pagination,
-        SearchFilter,
         TextInput,
         LoadingButton,
         SelectInput,
@@ -98,13 +74,14 @@ export default {
     layout: Layout,
     props: {
         filters: Object,
+        reports: Object,
         organizations: Object,
     },
     data() {
         return {
             form: {
                 search: this.filters.search,
-                trashed: this.filters.trashed,
+                organization_id: this.filters.organization_id,
             },
         }
     },
@@ -118,7 +95,7 @@ export default {
     },
     methods: {
         reset() {
-            this.form = mapValues(this.form, () => null)
+            this.form.search = null
         },
     },
 }

@@ -88,8 +88,15 @@ Route::middleware('auth')->group(function () {
     Route::middleware('role:Супер Администратор,Бухгалтер,Кассир')->group(function () {
 
         // Reports
-        Route::get('reports', [ReportsController::class, 'index'])
-            ->name('reports');
+        Route::prefix('reports')->name('reports')->controller(ReportsController::class)->group(function () {
+            Route::get('', 'index');
+            Route::get('{organization}/{supplier}/all', 'all')
+                ->name('.all');
+            Route::get('{organization}/{supplier}/pay', 'pay')
+                ->name('.pay');
+            Route::get('{organization}/{supplier}/not_pay', 'notPay')
+                ->name('.not_pay');
+        });
     });
 
     Route::middleware('role:Супер Администратор,Бухгалтер')->group(function () {
@@ -146,5 +153,4 @@ Route::middleware('auth')->group(function () {
             });
         });
     });
-
 });
