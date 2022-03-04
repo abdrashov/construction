@@ -109,6 +109,7 @@ Route::middleware('auth')->group(function () {
             Route::put('', 'update')->name('.update');
             Route::delete('', 'delete')->name('.delete');
             Route::post('{item}', 'store')->name('.store');
+            Route::get('pay', 'pay')->name('.pay');
         });
 
         // Reference

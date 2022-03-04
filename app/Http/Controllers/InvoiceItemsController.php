@@ -8,19 +8,19 @@ use App\Models\Item;
 use App\Models\Supplier;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class InvoiceItemsController extends Controller
 {
     public function Index(Invoice $invoice)
     {
-        $item_ids = array_map(
-            fn($item_id) => $item_id['item_id'],
-            $invoice->invoiceItems()->select('id', 'item_id')->get()->toArray()
-        );
-
         if (!$invoice->status) {
+
+            $item_ids = array_map(
+                fn($item_id) => $item_id['item_id'],
+                $invoice->invoiceItems()->select('id', 'item_id')->get()->toArray()
+            );
+
             return Inertia::render('InvoiceItems/Index', [
                 'filters' => Request::only('search', 'page'),
                 'organization' => [
@@ -35,7 +35,7 @@ class InvoiceItemsController extends Controller
                     'date' => $invoice->date->format('Y-m-d'),
                     'supplier_id' => $invoice->supplier_id,
                     'accepted' => $invoice->accepted,
-                    'file' => $invoice->file ? '\\file\\'.$invoice->file : '',
+                    'file' => $invoice->file ? '/file/' . $invoice->file : '',
                 ],
                 'invoice_items' => $invoice->invoiceItems->transform(fn($item) => [
                     'id' => $item->id,
@@ -69,7 +69,7 @@ class InvoiceItemsController extends Controller
                 'date' => $invoice->date->format('Y-m-d'),
                 'supplier' => $invoice->supplier,
                 'accepted' => $invoice->accepted,
-                'file' => $invoice->file ? '\\file\\'.$invoice->file : '',
+                'file' => $invoice->file ? '\\file\\' . $invoice->file : '',
             ],
             'invoice_items' => $invoice->invoiceItems->transform(fn($item) => [
                 'id' => $item->id,
@@ -94,7 +94,7 @@ class InvoiceItemsController extends Controller
             'measurement_id' => $item->measurement_id,
         ]);
 
-        $item->update(['sort' => $item->sort+1]);
+        $item->update(['sort' => $item->sort + 1]);
 
         return Redirect::back()->with('success', 'Товар, добавлено.');
     }
@@ -136,7 +136,7 @@ class InvoiceItemsController extends Controller
             'status' => true,
         ]);
 
-        return Redirect::route('invoices', $invoice->organization_id)->with('success', 'Успешно подтвержден.');
+        return Redirect::route('invoice-items', $invoice->id)->with('success', 'Успешно подтвержден.');
     }
 
     public function delete(Invoice $invoice)
@@ -148,5 +148,14 @@ class InvoiceItemsController extends Controller
         $invoice->invoiceItems()->where('id', Request::input('item_id'))->delete();
 
         return Redirect::back()->with('success', 'Товар, удален.');
+    }
+
+    public function pay(Invoice $invoice)
+    {
+        $invoice->update([
+            'pay' => true
+        ]);
+
+        return Redirect::route('invoices', $invoice->organization_id)->with('success', 'Успешно сохранено.');
     }
 }

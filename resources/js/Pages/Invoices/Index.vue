@@ -67,7 +67,7 @@
                     <th class="px-4 py-3">Номер</th>
                     <th class="px-4 py-3 border-l">Поставщик</th>
                     <th class="px-4 py-3 border-l">Принял</th>
-                    <th class="px-4 py-3 border-l">Статус</th>
+                    <th class="px-4 py-3 border-l">Статусы</th>
                     <th colspan="2" class="px-4 py-3 border-l">Дата</th>
                 </tr>
                 <tr v-for="invoice in organization.invoices" :key="invoice.id">
@@ -88,10 +88,16 @@
                         </Link>
                     </td>
                     <td class="border-t border-l">
-                        <Link class="flex items-center mx-4 text-xs" :href="`/invoices/${invoice.id}/invoice-items`" tabindex="-1">
-                            <span v-if="invoice.status" class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-full whitespace-nowrap dark:text-green-100 dark:bg-green-700"> Подвержен </span>
-                            <span v-else class="px-2 py-1 font-semibold leading-tight text-gray-700 bg-gray-100 rounded-full whitespace-nowrap dark:text-gray-100 dark:bg-gray-700"> Не подтвержден </span>
+                      <div class="flex mx-4 text-xs">
+                        <Link class="flex items-center mr-2" :href="`/invoices/${invoice.id}/invoice-items`" tabindex="-1">
+                            <span v-if="invoice.pay" class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-full whitespace-nowrap "> Оплачен </span>
+                            <span v-else class="px-2 py-1 font-semibold leading-tight text-red-700 bg-red-100 rounded-full whitespace-nowrap "> Не оплачен </span>
                         </Link>
+                        <Link class="flex items-center " :href="`/invoices/${invoice.id}/invoice-items`" tabindex="-1">
+                            <span v-if="invoice.status" class="px-2 py-1 font-semibold leading-tight text-blue-700 bg-blue-100 rounded-full whitespace-nowrap"> Подвержен </span>
+                            <span v-else class="px-2 py-1 font-semibold leading-tight text-gray-700 bg-gray-100 rounded-full whitespace-nowrap "> Не подтвержден </span>
+                        </Link>
+                        </div>
                     </td>
                     <td class="border-t">
                         <Link class="flex items-center px-4 py-3 border-l" :href="`/invoices/${invoice.id}/invoice-items`" tabindex="-1">

@@ -56,11 +56,6 @@
         </div>
 
         <div class="overflow-x-auto text-sm bg-white shadow">
-            <span class="hidden">
-                {{ (sum.count = 0) }}
-                {{ (sum.price = 0) }}
-                {{ (sum.sum = 0) }}
-            </span>
             <table class="w-full">
                 <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
                     <th class="px-4 py-3">Название</th>
@@ -78,20 +73,18 @@
                     <td class="w-1/6 border-t border-l">
                         <div class="flex items-center px-4 py-1">
                             <input type="number" v-model.lazy="item.count" @change="countHandler(index)" :name="`item[${index}][count]`" class="mr-1 border-b border-blue-300 border-dashed" />
-                            <span class="hidden">{{ (sum.count += item.count) }}</span>
                             <span>{{ item.measurement }}</span>
                         </div>
                     </td>
                     <td class="w-1/6 border-t border-l">
                         <div class="flex items-center px-4 py-1">
                             <input type="number" v-model.lazy="item.price" @change="priceHandler(index)" :name="`item[${index}][price]`" class="border-b border-blue-300 border-dashed" />
-                            <span class="hidden">{{ (sum.price += item.price) }}</span>
                         </div>
                     </td>
                     <td class="w-2/6 border-t border-l">
                         <div class="flex items-center w-full px-4 py-1 font-medium whitespace-nowrap">
                             {{ (item.count * item.price).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
-                            <span class="hidden">{{ (sum.sum += item.count * item.price) }}</span>
+
                         </div>
                     </td>
                     <td class="w-16 border-t border-l">
@@ -111,24 +104,6 @@
                 </tr>
                 <tr v-if="invoice_items.length === 0">
                     <td class="px-6 py-4 border-t" colspan="5">Товары не найдены.</td>
-                </tr>
-                <tr v-else>
-                    <td class="border-t"></td>
-                    <td class="border-t border-l">
-                        <div class="flex px-4 py-2 font-medium">
-                            {{ sum.count.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
-                        </div>
-                    </td>
-                    <td class="border-t border-l">
-                        <div class="flex px-4 py-2 font-medium">
-                            {{ sum.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
-                        </div>
-                    </td>
-                    <td colspane="2" class="border-t border-l">
-                        <div class="flex px-4 py-2 font-semibold whitespace-nowrap">
-                            {{ sum.sum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
-                        </div>
-                    </td>
                 </tr>
             </table>
         </div>
@@ -236,11 +211,6 @@ export default {
     remember: ['form', 'form_invoice'],
     data() {
         return {
-            sum: {
-                price: 0,
-                count: 0,
-                sum: 0,
-            },
             form_search: {
                 search: this.filters.search,
             },

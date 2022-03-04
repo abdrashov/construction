@@ -7,7 +7,7 @@
 }
 
 .btn-green {
-    @apply px-5 py-3 text-sm font-semibold leading-4 text-white duration-150 bg-green-500 rounded whitespace-nowrap hover:bg-green-600 focus:bg-green-600;
+    @apply px-5 py-3 text-sm font-semibold leading-4 text-white duration-150 bg-green-400 rounded whitespace-nowrap hover:bg-green-500 focus:bg-green-500;
 }
 
 .btn-cyan {

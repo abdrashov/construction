@@ -12,8 +12,13 @@ class Supplier extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'name'
+        'name',
     ];
+
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class);
+    }
 
     public function resolveRouteBinding($value, $field = null)
     {

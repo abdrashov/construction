@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Organization;
+use App\Models\Supplier;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Inertia\Inertia;
@@ -11,6 +12,32 @@ class ReportsController extends Controller
 {
     public function index()
     {
+        $object_id = 1;
+
+        $report = Supplier::select(
+            'suppliers.name as supplier',
+            'organizations.name as organization',
+            'invoices.name as invoice',
+            DB::raw(
+                '(SELECT COUNT(invoices.pay) FROM `invoices` WHERE `organizations`.`id` = `invoices`.`organization_id` AND `invoices`.`status` = 1) as pay'
+            ),
+            DB::raw(
+                '(SELECT COUNT(invoices.pay) FROM `invoices` WHERE `organizations`.`id` = `invoices`.`organization_id` AND `invoices`.`status` = 0) as not_pay'
+            ),
+            )
+            ->join('invoices', function ($query) use ($object_id) {
+                $query->on('suppliers.id', '=', 'invoices.supplier_id')
+                    ->where('invoices.status', true);
+            })
+            ->join('organizations', function ($query) use ($object_id) {
+                $query->on('invoices.organization_id', '=', 'organizations.id')
+                    ->where('invoices.organization_id', $object_id);
+            })
+            ->groupBy('suppliers.id')
+            ->get();
+
+        dd($report);
+
         $reports = Organization::filter(Request::only('search', 'trashed'))
             ->select(
                 'organizations.id',
@@ -34,7 +61,7 @@ class ReportsController extends Controller
             ->groupBy('organizations.id')
             ->paginate(20)
             ->withQueryString()
-            ->through(fn ($report) => [
+            ->through(fn($report) => [
                 'id' => $report->id,
                 'name' => $report->name,
                 'created_at' => $report->created_at->format('Y-m-d'),

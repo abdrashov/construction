@@ -21,6 +21,7 @@ class CreateInvoicesTable extends Migration
 
             $table->string('name', 255);
             $table->boolean('status')->default(false);
+            $table->boolean('pay')->default(false);
             $table->date('date');
             $table->string('supplier', 255);
             $table->string('accepted', 255);

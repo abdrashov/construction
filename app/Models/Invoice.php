@@ -12,7 +12,7 @@ class Invoice extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'organization_id', 'name', 'status', 'date', 'supplier', 'accepted', 'supplier_id', 'file'
+        'organization_id', 'name', 'pay', 'status', 'date', 'supplier', 'accepted', 'supplier_id', 'file'
     ];
 
     protected $dates = [
