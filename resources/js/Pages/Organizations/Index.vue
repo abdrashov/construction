@@ -20,7 +20,7 @@
         <div class="flex flex-wrap -m-4">
             <div v-for="organization in organizations.data" :key="organization.id" class="p-4 sm:w-1/2 lg:w-1/3">
                 <Link :href="`/organizations/${organization.id}/`+(auth.user.role === 'Администратор' ? 'edit' : 'invoices')">
-                    <div class="flex flex-col overflow-hidden duration-200 bg-white rounded-lg shadow-xl hover:bg-gray-100">
+                    <div class="flex flex-col overflow-hidden duration-200 bg-white shadow-md hover:bg-gray-100">
                         <div class="h-36">
                             <img aria-hidden="true" class="object-cover object-center w-full h-full" src="/img/art_5.jpg" alt="" />
                         </div>

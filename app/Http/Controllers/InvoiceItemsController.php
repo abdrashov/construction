@@ -35,7 +35,7 @@ class InvoiceItemsController extends Controller
                     'date' => $invoice->date->format('Y-m-d'),
                     'supplier_id' => $invoice->supplier_id,
                     'accepted' => $invoice->accepted,
-                    'file' => $invoice->file ? Storage::url($invoice->file) : '',
+                    'file' => $invoice->file ? '\\file\\'.$invoice->file : '',
                 ],
                 'invoice_items' => $invoice->invoiceItems->transform(fn($item) => [
                     'id' => $item->id,
@@ -69,7 +69,7 @@ class InvoiceItemsController extends Controller
                 'date' => $invoice->date->format('Y-m-d'),
                 'supplier' => $invoice->supplier,
                 'accepted' => $invoice->accepted,
-                'file' => $invoice->file ? Storage::url($invoice->file) : '',
+                'file' => $invoice->file ? '\\file\\'.$invoice->file : '',
             ],
             'invoice_items' => $invoice->invoiceItems->transform(fn($item) => [
                 'id' => $item->id,

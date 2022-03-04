@@ -9,11 +9,11 @@
             {{ form_invoice.name }}
         </h1>
 
-        <div class="w-full overflow-hidden bg-white rounded-lg shadow">
+        <div class="w-full overflow-hidden bg-white shadow">
             <form @submit.prevent="update">
                 <div class="items-start lg:flex">
                     <div class="flex flex-wrap w-full px-4 py-3">
-                        <text-input v-model="form_invoice.name" :error="form_invoice.errors.name" class="w-full pb-4 pr-0 lg:pr-4 lg:w-1/2" label="Название" />
+                        <text-input v-model="form_invoice.name" :error="form_invoice.errors.name" class="w-full pb-4 pr-0 lg:pr-4 lg:w-1/2" label="Номер" />
 
                         <div class="w-full pb-4 lg:w-1/2">
                             <label class="form-label">Дата:</label>
@@ -77,19 +77,19 @@
                     </td>
                     <td class="w-1/6 border-t border-l">
                         <div class="flex items-center px-4 py-1">
-                            <input type="number" v-model.lazy="item.count" v-on:input="countHandler(index)" :name="`item[${index}][count]`" class="mr-1 border-b border-blue-300 border-dashed" />
+                            <input type="number" v-model.lazy="item.count" @change="countHandler(index)" :name="`item[${index}][count]`" class="mr-1 border-b border-blue-300 border-dashed" />
                             <span class="hidden">{{ (sum.count += item.count) }}</span>
                             <span>{{ item.measurement }}</span>
                         </div>
                     </td>
                     <td class="w-1/6 border-t border-l">
                         <div class="flex items-center px-4 py-1">
-                            <input type="number" v-model.lazy="item.price" v-on:input="priceHandler(index)" :name="`item[${index}][price]`" class="border-b border-blue-300 border-dashed" />
+                            <input type="number" v-model.lazy="item.price" @change="priceHandler(index)" :name="`item[${index}][price]`" class="border-b border-blue-300 border-dashed" />
                             <span class="hidden">{{ (sum.price += item.price) }}</span>
                         </div>
                     </td>
                     <td class="w-2/6 border-t border-l">
-                        <div class="flex items-center w-full px-4 py-1 font-medium">
+                        <div class="flex items-center w-full px-4 py-1 font-medium whitespace-nowrap">
                             {{ (item.count * item.price).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
                             <span class="hidden">{{ (sum.sum += item.count * item.price) }}</span>
                         </div>
@@ -125,7 +125,7 @@
                         </div>
                     </td>
                     <td colspane="2" class="border-t border-l">
-                        <div class="flex px-4 py-2 font-semibold">
+                        <div class="flex px-4 py-2 font-semibold whitespace-nowrap">
                             {{ sum.sum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
                         </div>
                     </td>
@@ -153,9 +153,9 @@
                         </button>
                     </div>
                 </div>
-                <input class="relative w-full px-6 py-3 border rounded-md focus:shadow-outline" autocomplete="off" type="text" name="search" placeholder="Поиск…" v-model="form_search.search" @input="$emit('update:modelValue', $event.target.value)" />
-                <div class="my-5">
-                    <div class="text-sm bg-white rounded-lg shadow">
+                <input class="relative w-full px-6 py-3 border focus:shadow-outline" autocomplete="off" type="text" name="search" placeholder="Поиск…" v-model="form_search.search" @input="$emit('update:modelValue', $event.target.value)" />
+                <div class="mb-5">
+                    <div class="text-sm bg-white border">
                         <table class="w-full">
                             <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
                                 <th class="p-2 px-4">Название</th>
@@ -178,7 +178,7 @@
                                                 </td>
                                             </tr>
                                             <tr v-if="items.data.length === 0">
-                                                <td class="px-6 py-4 border-t" colspan="4">Товары не найдены.</td>
+                                                <td class="px-6 py-4 border-t" colspan="2">Товары не найдены.</td>
                                             </tr>
                                         </table>
                                     </div>
@@ -332,7 +332,7 @@ export default {
         },
         priceHandler(index) {
             if (this.invoice_items[index].price > 4294967295) {
-                this.invoice_items[index].price = this.invoice_items[index].price.toString().substring(0, this.invoice_items[index].price.toString().length - 1)
+                this.invoice_items[index].price = 4294967295
                 this.$swal.fire({
                     icon: 'error',
                     title: 'Упс...',
@@ -349,7 +349,7 @@ export default {
         },
         countHandler(index) {
             if (this.invoice_items[index].count > 4294967295) {
-                this.invoice_items[index].count = this.invoice_items[index].count.toString().substring(0, this.invoice_items[index].count.toString().length - 1)
+                this.invoice_items[index].count = 4294967295
                 this.$swal.fire({
                     icon: 'error',
                     title: 'Упс...',

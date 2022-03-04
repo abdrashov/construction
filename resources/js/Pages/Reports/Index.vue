@@ -35,24 +35,24 @@
                     <td class="border-t border-l">
                         <div class="flex px-4 py-2 text-xs">
                             <span class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-full">
-                            {{ organization.confirmed }}
-                             </span>
+                                {{ organization.confirmed }}
+                            </span>
                         </div>
                     </td>
                     <td class="border-t border-l">
                         <div class="flex px-4 py-2 text-xs">
                             <span class="px-2 py-1 font-semibold leading-tight text-gray-700 bg-gray-100 rounded-full">
-                            {{ organization.not_confirmed }}
-                             </span>
+                                {{ organization.not_confirmed }}
+                            </span>
                         </div>
                     </td>
                     <td class="border-t border-l">
-                        <div class="flex px-4 py-2 font-semibold">
+                        <div class="flex px-4 py-2 font-semibold whitespace-nowrap">
                             {{ organization.sum_count.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
-                             </div>
+                        </div>
                     </td>
                     <td class="border-t border-l">
-                        <div class="flex px-4 py-2 font-semibold">
+                        <div class="flex px-4 py-2 font-semibold whitespace-nowrap">
                             {{ organization.sum_price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
                         </div>
                     </td>

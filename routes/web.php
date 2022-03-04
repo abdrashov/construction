@@ -37,6 +37,15 @@ Route::post('login', [AuthenticatedSessionController::class, 'store'])
 Route::delete('logout', [AuthenticatedSessionController::class, 'destroy'])
     ->name('logout');
 
+// Images
+Route::get('/img/{path}', [ImagesController::class, 'show'])
+    ->where('path', '.*')
+    ->name('image');
+
+Route::get('/file/{path}', [ImagesController::class, 'path'])
+    ->where('path', '.*')
+    ->name('image');
+
 Route::middleware('auth')->group(function () {
 
     // Dashboard
@@ -136,11 +145,5 @@ Route::middleware('auth')->group(function () {
             });
         });
     });
-
-    // Images
-
-    Route::get('/img/{path}', [ImagesController::class, 'show'])
-        ->where('path', '.*')
-        ->name('image');
 
 });

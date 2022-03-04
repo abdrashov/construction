@@ -8,11 +8,11 @@
             <span class="font-medium text-sky-500">/</span> Создать
         </h1>
 
-        <div class="w-full overflow-hidden bg-white rounded-lg shadow">
+        <div class="w-full overflow-hidden bg-white shadow">
             <form @submit.prevent="store">
                 <div class="items-start lg:flex">
                     <div class="flex flex-wrap w-full px-4 py-3">
-                        <text-input v-model="form.name" :error="form.errors.name" class="w-full pb-4 pr-0 lg:pr-4 lg:w-1/2" label="Название" />
+                        <text-input v-model="form.name" :error="form.errors.name" class="w-full pb-4 pr-0 lg:pr-4 lg:w-1/2" label="Номер" />
 
                         <div class="w-full pb-4 lg:w-1/2">
                             <label class="form-label">Дата:</label>

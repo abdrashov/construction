@@ -8,7 +8,7 @@
         </h1>
         <trashed-message v-if="organization.deleted_at" class="mb-6" @restore="restore"> Эта объект была удалена. </trashed-message>
 
-        <div v-if="auth.user.role === 'Супер Администратор' || auth.user.role === 'Администратор'" class="w-full overflow-hidden bg-white rounded-lg shadow">
+        <div v-if="auth.user.role === 'Супер Администратор' || auth.user.role === 'Администратор'" class="w-full overflow-hidden bg-white shadow">
             <form @submit.prevent="update">
                 <div class="items-start lg:flex">
                     <div class="flex flex-wrap w-full px-4 py-3 lg:pr-0 lg:w-1/2">
@@ -64,7 +64,7 @@
         <div class="overflow-x-auto text-sm bg-white shadow">
             <table class="w-full">
                 <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
-                    <th class="px-4 py-3">Название</th>
+                    <th class="px-4 py-3">Номер</th>
                     <th class="px-4 py-3 border-l">Поставщик</th>
                     <th class="px-4 py-3 border-l">Принял</th>
                     <th class="px-4 py-3 border-l">Статус</th>
