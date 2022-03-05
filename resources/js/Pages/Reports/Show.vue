@@ -7,23 +7,29 @@
             {{ organization.name }}
         </h1>
         <div class="flex items-center mb-6">
-            <div class="w-full md:flex md:w-3/4 md:rounded md:shadow">
-                <input class="relative w-full px-4 py-3 focus:shadow-outline md:rounded-l" autocomplete="off" type="text" name="search" placeholder="Поиск…" v-model="form.search" />
+            <div class="w-full rounded shadow md:flex md:w-3/4">
+                <input class="relative w-full px-4 py-3 rounded focus:shadow-outline" autocomplete="off" type="text" name="search" placeholder="Поиск…" v-model="form.search" />
             </div>
             <button class="hidden w-8 ml-3 text-sm text-gray-500 hover:text-gray-700 focus:text-indigo-500 md:block" type="button" @click="reset">Сброс</button>
         </div>
         <div class="overflow-x-auto text-sm bg-white shadow">
             <table class="w-full">
                 <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
-                    <th class="px-4 py-3">Номер накладной</th>
-                    <th class="px-4 py-3 border-l">Принял</th>
+                    <th class="w-12 px-4 py-3">#</th>
+                    <th class="px-4 py-3 border-l">Номер накладной</th>
+                    <th class="px-4 py-3 border-l">Зав склад</th>
                     <th class="px-4 py-3 border-l">Сумма</th>
                     <th class="px-4 py-3 border-l">Дата</th>
                     <th class="px-4 py-3 border-l">Статус</th>
                 </tr>
-                <tr v-for="invoice in invoices" :key="invoice.id">
+                <tr v-for="(invoice, index) in invoices" :key="invoice.id">
                     <td class="border-t">
-                        <div class="flex items-center px-4 py-3 font-medium text-gray-900">
+                        <div class="flex items-center px-4 py-2 font-medium">
+                            {{ index + 1 }}
+                        </div>
+                    </td>
+                    <td class="border-t">
+                        <div class="flex items-center px-4 py-3 font-semibold border-l">
                             {{ invoice.name }}
                         </div>
                     </td>
@@ -65,14 +71,14 @@
             </div>
             <div class="bg-white shadow">
                 <div class="flex flex-wrap p-4">
-                    <div class="w-1/3 mb-2 text-xs text-sm font-semibold text-gray-600">Статус:</div>
+                    <div class="w-1/3 mb-2 text-sm font-semibold text-gray-600">Статус:</div>
                     <div class="w-2/3 mb-2 font-medium">
                         <div v-if="invoice.pay" class="text-green-700">Оплачен</div>
                         <div v-else class="text-red-700">Не оплачен</div>
                     </div>
-                    <div class="w-1/3 mb-2 text-xs text-sm font-semibold text-gray-600">Зав склад</div>
+                    <div class="w-1/3 mb-2 text-sm font-semibold text-gray-600">Зав склад</div>
                     <div class="w-2/3 mb-2 font-medium">{{ invoice.accepted }}</div>
-                    <div class="w-1/3 text-xs text-sm font-semibold text-gray-600">Дата</div>
+                    <div class="w-1/3 text-sm font-semibold text-gray-600">Дата</div>
                     <div class="w-2/3 font-medium">{{ invoice.date }}</div>
                 </div>
                 <div class="overflow-x-auto">

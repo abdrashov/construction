@@ -15,26 +15,32 @@
         <div class="overflow-x-auto text-sm bg-white shadow">
             <table class="w-full">
                 <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
-                    <th class="w-1/2 px-4 py-3 border-r" rowspan="2">Название</th>
+                    <th class="w-12 px-4 py-3 border-r" rowspan="2">#</th>
+                    <th class="w-1/2 px-4 py-3 border-r" rowspan="2">Поставщик</th>
                     <th class="w-1/2 px-4 py-3 border-r" colspan="2">Накладные</th>
                 </tr>
                 <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
                     <th class="px-4 py-3 border-r">Оплачен</th>
                     <th class="px-4 py-3 border-r">Не оплачен</th>
                 </tr>
-                <tr v-for="report in reports" :key="report.id">
+                <tr v-for="(report, index) in reports" :key="report.id" class="duration-150 hover:bg-amber-50 focus:bg-amber-50">
                     <td class="border-t">
-                        <Link class="flex items-center px-4 py-2 font-medium" :href="`/reports/${report.id}/${report.supplier_id}/all`">
+                        <div class="flex items-center px-4 py-2 font-medium">
+                            {{ index + 1 }}
+                        </div>
+                    </td>
+                    <td class="border-t border-l">
+                        <Link class="flex items-center px-4 py-2 font-medium hover:underline" :href="`/reports/${report.id}/${report.supplier_id}/all`">
                             {{ report.supplier }}
                         </Link>
                     </td>
                     <td class="border-t border-l">
-                        <Link class="flex items-center px-4 py-2 font-semibold whitespace-nowrap" :href="`/reports/${report.id}/${report.supplier_id}/all?pay=1`">
+                        <Link class="flex items-center px-4 py-2 font-semibold text-green-900 hover:underline whitespace-nowrap" :href="`/reports/${report.id}/${report.supplier_id}/all?pay=1`">
                             {{ report.pay_sum?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
                         </Link>
                     </td>
                     <td class="border-t border-l">
-                        <Link class="flex items-center px-4 py-2 font-semibold whitespace-nowrap" :href="`/reports/${report.id}/${report.supplier_id}/all?pay=0000`">
+                        <Link class="flex items-center px-4 py-2 font-semibold text-red-900 hover:underline whitespace-nowrap" :href="`/reports/${report.id}/${report.supplier_id}/all?pay=0000`">
                             {{ report.not_pay_sum?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
                         </Link>
                     </td>
@@ -96,7 +102,7 @@ export default {
     },
     methods: {
         reset() {
-            this.form.search = null
+            this.form = mapValues(this.form, () => null)
         },
     },
 }
