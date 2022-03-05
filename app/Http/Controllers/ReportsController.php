@@ -164,9 +164,26 @@ class ReportsController extends Controller
 
     public function all(Organization $organization, Supplier $supplier)
     {
+        // $invoices = $organization->invoices()
+        //     ->filter(Request::only('search', 'pay'))
+        //     ->with('invoiceItems')
+        //     ->where('supplier_id', $supplier->id)
+        //     ->where('status', 1)
+        //     ->get()
+        //     ->transform(fn($invoice) => [
+        //         'id' => $invoice->id,
+        //         'name' => $invoice->name,
+        //         'pay' => $invoice->pay,
+        //         'status' => $invoice->status,
+        //         'date' => $invoice->date->format('Y-m-d'),
+        //         'accepted' => $invoice->accepted,
+        //         'invoice_items' => $invoice->invoiceItems,
+        //         'sum_count' => $invoice->invoiceItems()->sum('count'),
+        //         'sum_price' => $invoice->invoiceItems()->sum('price'),
+        //         'sum' => $invoice->invoiceItems()->select(DB::raw('SUM(count * price) as sum'))->value('sum'),
+        //     ]);
         $invoices = $organization->invoices()
             ->filter(Request::only('search', 'pay'))
-            ->with('invoiceItems')
             ->where('supplier_id', $supplier->id)
             ->where('status', 1)
             ->get()
@@ -177,12 +194,11 @@ class ReportsController extends Controller
                 'status' => $invoice->status,
                 'date' => $invoice->date->format('Y-m-d'),
                 'accepted' => $invoice->accepted,
-                'invoice_items' => $invoice->invoiceItems,
                 'sum_count' => $invoice->invoiceItems()->sum('count'),
                 'sum_price' => $invoice->invoiceItems()->sum('price'),
                 'sum' => $invoice->invoiceItems()->select(DB::raw('SUM(count * price) as sum'))->value('sum'),
             ]);
-            
+
         return Inertia::render('Reports/Show', [
             'filters' => Request::only('search'),
             'organization' => $organization,
