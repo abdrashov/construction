@@ -136,6 +136,9 @@ return [
     'attributes' => [
         'name' => 'Название',
         'login' => 'Логин',
-        'password' => 'Пароль',
+        'first_name' => 'Имя',
+        'last_name' => 'Фамилия',
+        'measurement_id' => 'Измерение',
+        'supplier_id' => 'Поставщик',
     ],
 ];
