@@ -2,7 +2,7 @@
     <div>
         <Head title="Отчеты" />
         <h1 class="mb-6 text-2xl font-semibold">
-            <Link class="text-sky-500 hover:text-sky-700" href="/reports">Отчеты</Link>
+            <Link class="text-sky-500 hover:text-sky-700" :href="`/reports?organization_id=${organization.id}`">Отчеты</Link>
             <span class="font-medium text-sky-500">/</span>
             {{ organization.name }}
         </h1>
@@ -19,7 +19,7 @@
                     <th class="px-4 py-3 border-l">Принял</th>
                     <th class="px-4 py-3 border-l">Сумма</th>
                     <th class="px-4 py-3 border-l">Дата</th>
-                    <th class="px-4 py-3 border-l">Статусы</th>
+                    <th class="px-4 py-3 border-l">Статус</th>
                 </tr>
                 <tr v-for="invoice in invoices" :key="invoice.id">
                     <td class="border-t">

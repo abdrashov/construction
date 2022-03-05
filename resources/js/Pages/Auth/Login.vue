@@ -10,9 +10,9 @@
                     <form class="w-full" @submit.prevent="login">
                         <h1 class="mb-4 text-xl font-semibold text-gray-700">Войти</h1>
 
-                        <text-input v-model="form.login" :error="form.errors.login" label="Логин" type="text" placeholder="builder" autofocus autocapitalize="off" />
+                        <text-input v-model="form.login" :error="form.errors.login" label="Логин" type="text" autocomplete="off" />
 
-                        <text-input v-model="form.password" :error="form.errors.password" class="mt-4" label="Пароль" placeholder="***************" type="password" />
+                        <text-input v-model="form.password" :error="form.errors.password" class="mt-4" label="Пароль" type="password" />
 
                         <loading-button :loading="form.processing" class="w-full mt-4 btn-indigo" type="submit">Войти</loading-button>
 

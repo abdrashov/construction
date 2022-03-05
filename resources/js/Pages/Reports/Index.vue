@@ -3,37 +3,38 @@
         <Head title="Отчеты" />
         <h1 class="mb-6 text-2xl font-semibold">Отчеты</h1>
         <div class="flex items-center mb-6">
-            <div class="w-full md:rounded md:shadow md:flex md:w-3/4">
-                <input class="relative px-4 py-3 w-full md:rounded-l focus:shadow-outline md:w-1/3" autocomplete="off" type="text" name="search" placeholder="Поиск…" v-model="form.search" />
-                <select v-model="form.organization_id" class="form-select-icon relative mt-2 px-4 py-3 w-full md:border-l md:rounded-r focus:shadow-outline appearance-none md:mt-0 md:w-2/3">
+            <div class="w-full md:flex md:w-3/4 md:rounded md:shadow">
+                <input class="relative w-full px-4 py-3 focus:shadow-outline md:w-1/3 md:rounded-l" autocomplete="off" type="text" name="search" placeholder="Поиск…" v-model="form.search" />
+                <select v-model="form.organization_id" class="relative w-full px-4 py-3 mt-2 appearance-none form-select-icon focus:shadow-outline md:mt-0 md:w-2/3 md:border-l md:rounded-r">
+                    <option :value="null">Выберите объект</option>
                     <option v-for="organization in organizations" :key="organization.id" :value="organization.id">{{ organization.name }}</option>
                 </select>
             </div>
-            <button class="hidden ml-3 w-8 text-gray-500 hover:text-gray-700 focus:text-indigo-500 text-sm md:block" type="button" @click="reset">Сброс</button>
+            <button class="hidden w-8 ml-3 text-sm text-gray-500 hover:text-gray-700 focus:text-indigo-500 md:block" type="button" @click="reset">Сброс</button>
         </div>
-        <div class="text-sm bg-white shadow overflow-x-auto">
+        <div class="overflow-x-auto text-sm bg-white shadow">
             <table class="w-full">
-                <tr class="text-left text-gray-500 text-xs font-semibold tracking-wide bg-gray-50 border-b uppercase">
-                    <th class="px-4 py-3 w-1/2 border-r" rowspan="2">Название</th>
-                    <th class="px-4 py-3 w-1/2 border-r" colspan="2">Накладные</th>
+                <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
+                    <th class="w-1/2 px-4 py-3 border-r" rowspan="2">Название</th>
+                    <th class="w-1/2 px-4 py-3 border-r" colspan="2">Накладные</th>
                 </tr>
-                <tr class="text-left text-gray-500 text-xs font-semibold tracking-wide bg-gray-50 border-b uppercase">
+                <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
                     <th class="px-4 py-3 border-r">Оплачен</th>
                     <th class="px-4 py-3 border-r">Не оплачен</th>
                 </tr>
                 <tr v-for="report in reports" :key="report.id">
                     <td class="border-t">
-                        <Link class="flex items-center font-medium px-4 py-2" :href="`/reports/${report.id}/${report.supplier_id}/all`">
+                        <Link class="flex items-center px-4 py-2 font-medium" :href="`/reports/${report.id}/${report.supplier_id}/all`">
                             {{ report.supplier }}
                         </Link>
                     </td>
-                    <td class="border-l border-t">
-                        <Link class="flex items-center px-4 py-2 whitespace-nowrap font-semibold" :href="`/reports/${report.id}/${report.supplier_id}/all?pay=1`">
+                    <td class="border-t border-l">
+                        <Link class="flex items-center px-4 py-2 font-semibold whitespace-nowrap" :href="`/reports/${report.id}/${report.supplier_id}/all?pay=1`">
                             {{ report.pay_sum?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
                         </Link>
                     </td>
-                    <td class="border-l border-t">
-                        <Link class="flex items-center px-4 py-2 whitespace-nowrap font-semibold" :href="`/reports/${report.id}/${report.supplier_id}/all?pay=0000`">
+                    <td class="border-t border-l">
+                        <Link class="flex items-center px-4 py-2 font-semibold whitespace-nowrap" :href="`/reports/${report.id}/${report.supplier_id}/all?pay=0000`">
                             {{ report.not_pay_sum?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
                         </Link>
                     </td>

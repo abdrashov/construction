@@ -14,9 +14,9 @@ class ReportsController extends Controller
     {
         $organizations = Organization::get();
 
-        if (!Request::has('organization_id')) {
-            Request::merge(['organization_id' => $organizations->first()->id]);
-        }
+        // if (!Request::has('organization_id')) {
+        //     Request::merge(['organization_id' => $organizations->first()->id]);
+        // }
 
         $reports = Supplier::filter(Request::only('search'))
             ->select(
@@ -156,7 +156,7 @@ class ReportsController extends Controller
         //     ]);
 
         return Inertia::render('Reports/Index', [
-            'filters' => Request::only('search', 'organization_id'),
+            'filters' => Request::all('search', 'organization_id'),
             'reports' => $reports_merge,
             'organizations' => $organizations,
         ]);

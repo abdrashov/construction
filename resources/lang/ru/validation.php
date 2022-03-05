@@ -133,4 +133,9 @@ return [
             'rule-name' => 'custom-message',
         ],
     ],
+    'attributes' => [
+        'name' => 'Название',
+        'login' => 'Логин',
+        'password' => 'Пароль',
+    ],
 ];
