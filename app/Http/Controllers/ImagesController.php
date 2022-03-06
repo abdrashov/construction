@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Auth\Events\Lockout;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Storage;
 use League\Glide\Responses\LaravelResponseFactory;
 use League\Glide\ServerFactory;
+use Illuminate\Support\Str;
 
 class ImagesController extends Controller
 {
@@ -27,6 +31,11 @@ class ImagesController extends Controller
         if (!Auth::check()) {
             return abort(404);
         }
+
+        if (!Storage::has($path)){
+            return abort(404);
+        }
+
         return response()->file('storage/' . $path);
     }
 }

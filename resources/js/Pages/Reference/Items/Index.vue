@@ -19,7 +19,7 @@
             <table class="w-full">
                 <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
                     <th class="px-4 py-3">Название</th>
-                    <th class="px-4 py-3">Измерения</th>
+                    <th class="px-4 py-3" colspan="2">Измерения</th>
                 </tr>
                 <tr v-for="item in items.data" :key="item.id">
                     <td class="border-t">
@@ -33,9 +33,16 @@
                             {{ item.measurement }}
                         </Link>
                     </td>
+                    <td class="w-16 border-t">
+                        <div class="flex items-center justify-end px-4 py-1">
+                            <Link class="flex items-center justify-end px-2 py-2 ml-2 text-xs font-medium leading-5 text-gray-500 duration-200 bg-gray-100 rounded-lg focus:shadow-outline-gray hover:text-orange-400 hover:bg-orange-100 focus:outline-none" :href="`/reference/items/${item.id}/edit`">
+                                <icon name="right" class="w-4 h-4" />
+                            </Link>
+                        </div>
+                    </td>
                 </tr>
                 <tr v-if="items.data.length === 0">
-                    <td class="px-4 py-4 border-t" colspan="4">Не найдено.</td>
+                    <td class="px-4 py-4 border-t" colspan="3">Не найдено.</td>
                 </tr>
             </table>
         </div>
