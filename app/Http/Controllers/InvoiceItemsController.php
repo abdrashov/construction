@@ -46,6 +46,7 @@ class InvoiceItemsController extends Controller
                 ]),
                 'items' => Item::filter(Request::only('search'))
                     ->whereNotIn('id', $item_ids)
+                    ->with('measurement')
                     ->paginate(10)
                     ->withQueryString()
                     ->through(fn($item) => [

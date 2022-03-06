@@ -24,7 +24,7 @@ class InvoicesController extends Controller
                 'address' => $organization->address,
                 'users' => $organization->users,
                 'deleted_at' => $organization->deleted_at,
-                'invoices' => $organization->invoices()->filter(Request::only('name', 'date', 'supplier_id', 'accepted', 'status', 'pay'))->orderByDesc('date')->get()->transform(fn ($invoice) => [
+                'invoices' => $organization->invoices()->filter(Request::only('name', 'date', 'supplier_id', 'accepted', 'status', 'pay'))->orderByDesc('date')->with('user')->get()->transform(fn ($invoice) => [
                     'id' => $invoice->id,
                     'name' => $invoice->name,
                     'fullname' => $invoice->user->last_name . ' ' .  $invoice->user->first_name,

@@ -17,6 +17,7 @@ class ItemController extends Controller
             'filters' => Request::all('search', 'trashed'),
             'items' => Item::orderBy('name')
                 ->filter(Request::only('search', 'trashed'))
+                ->with('measurement')
                 ->paginate(10)
                 ->withQueryString()
                 ->through(fn ($item) => [
