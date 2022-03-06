@@ -51,12 +51,15 @@
             </form>
         </div>
 
-        <div class="flex items-center justify-between mb-3 mt-6 text-xl">
-            <div class="mr-4 w-full max-w-md">
+        <div class="mb-3 mt-6 text-xl md:flex md:items-center md:justify-between">
+            <div class="mr-4">
                 <h2 class="text-gray-600 font-semibold">Накладные</h2>
             </div>
             <div class="">
-                <button @click="filter.modal = true" class="btn-gray mr-2">
+                <Link class="ml-3 text-gray-500 hover:text-gray-700 focus:text-indigo-500 text-sm mr-2" v-if="filters.name || filters.date || filters.supplier_id || filters.accepted || filters.status || filters.pay" :href="`/organizations/${this.organization.id}/invoices`">
+                    Сброс
+                </Link>
+                <button @click="search.modal = true" class="btn-gray mr-2">
                     <span>Фильтр/Поиск</span>
                 </button>
                 <Link class="btn-blue" :href="`/organizations/${organization.id}/invoices/create`">
@@ -115,7 +118,7 @@
                         <Link class="flex items-center px-4 py-3" :href="`/invoices/${invoice.id}/invoice-items`" tabindex="-1">
                             <div>
                                 <div>{{ invoice.fullname }}</div>
-                                <div class="text-gray-700 text-xs font-medium whitespace-nowrap">{{ invoice.date }}</div>
+                                <div class="text-gray-700 whitespace-nowrap text-xs font-medium">{{ invoice.date }}</div>
                             </div>
                         </Link>
                     </td>
@@ -136,10 +139,10 @@
             </table>
         </div>
 
-        <ModalLeft @serach="serach" @close="filter.modal = !filter.modal" :isOpen="filter.modal">
+        <ModalLeft @serach="serach" @close="search.modal = !search.modal" :isOpen="search.modal">
             <ul role="list" class="-my-6">
                 <li class="pb-4">
-                    <text-input v-model.lazy="search.name" class="w-full" label="Номер" />
+                    <text-input v-model="search.name" class="w-full" label="Номер" />
                 </li>
                 <li class="pb-4">
                     <div class="w-full">
@@ -153,26 +156,26 @@
                 </li>
                 <li class="pb-4">
                     <select-input v-model="search.supplier_id" class="w-full" label="Поставщик">
-                        <option :value="null"></option>
+                        <option :value="null" />
                         <option v-for="supplier in suppliers" :key="supplier.id" :value="supplier.id">{{ supplier.name }}</option>
                     </select-input>
                 </li>
                 <li class="pb-4">
                     <select-input v-model="search.accepted" class="w-full" label="Принял">
-                        <option :value="null"></option>
+                        <option :value="null" />
                         <option v-for="(user, index) in organization.users" :key="index" :value="user.lastname + ' ' + user.firstname">{{ user.lastname }} {{ user.firstname }}</option>
                     </select-input>
                 </li>
                 <li class="pb-4">
                     <select-input v-model="search.status" class="w-full" label="Статус">
-                        <option :value="null"></option>
+                        <option :value="null" />
                         <option value="true">Подтвержден</option>
                         <option value="false">Не подтвержден</option>
                     </select-input>
                 </li>
                 <li>
                     <select-input v-model="search.pay" class="w-full" label="Оплата">
-                        <option :value="null"></option>
+                        <option :value="null" />
                         <option value="true">Оплачен</option>
                         <option value="false">Не оплачен</option>
                     </select-input>
@@ -191,6 +194,7 @@ import pickBy from 'lodash/pickBy'
 import TextInput from '@/Shared/TextInput'
 import SelectInput from '@/Shared/SelectInput'
 import LoadingButton from '@/Shared/LoadingButton'
+import mapValues from 'lodash/mapValues'
 import TrashedMessage from '@/Shared/TrashedMessage'
 import { Calendar, DatePicker } from 'v-calendar'
 import 'v-calendar/dist/style.css'
@@ -222,10 +226,8 @@ export default {
                 address: this.organization.address,
             },
             user_form: this.organization.users,
-            filter: {
-                modal: false,
-            },
             search: {
+                modal: false,
                 name: this.filters.name,
                 date: this.filters.date,
                 supplier_id: this.filters.supplier_id,
@@ -238,6 +240,7 @@ export default {
     methods: {
         serach() {
             this.$inertia.get(`/organizations/${this.organization.id}/invoices`, pickBy(this.search), { preserveState: true })
+            this.search.modal = false
         },
         update() {
             this.$inertia.post(
