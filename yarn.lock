@@ -4037,6 +4037,11 @@
   dependencies:
     "semver" "^6.0.0"
 
+"maska@^1.5.0":
+  "integrity" "sha512-BwZXzs5gHeu6wtn3iWFqrKRtcsM3sTpkHvfAngVNVNlN7tl9ZyQUeHTz11s9Sy7Bq1MoQ+xyR/+IzghY8nR84Q=="
+  "resolved" "https://registry.npmjs.org/maska/-/maska-1.5.0.tgz"
+  "version" "1.5.0"
+
 "md5.js@^1.3.4":
   "integrity" "sha512-xitP+WxNPcTTOgnTJcrhM0xvdPepipPSf3I8EIpGKeFLjt3PlJLIDG3u8EX53ZIubkb+5U2+3rELYpEhHhzdkg=="
   "resolved" "https://registry.npmjs.org/md5.js/-/md5.js-1.3.5.tgz"

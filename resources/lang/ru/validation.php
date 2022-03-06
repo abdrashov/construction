@@ -140,5 +140,6 @@ return [
         'last_name' => 'Фамилия',
         'measurement_id' => 'Измерение',
         'supplier_id' => 'Поставщик',
+        'date' => 'Дата',
     ],
 ];

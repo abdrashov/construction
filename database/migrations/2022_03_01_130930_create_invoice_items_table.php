@@ -23,8 +23,8 @@ class CreateInvoiceItemsTable extends Migration
             $table->unsignedInteger('item_id');
             $table->foreign('item_id')->references('id')->on('items');
 
-            $table->integer('count')->default(0)->unsigned();
-            $table->integer('price')->default(0)->unsigned();
+            $table->bigInteger('count')->default(0)->unsigned();
+            $table->bigInteger('price')->default(0)->unsigned();
 
             $table->string('measurement')->nullable();
 

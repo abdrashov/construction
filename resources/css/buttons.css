@@ -14,6 +14,10 @@
     @apply px-5 py-3 text-sm font-semibold leading-4 text-white duration-150 rounded bg-cyan-400 whitespace-nowrap hover:bg-cyan-500 focus:bg-cyan-500;
 }
 
+.btn-gray {
+    @apply px-5 py-3 text-sm font-semibold leading-4 text-white duration-150 rounded bg-gray-400 whitespace-nowrap hover:bg-gray-500 focus:bg-gray-500;
+}
+
 .btn-spinner,
 .btn-spinner:after {
   border-radius: 50%;

@@ -40,8 +40,8 @@ class InvoiceItemsController extends Controller
                 'invoice_items' => $invoice->invoiceItems->transform(fn($item) => [
                     'id' => $item->id,
                     'name' => $item->name,
-                    'count' => $item->count,
-                    'price' => $item->price,
+                    'count' => $item->count / InvoiceItem::FLOAT_TO_INT_COUNT,
+                    'price' => $item->price / InvoiceItem::FLOAT_TO_INT_PRICE,
                     'measurement' => $item->measurement,
                 ]),
                 'items' => Item::filter(Request::only('search'))
@@ -75,8 +75,8 @@ class InvoiceItemsController extends Controller
             'invoice_items' => $invoice->invoiceItems->transform(fn($item) => [
                 'id' => $item->id,
                 'name' => $item->name,
-                'count' => $item->count,
-                'price' => $item->price,
+                'count' => $item->count / InvoiceItem::FLOAT_TO_INT_COUNT,
+                'price' => $item->price / InvoiceItem::FLOAT_TO_INT_PRICE,
                 'measurement' => $item->measurement,
             ]),
         ]);
@@ -104,14 +104,15 @@ class InvoiceItemsController extends Controller
     {
         Request::validate([
             'items.*.id' => ['required'],
-            'items.*.price' => ['nullable', 'numeric', 'min:0', 'max:4294967295'],
-            'items.*.count' => ['nullable', 'numeric', 'min:0', 'max:4294967295'],
+            'items.*.price' => ['nullable', 'numeric', 'min:0', 'max:5000000000'],
+            'items.*.count' => ['nullable', 'numeric', 'min:0', 'max:5000000000'],
         ]);
+
 
         foreach (Request::input('items') as $item) {
             InvoiceItem::findOrFail($item['id'])->update([
-                'price' => $item['price'],
-                'count' => $item['count'],
+                'price' => $item['price'] * InvoiceItem::FLOAT_TO_INT_PRICE,
+                'count' => $item['count'] * InvoiceItem::FLOAT_TO_INT_COUNT,
             ]);
         }
 
@@ -122,14 +123,14 @@ class InvoiceItemsController extends Controller
     {
         Request::validate([
             'items.*.id' => ['required'],
-            'items.*.price' => ['nullable', 'numeric', 'min:0', 'max:4294967295'],
-            'items.*.count' => ['nullable', 'numeric', 'min:0', 'max:4294967295'],
+            'items.*.price' => ['nullable', 'numeric', 'min:0', 'max:5000000000'],
+            'items.*.count' => ['nullable', 'numeric', 'min:0', 'max:5000000000'],
         ]);
 
         foreach (Request::input('items') as $item) {
             InvoiceItem::findOrFail($item['id'])->update([
-                'price' => $item['price'],
-                'count' => $item['count'],
+                'price' => $item['price'] * InvoiceItem::FLOAT_TO_INT_PRICE,
+                'count' => $item['count'] * InvoiceItem::FLOAT_TO_INT_COUNT,
             ]);
         }
 

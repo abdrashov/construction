@@ -15,4 +15,7 @@ class InvoiceItem extends Model
         'invoice_id', 'name', 'item_id', 'count', 'price', 'measurement', 'measurement_id',
     ];
 
+    public const FLOAT_TO_INT_PRICE = 100;
+    public const FLOAT_TO_INT_COUNT = 10000;
+
 }

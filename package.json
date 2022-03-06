@@ -27,6 +27,7 @@
         "eslint-plugin-vue": "^8.2.0",
         "laravel-mix": "^6.0.41",
         "lodash": "^4.17.21",
+        "maska": "^1.5.0",
         "postcss": "^8.4.4",
         "postcss-import": "^12.0.1",
         "postcss-nesting": "^7.0.1",

@@ -19,6 +19,9 @@ class CreateInvoicesTable extends Migration
             $table->unsignedInteger('organization_id');
             $table->foreign('organization_id')->references('id')->on('organizations');
 
+            $table->unsignedInteger('user_id');
+            $table->foreign('user_id')->references('id')->on('users');
+
             $table->string('name', 255);
             $table->boolean('status')->default(false);
             $table->boolean('pay')->default(false);

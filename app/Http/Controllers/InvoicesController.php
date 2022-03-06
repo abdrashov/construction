@@ -6,6 +6,7 @@ use App\Models\Invoice;
 use App\Models\Organization;
 use App\Models\Supplier;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
 use Inertia\Inertia;
@@ -15,15 +16,18 @@ class InvoicesController extends Controller
     public function Index(Organization $organization)
     {
         return Inertia::render('Invoices/Index', [
+            'filters' => Request::all('name', 'date', 'supplier_id', 'accepted', 'status', 'pay'),
+            'suppliers' => Supplier::orderBy('name')->get(),
             'organization' => [
                 'id' => $organization->id,
                 'name' => $organization->name,
                 'address' => $organization->address,
                 'users' => $organization->users,
                 'deleted_at' => $organization->deleted_at,
-                'invoices' => $organization->invoices()->orderByDesc('date')->get()->transform(fn ($invoice) => [
+                'invoices' => $organization->invoices()->filter(Request::only('name', 'date', 'supplier_id', 'accepted', 'status', 'pay'))->orderByDesc('date')->get()->transform(fn ($invoice) => [
                     'id' => $invoice->id,
                     'name' => $invoice->name,
+                    'fullname' => $invoice->user->last_name . ' ' .  $invoice->user->first_name,
                     'status' => $invoice->status,
                     'pay' => $invoice->pay,
                     'date' => $invoice->date->format('Y-m-d'),
@@ -48,7 +52,8 @@ class InvoicesController extends Controller
 
     public function store(Organization $organization)
     {
-        if (Request::has('date')) Request::merge(['date' => (new Carbon(Request::input('date')))->addDay()->format('Y-m-d')]);
+        if (!is_null(Request::input('date'))) Request::merge(['date' => (new Carbon(Request::input('date')))->format('Y-m-d')]);
+
         Request::validate([
             'name' => ['required', 'max:255'],
             'date' => ['required', 'date', 'date_format:Y-m-d'],
@@ -59,9 +64,10 @@ class InvoicesController extends Controller
 
         $supplier = Supplier::findOrFail(Request::input('supplier_id'));
 
-        Request::merge(['supplier' => $supplier->name]);
+        Request::merge(['supplier' => $supplier->name, 'user_id' => Auth::id()]);
 
-        $invoice = $organization->invoices()->create(Request::only('name', 'date', 'supplier_id', 'accepted', 'supplier'));
+        $invoice = $organization->invoices()
+            ->create(Request::only('name', 'date', 'supplier_id', 'accepted', 'supplier', 'user_id'));
 
         if (Request::file('file')) {
             $invoice->update(['file' => Request::file('file')->store('invoices')]);
@@ -72,7 +78,7 @@ class InvoicesController extends Controller
 
     public function update(Organization $organization, Invoice $invoice)
     {
-        if (Request::has('date')) Request::merge(['date' => (new Carbon(Request::input('date')))->addDay()->format('Y-m-d')]);
+        if (!is_null(Request::input('date'))) Request::merge(['date' => (new Carbon(Request::input('date')))->format('Y-m-d')]);
 
         Request::validate([
             'name' => ['required', 'max:255'],
