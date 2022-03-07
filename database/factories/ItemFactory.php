@@ -15,7 +15,7 @@ class ItemFactory extends Factory
     public function definition()
     {
         return [
-            'name' => $this->faker->colorName,
+            'name' => $this->faker->text(20),
             'measurement_id' => Measurement::inRandomOrder()->first()->id
         ];
     }

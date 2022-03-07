@@ -16,11 +16,22 @@ class OrganizationFactory extends Factory
         return [
             'name' => $this->faker->company,
             'address' => $this->faker->address,
-            'users' => [[
-                'firstname' => $this->faker->firstName,
-                'lastname' => $this->faker->lastName,
-                'default' => true,
-            ],
+            'users' => [
+                [
+                    'firstname' => $this->faker->firstName,
+                    'lastname' => $this->faker->lastName,
+                    'default' => true,
+                ],
+                [
+                    'firstname' => $this->faker->firstName,
+                    'lastname' => $this->faker->lastName,
+                    'default' => true,
+                ],
+                [
+                    'firstname' => $this->faker->firstName,
+                    'lastname' => $this->faker->lastName,
+                    'default' => true,
+                ],
             ],
         ];
     }

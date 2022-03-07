@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\Invoice;
+use App\Models\InvoiceItem;
 use App\Models\Item;
 use App\Models\Measurement;
 use App\Models\Organization;
@@ -26,7 +28,7 @@ class DatabaseSeeder extends Seeder
             'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
         ]);
 
-        User::factory(5)->create();
+        User::factory(29)->create();
 
         Measurement::create([
             'name' => 'кг'
@@ -38,8 +40,10 @@ class DatabaseSeeder extends Seeder
             'name' => 'м'
         ]);
 
-        Item::factory(20)->create();
-        Supplier::factory(30)->create();
-        Organization::factory(3)->create();
+        Item::factory(5000)->create();
+        Supplier::factory(200)->create();
+        Organization::factory(4)->create();
+        Invoice::factory(800)->create();
+        InvoiceItem::factory(10000)->create();
     }
 }
