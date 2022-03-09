@@ -7,6 +7,7 @@ use App\Models\Item;
 use App\Models\Measurement;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class ItemController extends Controller
@@ -33,7 +34,7 @@ class ItemController extends Controller
     {
         Item::create(
             Request::validate([
-                'name' => ['required', 'max:255'],
+                'name' => ['required', 'max:255', Rule::unique('items')],
                 'measurement_id' => ['required', 'max:255'],
             ])
         );
@@ -58,7 +59,7 @@ class ItemController extends Controller
     {
         $item->update(
             Request::validate([
-                'name' => ['required', 'max:255'],
+                'name' => ['required', 'max:255', Rule::unique('items')->ignore($item->id)],
                 'measurement_id' => ['required', 'max:255'],
             ])
         );

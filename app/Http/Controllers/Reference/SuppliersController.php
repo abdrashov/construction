@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Supplier;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class SuppliersController extends Controller
@@ -14,7 +15,8 @@ class SuppliersController extends Controller
     {
         return Inertia::render('Reference/Suppliers/Index', [
             'filters' => Request::all('search', 'trashed'),
-            'suppliers' => Supplier::filter(Request::only('search', 'trashed'))->paginate(10),
+            'suppliers' => Supplier::orderBy('name')
+                ->filter(Request::only('search', 'trashed'))->paginate(10),
         ]);
     }
 
@@ -22,7 +24,7 @@ class SuppliersController extends Controller
     {
         Supplier::create(
             Request::validate([
-                'name' => ['required', 'max:255'],
+                'name' => ['required', 'max:255', Rule::unique('suppliers')],
             ])
         );
 
@@ -44,7 +46,7 @@ class SuppliersController extends Controller
     {
         $supplier->update(
             Request::validate([
-                'name' => ['required', 'max:255'],
+                'name' => ['required', 'max:255', Rule::unique('suppliers')->ignore($supplier->id)],
             ])
         );
 

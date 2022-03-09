@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Measurement;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Response;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class MeasurementsController extends Controller
@@ -15,7 +15,8 @@ class MeasurementsController extends Controller
     {
         return Inertia::render('Reference/Measurements/Index', [
             'filters' => Request::all('search', 'trashed'),
-            'measurements' => Measurement::filter(Request::only('search', 'trashed'))
+            'measurements' => Measurement::orderBy('name')
+                ->filter(Request::only('search', 'trashed'))
                 ->paginate(10)
                 ->withQueryString(),
         ]);
@@ -25,7 +26,7 @@ class MeasurementsController extends Controller
     {
         Measurement::create(
             Request::validate([
-                'name' => ['required', 'max:255'],
+                'name' => ['required', 'max:255', Rule::unique('measurements')],
             ])
         );
 
@@ -47,7 +48,7 @@ class MeasurementsController extends Controller
     {
         $measurement->update(
             Request::validate([
-                'name' => ['required', 'max:255'],
+                'name' => ['required', 'max:255', Rule::unique('measurements')->ignore($measurement->id)],
             ])
         );
 
