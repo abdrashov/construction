@@ -92,7 +92,7 @@
                     <span class="ml-4">Измерение</span>
                 </Link>
             </li>
-            <li v-if="auth.user.role === 'Супер Администратор'" class="relative px-5 py-2">
+            <!-- <li v-if="auth.user.role === 'Супер Администратор'" class="relative px-5 py-2">
                 <span v-if="isUrl('log')" class="absolute inset-y-0 left-0 w-1 bg-sky-600 rounded-br-lg rounded-tr-lg" aria-hidden="true"></span>
                 <Link href="/log" class="inline-flex items-center w-full hover:text-gray-600 text-gray-700 text-sm font-semibold transition-colors duration-150">
                     <svg class="w-5 h-5" aria-hidden="true" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
@@ -100,7 +100,7 @@
                     </svg>
                     <span class="ml-4">Логи</span>
                 </Link>
-            </li>
+            </li> -->
         </ul>
     </div>
 </template>
