@@ -68,35 +68,46 @@
                 </Link>
             </div>
         </div>
-
         <div class="text-sm bg-white shadow overflow-x-auto">
             <table class="w-full">
                 <tr class="text-left text-gray-500 text-xs font-semibold tracking-wide bg-gray-50 border-b uppercase">
-                    <th class="px-4 py-3">Номер</th>
-                    <th class="px-4 py-3 border-l">Поставщик</th>
-                    <th class="px-4 py-3 border-l">Принял</th>
-                    <th class="px-4 py-3 border-l">Статусы</th>
+                    <th class="px-4 py-3 w-12">#</th>
+                    <th class="px-2 py-3 border-l">Номер</th>
+                    <th class="px-2 py-3 border-l">Поставщик</th>
+                    <th class="px-2 py-3 border-l">Принял</th>
+                    <th class="px-2 py-3 border-l">Сумма</th>
+                    <th class="px-2 py-3 border-l">Статусы</th>
                     <th colspan="2" class="px-4 py-3 border-l">Информация</th>
                 </tr>
-                <tr v-for="invoice in organization.invoices" :key="invoice.id">
-                    <td class="border-t">
-                        <Link class="flex items-center px-4 py-3 text-gray-900 font-medium" :href="`/invoices/${invoice.id}/invoice-items`">
+                <tr v-for="(invoice, index) in organization.invoices.data" :key="invoice.id">
+                    <td class="border-t w-12">
+                        <div class="flex items-center px-4 py-3 text-gray-900 font-medium">
+                            {{ ((organization.invoices.current_page-1) * organization.invoices.per_page ) + index + 1 }}
+                        </div>
+                    </td>
+                    <td class="border-l border-t">
+                        <Link class="flex items-center px-2 py-3 text-gray-900 font-medium" :href="`/invoices/${invoice.id}/invoice-items`">
                             {{ invoice.name }}
                             <icon v-if="invoice.deleted_at" name="trash" class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400" />
                         </Link>
                     </td>
                     <td class="border-l border-t">
-                        <Link class="flex items-center px-4 py-3" :href="`/invoices/${invoice.id}/invoice-items`" tabindex="-1">
+                        <Link class="flex items-center px-2 py-3" :href="`/invoices/${invoice.id}/invoice-items`" tabindex="-1">
                             {{ invoice.supplier }}
                         </Link>
                     </td>
                     <td class="border-l border-t">
-                        <Link class="flex items-center px-4 py-3" :href="`/invoices/${invoice.id}/invoice-items`" tabindex="-1">
+                        <Link class="flex items-center px-2 py-3" :href="`/invoices/${invoice.id}/invoice-items`" tabindex="-1">
                             {{ invoice.accepted }}
                         </Link>
                     </td>
                     <td class="border-l border-t">
-                        <div class="flex mx-4 text-xs">
+                        <Link class="flex items-center whitespace-nowrap px-2 py-3" :href="`/invoices/${invoice.id}/invoice-items`" tabindex="-1">
+                            {{ invoice.sum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
+                        </Link>
+                    </td>
+                    <td class="border-l border-t">
+                        <div class="flex mx-2 text-xs">
                             <Link v-if="invoice.pay && invoice.status" class="px-2 py-1 whitespace-nowrap font-semibold leading-tight bg-gradient-to-r rounded-full from-green-100 to-blue-100" :href="`/invoices/${invoice.id}/invoice-items`" tabindex="-1">
                                 <span class="text-green-700"> Оплачен </span>
                                 /
@@ -115,7 +126,7 @@
                         </div>
                     </td>
                     <td class="border-l border-t">
-                        <Link class="flex items-center px-4 py-3" :href="`/invoices/${invoice.id}/invoice-items`" tabindex="-1">
+                        <Link class="flex items-center px-2 py-3" :href="`/invoices/${invoice.id}/invoice-items`" tabindex="-1">
                             <div>
                                 <div>{{ invoice.fullname }}</div>
                                 <div class="text-gray-700 whitespace-nowrap text-xs font-medium">{{ invoice.date }}</div>
@@ -133,11 +144,12 @@
                         </div>
                     </td>
                 </tr>
-                <tr v-if="organization.invoices.length === 0">
-                    <td class="px-6 py-4 border-t" colspan="6">Накладные не найдены.</td>
+                <tr v-if="organization.invoices.data.length === 0">
+                    <td class="px-6 py-4 border-t" colspan="7">Накладные не найдены.</td>
                 </tr>
             </table>
         </div>
+        <pagination class="mt-6" :links="organization.invoices.links" />
 
         <ModalLeft @serach="serach" @close="search.modal = !search.modal" :isOpen="search.modal">
             <ul role="list" class="-my-6">
@@ -196,6 +208,7 @@ import SelectInput from '@/Shared/SelectInput'
 import LoadingButton from '@/Shared/LoadingButton'
 import mapValues from 'lodash/mapValues'
 import TrashedMessage from '@/Shared/TrashedMessage'
+import Pagination from '@/Shared/Pagination'
 import { Calendar, DatePicker } from 'v-calendar'
 import 'v-calendar/dist/style.css'
 
@@ -210,6 +223,7 @@ export default {
         TrashedMessage,
         ModalLeft,
         DatePicker,
+        Pagination,
     },
     layout: Layout,
     props: {

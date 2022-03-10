@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\SpatieLogsActivity;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -11,6 +12,7 @@ class Invoice extends Model
 {
     use HasFactory;
     use SoftDeletes;
+    use SpatieLogsActivity;
 
     protected $fillable = [
         'organization_id', 'user_id', 'name', 'pay', 'status', 'date', 'supplier', 'accepted', 'supplier_id', 'file'

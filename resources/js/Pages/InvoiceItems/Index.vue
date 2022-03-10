@@ -62,13 +62,19 @@
         <div class="text-sm bg-white shadow overflow-x-auto">
             <table class="w-full">
                 <tr class="text-left text-gray-500 text-xs font-semibold tracking-wide bg-gray-50 border-b uppercase">
-                    <th class="px-4 py-3">Название</th>
+                    <th class="px-4 py-3 w-12">#</th>
+                    <th class="px-4 py-3 border-l">Название</th>
                     <th class="px-4 py-3 border-l">Количество</th>
                     <th class="px-4 py-3 border-l">Цена</th>
                     <th class="px-4 py-3 border-l" colspan="2">Сумма</th>
                 </tr>
                 <tr v-for="(item, index) in invoice_items" :key="item.id">
-                    <td class="w-2/6 border-t">
+                    <td class="border-t w-12">
+                        <div class="flex items-center px-4 py-1 text-gray-900 font-medium">
+                            {{ index+1 }}
+                        </div>
+                    </td>
+                    <td class="w-2/6 border-l border-t">
                         <div class="flex items-center px-4 py-1 text-gray-900 font-medium">
                             {{ item.name }}
                         </div>
@@ -104,8 +110,16 @@
                         </div>
                     </td>
                 </tr>
+                <tr v-if="invoice_items.length !== 0">
+                    <td class="pl-4 py-4 border-t text-right" colspan="4">Сумма</td>
+                    <td class="border-t" colspan="2">
+                        <div class="flex items-center px-4 py-1 w-full whitespace-nowrap font-medium">
+                            {{ invoice.sum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
+                        </div>
+                    </td>
+                </tr>
                 <tr v-if="invoice_items.length === 0">
-                    <td class="px-6 py-4 border-t" colspan="5">Товары не найдены.</td>
+                    <td class="px-6 py-4 border-t" colspan="6">Товары не найдены.</td>
                 </tr>
             </table>
         </div>

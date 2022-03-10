@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Casts\Json;
+use App\SpatieLogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -11,6 +12,7 @@ class Organization extends Model
 {
     use HasFactory;
     use SoftDeletes;
+    use SpatieLogsActivity;
 
     protected $fillable = [
         'name', 'address', 'users'

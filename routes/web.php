@@ -5,6 +5,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ImagesController;
 use App\Http\Controllers\InvoiceItemsController;
 use App\Http\Controllers\InvoicesController;
+use App\Http\Controllers\AuditLogsController;
 use App\Http\Controllers\OrganizationsController;
 use App\Http\Controllers\Reference\ItemController;
 use App\Http\Controllers\Reference\MeasurementsController;
@@ -56,6 +57,16 @@ Route::middleware('auth')->group(function () {
 
     Route::get('auth/{user}', [UsersController::class, 'auth'])->name('auth');
     Route::put('auth/{user}', [UsersController::class, 'password']);
+
+    Route::middleware('role:Супер Администратор')->group(function () {
+
+        // Logs
+        // Logs pages
+        Route::prefix('log')->name('log.')->group(function () {
+            // Route::resource('system', SystemLogsController::class)->only(['index', 'destroy']);
+            Route::get('', [AuditLogsController::class, 'index']);
+        });
+    });
 
     Route::middleware('role:Супер Администратор,Администратор')->group(function () {
 

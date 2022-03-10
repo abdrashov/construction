@@ -6,6 +6,7 @@ use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Item;
 use App\Models\Supplier;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
 use Inertia\Inertia;
@@ -36,6 +37,7 @@ class InvoiceItemsController extends Controller
                     'supplier_id' => $invoice->supplier_id,
                     'accepted' => $invoice->accepted,
                     'file' => $invoice->file ? '/file/' . $invoice->file : '',
+                    'sum' => $invoice->invoiceItems()->select(DB::raw('SUM(count * price) as sum'))->value('sum') / (InvoiceItem::FLOAT_TO_INT_PRICE * InvoiceItem::FLOAT_TO_INT_COUNT),
                 ],
                 'invoice_items' => $invoice->invoiceItems->transform(fn($item) => [
                     'id' => $item->id,
@@ -72,6 +74,7 @@ class InvoiceItemsController extends Controller
                 'supplier' => $invoice->supplier,
                 'accepted' => $invoice->accepted,
                 'file' => $invoice->file ? '\\file\\' . $invoice->file : '',
+                'sum' => $invoice->invoiceItems()->select(DB::raw('SUM(count * price) as sum'))->value('sum') / (InvoiceItem::FLOAT_TO_INT_PRICE * InvoiceItem::FLOAT_TO_INT_COUNT),
             ],
             'invoice_items' => $invoice->invoiceItems->transform(fn($item) => [
                 'id' => $item->id,

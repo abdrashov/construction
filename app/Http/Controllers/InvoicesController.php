@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Invoice;
+use App\Models\InvoiceItem;
 use App\Models\Organization;
 use App\Models\Supplier;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
 use Inertia\Inertia;
@@ -24,16 +26,28 @@ class InvoicesController extends Controller
                 'address' => $organization->address,
                 'users' => $organization->users,
                 'deleted_at' => $organization->deleted_at,
-                'invoices' => $organization->invoices()->filter(Request::only('name', 'date', 'supplier_id', 'accepted', 'status', 'pay'))->orderByDesc('date')->with('user')->get()->transform(fn ($invoice) => [
-                    'id' => $invoice->id,
-                    'name' => $invoice->name,
-                    'fullname' => $invoice->user->last_name . ' ' .  $invoice->user->first_name,
-                    'status' => $invoice->status,
-                    'pay' => $invoice->pay,
-                    'date' => $invoice->date->format('Y-m-d'),
-                    'supplier' => $invoice->supplier,
-                    'accepted' => $invoice->accepted,
-                ]),
+                'invoices' => $organization->invoices()
+                    ->filter(Request::only('name', 'date', 'supplier_id', 'accepted', 'status', 'pay'))
+                    ->orderByDesc('date')
+                    ->with('user')
+                    ->withCount([
+                        'invoiceItems' => function ($query) {
+                            $query->select(DB::raw('SUM(count * price) as sum'));
+                        }
+                    ])
+                    ->paginate(10)
+                    ->withQueryString()
+                    ->through(fn ($invoice) => [
+                        'id' => $invoice->id,
+                        'name' => $invoice->name,
+                        'fullname' => $invoice->user->last_name . ' ' .  $invoice->user->first_name,
+                        'status' => $invoice->status,
+                        'pay' => $invoice->pay,
+                        'sum' => $invoice->invoice_items_count / (InvoiceItem::FLOAT_TO_INT_PRICE * InvoiceItem::FLOAT_TO_INT_COUNT),
+                        'date' => $invoice->date->format('Y-m-d'),
+                        'supplier' => $invoice->supplier,
+                        'accepted' => $invoice->accepted,
+                    ]),
             ],
         ]);
     }
