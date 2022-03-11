@@ -110,14 +110,14 @@ class ReportsController extends Controller
         $not_sum_pay = 0;
 
         foreach ($reports as $report) {
-            $sum_pay += $report['pay_sum'];
-            $not_sum_pay += $report['not_pay_sum'];
             $reports_merge->push($report);
         }
         foreach ($not_reports as $not_report) {
-            $sum_pay += $report['pay_sum'];
-            $not_sum_pay += $report['not_pay_sum'];
             $reports_merge->push($not_report);
+        }
+        foreach ($reports_merge as $reports_mer) {
+            $sum_pay += $reports_mer['pay_sum'];
+            $not_sum_pay += $reports_mer['not_pay_sum'];
         }
 
 
