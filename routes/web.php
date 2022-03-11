@@ -107,6 +107,8 @@ Route::middleware('auth')->group(function () {
                 ->name('.pay');
             Route::get('{organization}/{supplier}/not_pay', 'notPay')
                 ->name('.not_pay');
+            Route::get('{organization}/{supplier}/{invoice}/items', 'invoiceItem')
+                ->name('.invoice.item');
         });
     });
 

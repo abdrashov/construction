@@ -2,47 +2,73 @@
     <div>
         <Head title="Отчеты" />
         <h1 class="mb-6 text-2xl font-semibold">Отчеты</h1>
-        <div class="flex items-center mb-6">
-            <div class="w-full md:flex md:w-3/4 md:rounded md:shadow">
-                <input class="relative w-full px-4 py-3 focus:shadow-outline md:w-1/3 md:rounded-l" autocomplete="off" type="text" name="search" placeholder="Поиск…" v-model="form.search" />
-                <select v-model="form.organization_id" class="relative w-full px-4 py-3 mt-2 appearance-none form-select-icon focus:shadow-outline md:mt-0 md:w-2/3 md:border-l md:rounded-r">
+        <div class="md:flex items-center justify-between mb-6">
+            <div class="items-center w-full md:flex md:w-1/2">
+                <select v-model="form.organization_id" class="rounded form-select-icon relative px-4 py-3 w-full focus:shadow-outline appearance-none">
                     <option :value="null">Выберите объект</option>
                     <option v-for="organization in organizations" :key="organization.id" :value="organization.id">{{ organization.name }}</option>
                 </select>
+                <button class="hidden ml-3 w-8 text-gray-500 hover:text-gray-700 focus:text-indigo-500 text-sm md:block" type="button" @click="reset">Сброс</button>
             </div>
-            <button class="hidden w-8 ml-3 text-sm text-gray-500 hover:text-gray-700 focus:text-indigo-500 md:block" type="button" @click="reset">Сброс</button>
+            <button @click="search.modal = true" class="md:mt-0 mt-2 btn-gray">
+                <span>Фильтр/Поиск</span>
+            </button>
         </div>
-        <div class="overflow-x-auto text-sm bg-white shadow">
+        <div class="text-sm bg-white shadow overflow-x-auto">
             <table class="w-full">
-                <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
-                    <th class="w-12 px-4 py-3 border-r" rowspan="2">#</th>
-                    <th class="w-1/2 px-4 py-3 border-r" rowspan="2">Поставщик</th>
-                    <th class="w-1/2 px-4 py-3 border-r" colspan="2">Накладные</th>
+                <tr class="text-left text-gray-500 text-xs font-semibold tracking-wide bg-gray-50 border-b uppercase">
+                    <th class="px-4 py-3 w-12 border-r" rowspan="2">#</th>
+                    <th class="px-4 py-3 w-1/2 border-r" rowspan="2">Поставщик</th>
+                    <th class="px-4 py-3 w-1/2 border-r" colspan="3">Накладные</th>
                 </tr>
-                <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
+                <tr class="text-left text-gray-500 text-xs font-semibold tracking-wide bg-gray-50 border-b uppercase">
                     <th class="px-4 py-3 border-r">Оплачен</th>
                     <th class="px-4 py-3 border-r">Не оплачен</th>
+                    <th class="px-4 py-3 border-r">Сумма</th>
                 </tr>
-                <tr v-for="(report, index) in reports" :key="report.id" class="duration-150 hover:bg-amber-50 focus:bg-amber-50">
+                <tr v-for="(report, index) in reports" :key="report.id" class="hover:bg-amber-50 focus:bg-amber-50 duration-150">
                     <td class="border-t">
                         <div class="flex items-center px-4 py-2 font-medium">
                             {{ index + 1 }}
                         </div>
                     </td>
-                    <td class="border-t border-l">
-                        <Link class="flex items-center px-4 py-2 font-medium hover:underline" :href="`/reports/${report.id}/${report.supplier_id}/all`">
+                    <td class="border-l border-t">
+                        <Link class="flex items-center px-4 py-2 hover:underline font-medium" :href="`/reports/${report.id}/${report.supplier_id}/all`">
                             {{ report.supplier }}
                         </Link>
                     </td>
-                    <td class="border-t border-l">
-                        <Link class="flex items-center px-4 py-2 font-semibold text-green-900 hover:underline whitespace-nowrap" :href="`/reports/${report.id}/${report.supplier_id}/pay`">
+                    <td class="border-l border-t">
+                        <Link class="flex items-center px-4 py-2 text-green-900 hover:underline whitespace-nowrap font-semibold" :href="`/reports/${report.id}/${report.supplier_id}/pay`">
                             {{ report.pay_sum?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
                         </Link>
                     </td>
-                    <td class="border-t border-l">
-                        <Link class="flex items-center px-4 py-2 font-semibold text-red-900 hover:underline whitespace-nowrap" :href="`/reports/${report.id}/${report.supplier_id}/not_pay`">
+                    <td class="border-l border-t">
+                        <Link class="flex items-center px-4 py-2 text-red-900 hover:underline whitespace-nowrap font-semibold" :href="`/reports/${report.id}/${report.supplier_id}/not_pay`">
                             {{ report.not_pay_sum?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
                         </Link>
+                    </td>
+                    <td class="border-l border-t">
+                        <div class="flex items-center px-4 py-2 whitespace-nowrap font-semibold" :href="`/reports/${report.id}/${report.supplier_id}/not_pay`">
+                            {{ (report.pay_sum + report.not_pay_sum).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
+                        </div>
+                    </td>
+                </tr>
+                <tr v-if="reports.length !== 0">
+                    <td class="px-4 py-4 font-semibold border-t" colspan="2">ИТОГО</td>
+                    <td class="border-l border-t">
+                        <div class="flex items-center px-4 whitespace-nowrap font-semibold">
+                            {{ sum_pay?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
+                        </div>
+                    </td>
+                    <td class="border-l border-t">
+                        <div class="flex items-center px-4 whitespace-nowrap font-semibold">
+                            {{ not_sum_pay?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
+                        </div>
+                    </td>
+                    <td class="border-l border-t">
+                        <div class="flex items-center px-4 whitespace-nowrap font-semibold">
+                            {{ (sum_pay + not_sum_pay).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
+                        </div>
                     </td>
                 </tr>
                 <tr v-if="reports.length === 0">
@@ -51,6 +77,33 @@
             </table>
         </div>
         <!-- <pagination class="mt-6" :links="reports.links" /> -->
+        <ModalLeft @serach="seatch" @close="search.modal = !search.modal" :isOpen="search.modal">
+            <ul role="list" class="-my-6">
+                <li class="pb-4">
+                    <text-input v-model="search.search" class="w-full" label="Название" />
+                </li>
+                <li class="pb-4">
+                    <div class="w-full">
+                        <label class="form-label">Дата от:</label>
+                        <date-picker v-model="search.begin" mode="date" is24hr :masks="{ input: 'YYYY-MM-DD' }">
+                            <template v-slot="{ inputValue, inputEvents }">
+                                <input class="form-input" :value="inputValue" v-on="inputEvents" />
+                            </template>
+                        </date-picker>
+                    </div>
+                </li>
+                <li class="pb-4">
+                    <div class="w-full">
+                        <label class="form-label">Дата до:</label>
+                        <date-picker v-model="search.end" mode="date" is24hr :masks="{ input: 'YYYY-MM-DD' }">
+                            <template v-slot="{ inputValue, inputEvents }">
+                                <input class="form-input" :value="inputValue" v-on="inputEvents" />
+                            </template>
+                        </date-picker>
+                    </div>
+                </li>
+            </ul>
+        </ModalLeft>
     </div>
 </template>
 
@@ -66,6 +119,9 @@ import Pagination from '@/Shared/Pagination'
 import LoadingButton from '@/Shared/LoadingButton'
 import TextInput from '@/Shared/TextInput'
 import SelectInput from '@/Shared/SelectInput'
+import ModalLeft from '@/Shared/ModalLeft'
+import { Calendar, DatePicker } from 'v-calendar'
+import 'v-calendar/dist/style.css'
 
 export default {
     components: {
@@ -77,18 +133,27 @@ export default {
         TextInput,
         LoadingButton,
         SelectInput,
+        ModalLeft,
+        DatePicker,
     },
     layout: Layout,
     props: {
         filters: Object,
         reports: Object,
         organizations: Object,
+        sum_pay: Number,
+        not_sum_pay: Number,
     },
     data() {
         return {
             form: {
-                search: this.filters.search,
                 organization_id: this.filters.organization_id,
+            },
+            search: {
+                modal: false,
+                search: this.filters.search,
+                begin: this.filters.begin,
+                end: this.filters.end,
             },
         }
     },
@@ -96,13 +161,18 @@ export default {
         form: {
             deep: true,
             handler: throttle(function () {
-                this.$inertia.get('/reports', pickBy(this.form), { preserveState: true })
+                this.$inertia.get('/reports', pickBy({ ...this.form, ...this.search }), { preserveState: true })
             }, 150),
         },
     },
     methods: {
         reset() {
             this.form = mapValues(this.form, () => null)
+            this.search = mapValues(this.search, () => null)
+        },
+        seatch() {
+            this.$inertia.get(`/reports`, pickBy({ ...this.form, ...this.search }), { preserveState: true })
+            this.search.modal = false
         },
     },
 }

@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Organization;
 use App\Models\Supplier;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Inertia\Inertia;
@@ -13,6 +15,9 @@ class ReportsController extends Controller
 {
     public function index()
     {
+        if (!is_null(Request::input('begin'))) Request::merge(['begin' => (new Carbon(Request::input('begin')))->format('Y-m-d')]);
+        if (!is_null(Request::input('end'))) Request::merge(['end' => (new Carbon(Request::input('end')))->format('Y-m-d')]);
+
         $reports = Supplier::filter(Request::only('search'))
             ->select(
                 'organizations.id as id',
@@ -23,7 +28,13 @@ class ReportsController extends Controller
             ->join('invoices', function ($query) {
                 $query->on('suppliers.id', '=', 'invoices.supplier_id')
                     ->where('invoices.status', true)
-                    ->where('invoices.pay', true);
+                    ->where('invoices.pay', true)
+                    ->when(Request::input('begin') ?? null, function ($query, $search) {
+                        $query->where('invoices.date', '>=', $search);
+                    })
+                    ->when(Request::input('end') ?? null, function ($query, $search) {
+                        $query->where('invoices.date', '<=', $search);
+                    });
             })
             ->join('invoice_items', function ($query) {
                 $query->on('invoices.id', '=', 'invoice_items.invoice_id');
@@ -53,7 +64,13 @@ class ReportsController extends Controller
             ->join('invoices', function ($query) {
                 $query->on('suppliers.id', '=', 'invoices.supplier_id')
                     ->where('invoices.status', true)
-                    ->where('invoices.pay', false);
+                    ->where('invoices.pay', false)
+                    ->when(Request::input('begin') ?? null, function ($query, $search) {
+                        $query->where('invoices.date', '>=', $search);
+                    })
+                    ->when(Request::input('end') ?? null, function ($query, $search) {
+                        $query->where('invoices.date', '<=', $search);
+                    });
             })
             ->join('invoice_items', function ($query) {
                 $query->on('invoices.id', '=', 'invoice_items.invoice_id');
@@ -89,11 +106,17 @@ class ReportsController extends Controller
         }
 
         $reports_merge = collect();
+        $sum_pay = 0;
+        $not_sum_pay = 0;
 
         foreach ($reports as $report) {
+            $sum_pay += $report['pay_sum'];
+            $not_sum_pay += $report['not_pay_sum'];
             $reports_merge->push($report);
         }
         foreach ($not_reports as $not_report) {
+            $sum_pay += $report['pay_sum'];
+            $not_sum_pay += $report['not_pay_sum'];
             $reports_merge->push($not_report);
         }
 
@@ -133,9 +156,11 @@ class ReportsController extends Controller
         //     ]);
 
         return Inertia::render('Reports/Index', [
-            'filters' => Request::all('search', 'organization_id'),
+            'filters' => Request::all('search', 'organization_id', 'begin', 'end'),
             'reports' => $reports_merge,
             'organizations' => Organization::get(),
+            'sum_pay' => $sum_pay,
+            'not_sum_pay' => $not_sum_pay,
         ]);
     }
 
@@ -208,6 +233,33 @@ class ReportsController extends Controller
             'organization' => $organization,
             'supplier' => $supplier,
             'invoices' => $invoices,
+        ]);
+    }
+
+    public function invoiceItem(Organization $organization, Supplier $supplier, Invoice $invoice)
+    {
+        return Inertia::render('Reports/InvoiceItems', [
+            'filters' => Request::only('search'),
+            'organization' => $organization,
+            'supplier' => $supplier,
+            'invoice' => [
+                'id' => $invoice->id,
+                'name' => $invoice->name,
+                'status' => $invoice->status,
+                'pay' => $invoice->pay,
+                'date' => $invoice->date->format('Y-m-d'),
+                'supplier' => $invoice->supplier,
+                'accepted' => $invoice->accepted,
+                'file' => $invoice->file ? '\\file\\' . $invoice->file : '',
+                'sum' => $invoice->invoiceItems()->select(DB::raw('SUM(count * price) as sum'))->value('sum') / (InvoiceItem::FLOAT_TO_INT_PRICE * InvoiceItem::FLOAT_TO_INT_COUNT),
+            ],
+            'invoice_items' => $invoice->invoiceItems->transform(fn ($item) => [
+                'id' => $item->id,
+                'name' => $item->name,
+                'count' => $item->count / InvoiceItem::FLOAT_TO_INT_COUNT,
+                'price' => $item->price / InvoiceItem::FLOAT_TO_INT_PRICE,
+                'measurement' => $item->measurement,
+            ]),
         ]);
     }
 }
