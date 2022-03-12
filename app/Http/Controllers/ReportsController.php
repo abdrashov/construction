@@ -316,42 +316,55 @@ class ReportsController extends Controller
 
     public function items()
     {
-        $items = Item::orderBy('name')
-            ->whereHas('invoiceItems', function ($query) {
-                $query->whereHas('invoice', function ($query) {
-                    $query->whereHas('organization', function ($query) {
-                        $query->where('id', Request::input('organization_id'));
-                    })->where('status', true);
-                });
+
+        $items = InvoiceItem::select(
+            'id',
+            'name',
+            'measurement',
+            DB::raw('SUM(count) as items_count'),
+            DB::raw('SUM(count * price) as items_price'),
+        )
+            ->whereHas('invoice', function ($query) {
+                $query->where('organization_id', Request::input('organization_id'))
+                    ->where('status', true);
             })
-            ->withCount(['invoiceItems AS invoice_items_count' => function ($query) {
-                $query->select(DB::raw('SUM(count) as invoice_items_count'));
-            }])
-            ->withCount(['invoiceItems AS invoice_items_price' => function ($query) {
-                $query->select(DB::raw('SUM(count * price) as invoice_items_price'));
-            }])
-            ->with('measurement')
+            ->orderBy('name')
+            ->groupBy('id')
             ->get()
             ->transform(fn ($item) => [
                 'id' => $item->id,
                 'name' => $item->name,
-                'measurement' => $item->measurement ? $item->measurement->name : '',
-                'count' => $item->invoice_items_count / InvoiceItem::FLOAT_TO_INT_COUNT,
-                'sum' => $item->invoice_items_price / (InvoiceItem::FLOAT_TO_INT_COUNT * InvoiceItem::FLOAT_TO_INT_PRICE),
+                'measurement' => $item->measurement,
+                'count' => $item->items_count / InvoiceItem::FLOAT_TO_INT_COUNT,
+                'sum' => $item->items_price / (InvoiceItem::FLOAT_TO_INT_COUNT * InvoiceItem::FLOAT_TO_INT_PRICE),
             ]);
+
+
+        // $items = Item::orderBy('name')
+        //     ->whereHas('invoiceItems.invoice', function ($query) {
+        //         $query->where('organization_id', Request::input('organization_id'))
+        //             ->where('status', true);
+        //     })
+        //     ->withCount(['invoiceItems AS invoice_items_price' => function ($query) {
+        //         $query->select(DB::raw('SUM(count * price) as invoice_items_price'));
+        //     }])
+        //     ->withCount(['invoiceItems AS invoice_items_count' => function ($query) {
+        //         $query->select(DB::raw('SUM(count) as invoice_items_count'));
+        //     }])
+        //     ->with('measurement')
+        //     ->get()
+        //     ->transform(fn ($item) => [
+        //         'id' => dd($item).$item->id,
+        //         'name' => $item->name,
+        //         'measurement' => $item->measurement ? $item->measurement->name : '',
+        //         'count' => $item->invoice_items_count / InvoiceItem::FLOAT_TO_INT_COUNT,
+        //         'sum' => $item->invoice_items_price / (InvoiceItem::FLOAT_TO_INT_COUNT * InvoiceItem::FLOAT_TO_INT_PRICE),
+        //     ]);
 
         $sum_item = 0;
         foreach ($items as $item) {
             $sum_item += $item['sum'];
         }
-        // ->paginate(20)
-        // ->withQueryString()
-        // ->through(fn ($item) => [
-        //     'id' => $item->id,
-        //     'name' => $item->name,
-        //     'measurement' => $item->measurement ? $item->measurement->name : '',
-        //     'count' => $item->invoice_items_count,
-        // ]);
 
         return Inertia::render('Reports/Items', [
             'filters' => Request::all('search', 'organization_id'),

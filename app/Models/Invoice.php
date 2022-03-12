@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 
 class Invoice extends Model
 {
@@ -35,6 +36,11 @@ class Invoice extends Model
     public function invoiceItems()
     {
         return $this->hasMany(InvoiceItem::class);
+    }
+
+    public function invoiceItemsPriceSum()
+    {
+        return $this->hasMany(InvoiceItem::class)->select(DB::raw('SUM(count * price) as sum'));
     }
 
     public function scopeFilter($query, array $filters)
