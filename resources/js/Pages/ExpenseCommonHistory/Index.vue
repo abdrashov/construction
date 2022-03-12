@@ -2,11 +2,9 @@
     <div>
         <Head title="Оплата" />
         <h1 class="mb-6 text-2xl font-semibold">
-            <Link class="text-sky-500 hover:text-sky-700" href="/organizations">Объекты</Link>
+            <Link class="text-sky-500 hover:text-sky-700" :href="`/expense-common`">Расходы</Link>
             <span class="text-sky-500 font-medium">/</span>
-            <Link class="text-sky-500 hover:text-sky-700" :href="`/expense-common`">{{ expense.name }}</Link>
-            <span class="text-sky-500 font-medium">/</span>
-            Оплата
+            {{ expense.name }}
         </h1>
 
         <div class="w-full bg-white shadow overflow-hidden">
