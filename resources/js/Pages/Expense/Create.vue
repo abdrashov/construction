@@ -89,7 +89,6 @@ export default {
                     this.form.reset('name')
                     this.form.reset('price')
                     this.form.reset('date')
-                    this.create.modal = false
                 },
             })
         },

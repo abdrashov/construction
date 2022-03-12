@@ -63,7 +63,7 @@
                     </td>
                     <td class="w-16 border-l border-t">
                         <div class="flex items-center justify-end px-4 py-1">
-                            <Link class="focus:shadow-outline-gray flex items-center justify-end ml-2 px-2 py-2 text-gray-500 hover:text-orange-400 text-xs font-medium leading-5 bg-gray-100 hover:bg-orange-100 rounded-lg focus:outline-none duration-200" :href="`/expenses/${expense.id}`">
+                            <Link class="focus:shadow-outline-gray flex items-center justify-end ml-2 px-2 py-2 text-gray-500 hover:text-orange-400 text-xs font-medium leading-5 bg-gray-100 hover:bg-orange-100 rounded-lg focus:outline-none duration-200" :href="`/expense-common/${expense.id}`">
                                 <icon name="right" class="w-4 h-4" />
                             </Link>
                         </div>
