@@ -321,7 +321,7 @@ class ReportsController extends Controller
                 $query->whereHas('invoice', function ($query) {
                     $query->whereHas('organization', function ($query) {
                         $query->where('id', Request::input('organization_id'));
-                    });
+                    })->where('status', true);
                 });
             })
             ->withCount(['invoiceItems AS invoice_items_count' => function ($query) {
