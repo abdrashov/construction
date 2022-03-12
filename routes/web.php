@@ -6,6 +6,10 @@ use App\Http\Controllers\ImagesController;
 use App\Http\Controllers\InvoiceItemsController;
 use App\Http\Controllers\InvoicesController;
 use App\Http\Controllers\AuditLogsController;
+use App\Http\Controllers\ExpenseCommonController;
+use App\Http\Controllers\ExpenseCommonHistoryController;
+use App\Http\Controllers\ExpenseController;
+use App\Http\Controllers\ExpenseHistoryController;
 use App\Http\Controllers\OrganizationsController;
 use App\Http\Controllers\Reference\ItemController;
 use App\Http\Controllers\Reference\MeasurementsController;
@@ -113,6 +117,38 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::middleware('role:Супер Администратор,Бухгалтер')->group(function () {
+
+        // Expense
+        Route::prefix('organizations/{organization}/expense')->name('expense')->controller(ExpenseController::class)->group(function () {
+            Route::get('', 'index');
+            Route::post('', 'store')->name('.store');
+            Route::put('{expense}', 'update')->name('.update');
+            Route::get('create', 'create')->name('.create');
+        });
+
+        // ExpenseHistory
+        Route::prefix('organizations/expenses/{expense}')->name('expenses-history')->controller(ExpenseHistoryController::class)->group(function () {
+            Route::get('', 'index');
+            Route::post('', 'store')->name('.store');
+            Route::delete('{expense_history}', 'destroy')->name('.delete');
+            Route::get('create', 'create')->name('.create');
+        });
+
+        // ExpenseCommon
+        Route::prefix('expense-common')->name('expense-common')->controller(ExpenseCommonController::class)->group(function () {
+            Route::get('', 'index');
+            Route::post('', 'store')->name('.store');
+            Route::put('{expense}', 'update')->name('.update');
+            Route::get('create', 'create')->name('.create');
+        });
+
+        // ExpenseCommonHistory
+        Route::prefix('expense-common/{expense}')->name('expense-common-history')->controller(ExpenseCommonHistoryController::class)->group(function () {
+            Route::get('', 'index');
+            Route::post('', 'store')->name('.store');
+            Route::delete('{expense_history}', 'destroy')->name('.delete');
+            Route::get('create', 'create')->name('.create');
+        });
 
         // Invoice
         Route::prefix('organizations/{organization}/invoices')->name('invoices')->controller(InvoicesController::class)->group(function () {

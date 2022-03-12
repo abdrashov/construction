@@ -2,34 +2,35 @@
 
 namespace App\Models;
 
-use App\Casts\Json;
 use App\SpatieLogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Organization extends Model
+class ExpenseHistory extends Model
 {
     use HasFactory;
     use SoftDeletes;
     use SpatieLogsActivity;
+    
+    public const FLOAT_TO_INT_PRICE = 100;
 
     protected $fillable = [
-        'name', 'address', 'users'
+        'expense_id', 'user_id', 'name', 'price', 'date'
     ];
 
-    protected $casts = [
-        'users' => Json::class,
+    protected $dates = [
+        'date',
     ];
-
-    public function invoices()
+    
+    public function expense()
     {
-        return $this->hasMany(Invoice::class);
+        return $this->belongsTo(Expense::class);
     }
-
-    public function expenses()
+    
+    public function user()
     {
-        return $this->hasMany(Expense::class);
+        return $this->belongsTo(User::class);
     }
 
     public function resolveRouteBinding($value, $field = null)
@@ -47,6 +48,6 @@ class Organization extends Model
             } elseif ($trashed === 'only') {
                 $query->onlyTrashed();
             }
-        })->orderByDesc('organizations.created_at');
+        });
     }
 }

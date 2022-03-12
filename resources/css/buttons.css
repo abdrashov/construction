@@ -1,5 +1,5 @@
 .btn-indigo {
-    @apply px-5 py-3 text-sm font-semibold leading-4 text-white duration-150 bg-indigo-500 rounded whitespace-nowrap hover:bg-indigo-600 focus:bg-indigo-600;
+    @apply px-5 py-3 text-sm font-semibold leading-4 text-white duration-150 bg-indigo-400 rounded whitespace-nowrap hover:bg-indigo-500 focus:bg-indigo-500;
 }
 
 .btn-blue {

@@ -56,12 +56,15 @@
                 <h2 class="text-gray-600 font-semibold">Накладные</h2>
             </div>
             <div class="">
-                <Link class="ml-3 text-gray-500 hover:text-gray-700 focus:text-indigo-500 text-sm mr-2" v-if="filters.name || filters.date || filters.supplier_id || filters.accepted || filters.status || filters.pay" :href="`/organizations/${this.organization.id}/invoices`">
-                    Сброс
+                <Link class="ml-3 mr-2 text-gray-500 hover:text-gray-700 focus:text-indigo-500 text-sm" v-if="filters.name || filters.date || filters.supplier_id || filters.accepted || filters.status || filters.pay" :href="`/organizations/${this.organization.id}/invoices`">
+                    <span>Сброс</span>
                 </Link>
                 <button @click="search.modal = true" class="btn-gray mr-2">
                     <span>Фильтр/Поиск</span>
                 </button>
+                <Link class="btn-indigo mr-2" :href="`/organizations/${organization.id}/expense`">
+                    <span>Раходы</span>
+                </Link>
                 <Link class="btn-blue" :href="`/organizations/${organization.id}/invoices/create`">
                     <span>Создать</span>
                     <span class="hidden md:inline">&nbsp;Накладной</span>
@@ -80,9 +83,9 @@
                     <th colspan="2" class="px-4 py-3 border-l">Информация</th>
                 </tr>
                 <tr v-for="(invoice, index) in organization.invoices.data" :key="invoice.id">
-                    <td class="border-t w-12">
+                    <td class="w-12 border-t">
                         <div class="flex items-center px-4 py-3 text-gray-900 font-medium">
-                            {{ ((organization.invoices.current_page-1) * organization.invoices.per_page ) + index + 1 }}
+                            {{ (organization.invoices.current_page - 1) * organization.invoices.per_page + index + 1 }}
                         </div>
                     </td>
                     <td class="border-l border-t">
@@ -102,7 +105,7 @@
                         </Link>
                     </td>
                     <td class="border-l border-t">
-                        <Link class="flex items-center whitespace-nowrap px-2 py-3" :href="`/invoices/${invoice.id}/invoice-items`" tabindex="-1">
+                        <Link class="flex items-center px-2 py-3 whitespace-nowrap" :href="`/invoices/${invoice.id}/invoice-items`" tabindex="-1">
                             {{ invoice.sum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
                         </Link>
                     </td>

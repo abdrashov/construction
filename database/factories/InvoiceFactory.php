@@ -25,7 +25,7 @@ class InvoiceFactory extends Factory
         return [
             'organization_id' => $oranization->id,
             'user_id' => User::inRandomOrder()->value('id'),
-            'name' => $this->faker->numberBetween(1147483647),
+            'name' => $this->faker->numberBetween(1000000),
             'pay' => $pay,
             'status' => $pay == 1 ? 1 : $this->faker->numberBetween(0, 1),
             'date' => $this->faker->date(),

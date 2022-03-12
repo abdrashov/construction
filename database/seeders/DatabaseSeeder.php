@@ -2,6 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\Expense;
+use App\Models\ExpenseCategory;
+use App\Models\ExpenseHistory;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Item;
@@ -28,7 +31,7 @@ class DatabaseSeeder extends Seeder
             'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
         ]);
 
-        User::factory(29)->create();
+        User::factory(8)->create();
 
         Measurement::create([
             'name' => 'кг'
@@ -40,10 +43,25 @@ class DatabaseSeeder extends Seeder
             'name' => 'м'
         ]);
 
-        Item::factory(5000)->create();
-        Supplier::factory(200)->create();
+        Item::factory(80)->create();
+        Supplier::factory(10)->create();
         Organization::factory(4)->create();
-        Invoice::factory(800)->create();
-        InvoiceItem::factory(10000)->create();
+        Invoice::factory(5)->create();
+        InvoiceItem::factory(30)->create();
+        ExpenseCategory::create(
+            [
+                'name' => 'Услуга',
+            ]
+        );
+        ExpenseCategory::create([
+            'name' => 'Зарплата',
+        ]);
+        ExpenseCategory::create(
+            [
+                'name' => 'Прочие',
+            ]
+        );
+        Expense::factory(5)->create();
+        ExpenseHistory::factory(30)->create();
     }
 }
