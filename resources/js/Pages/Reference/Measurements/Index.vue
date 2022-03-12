@@ -18,7 +18,7 @@
         <div class="text-sm bg-white shadow overflow-x-auto">
             <table class="w-full">
                 <tr class="text-left text-gray-500 text-xs font-semibold tracking-wide bg-gray-50 border-b uppercase">
-                    <th class="px-4 py-3" colspan="2">Названия</th>
+                    <th class="px-4 py-3" colspan="2">Название</th>
                 </tr>
                 <tr v-for="measurement in measurements.data" :key="measurement.id">
                     <td class="border-t">

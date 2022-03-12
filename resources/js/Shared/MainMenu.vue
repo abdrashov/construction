@@ -43,6 +43,19 @@
                     <span class="ml-4">Объекты</span>
                 </Link>
             </li>
+            <li v-if="auth.user.role === 'Супер Администратор' || auth.user.role === 'Администратор' || auth.user.role === 'Бухгалтер'" class="relative px-5 py-2">
+                <span v-if="isUrl('expense-common')" class="absolute inset-y-0 left-0 w-1 bg-sky-600 rounded-br-lg rounded-tr-lg" aria-hidden="true"></span>
+                <Link href="/expense-common" class="inline-flex items-center w-full hover:text-gray-600 text-gray-700 text-sm font-semibold transition-colors duration-150">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            opacity="0.5"
+                            d="M19 22H5C4.4 22 4 21.6 4 21V3C4 2.4 4.4 2 5 2H14L20 8V21C20 21.6 19.6 22 19 22ZM15 17C15 16.4 14.6 16 14 16H8C7.4 16 7 16.4 7 17C7 17.6 7.4 18 8 18H14C14.6 18 15 17.6 15 17ZM17 12C17 11.4 16.6 11 16 11H8C7.4 11 7 11.4 7 12C7 12.6 7.4 13 8 13H16C16.6 13 17 12.6 17 12ZM17 7C17 6.4 16.6 6 16 6H8C7.4 6 7 6.4 7 7C7 7.6 7.4 8 8 8H16C16.6 8 17 7.6 17 7Z"
+                        />
+                        <path d="M15 8H20L14 2V7C14 7.6 14.4 8 15 8Z" />
+                    </svg>
+                    <span class="ml-4">Расходы</span>
+                </Link>
+            </li>
             <li v-if="auth.user.role === 'Супер Администратор' || auth.user.role === 'Кассир' || auth.user.role === 'Бухгалтер'" class="relative px-5 py-2">
                 <span v-if="isUrl('reports')" class="absolute inset-y-0 left-0 w-1 bg-sky-600 rounded-br-lg rounded-tr-lg" aria-hidden="true"></span>
                 <Link href="/reports" class="inline-flex items-center w-full hover:text-gray-600 text-gray-700 text-sm font-semibold transition-colors duration-150">

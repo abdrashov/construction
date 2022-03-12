@@ -2,6 +2,14 @@
     <div>
         <Head title="Отчеты" />
         <h1 class="mb-6 text-2xl font-semibold">Отчеты</h1>
+        <div class="mb-2">
+            <Link href="/reports" class="md:mt-0 mt-2 inline-block btn-blue">
+                <span>По поставщикам</span>
+            </Link>
+            <Link href="/reports/items" class="md:mt-0 inline-block mt-2 md:ml-2 ml-0 btn-blue">
+                <span>По товарам</span>
+            </Link>
+        </div>
         <div class="md:flex items-center justify-between mb-6">
             <div class="items-center w-full md:flex md:w-1/2">
                 <select v-model="form.organization_id" class="rounded form-select-icon relative px-4 py-3 w-full focus:shadow-outline appearance-none">
@@ -33,19 +41,19 @@
                         </div>
                     </td>
                     <td class="border-l border-t">
-                        <Link class="flex items-center px-4 py-2 hover:underline font-medium" :href="`/reports/${report.id}/${report.supplier_id}/all`">
+                        <button @click="link(report.id, report.supplier_id, 'all')" class="flex items-center px-4 py-2 hover:underline font-medium">
                             {{ report.supplier }}
-                        </Link>
+                        </button>
                     </td>
                     <td class="border-l border-t">
-                        <Link class="flex items-center px-4 py-2 text-green-900 hover:underline whitespace-nowrap font-semibold" :href="`/reports/${report.id}/${report.supplier_id}/pay`">
+                        <button @click="link(report.id, report.supplier_id, 'pay')" class="flex items-center px-4 py-2 text-green-900 hover:underline whitespace-nowrap font-semibold">
                             {{ report.pay_sum?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
-                        </Link>
+                        </button>
                     </td>
                     <td class="border-l border-t">
-                        <Link class="flex items-center px-4 py-2 text-red-900 hover:underline whitespace-nowrap font-semibold" :href="`/reports/${report.id}/${report.supplier_id}/not_pay`">
+                        <button @click="link(report.id, report.supplier_id, 'not_pay')" class="flex items-center px-4 py-2 text-green-900 hover:underline whitespace-nowrap font-semibold">
                             {{ report.not_pay_sum?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
-                        </Link>
+                        </button>
                     </td>
                     <td class="border-l border-t">
                         <div class="flex items-center px-4 py-2 whitespace-nowrap font-semibold" :href="`/reports/${report.id}/${report.supplier_id}/not_pay`">
@@ -174,6 +182,9 @@ export default {
             this.$inertia.get(`/reports`, pickBy({ ...this.form, ...this.search }), { preserveState: true })
             this.search.modal = false
         },
+        link(organization, supplier, param) {
+            this.$inertia.get(`/reports/${organization}/${supplier}/${param}`, pickBy({...this.search }), { preserveState: true })
+        }
     },
 }
 </script>

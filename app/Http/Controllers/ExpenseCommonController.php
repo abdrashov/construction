@@ -20,20 +20,25 @@ class ExpenseCommonController extends Controller
 {
     public function Index()
     {
+        $expenses = Expense::whereNull('organization_id')->orderByDesc('date')
+            ->get()
+            ->transform(fn ($expense) => [
+                'id' => $expense->id,
+                'name' => $expense->name,
+                'category' => $expense->category->name,
+                'fullname' => $expense->user->last_name . ' ' .  $expense->user->first_name,
+                'price' => $expense->price ? $expense->price / Expense::FLOAT_TO_INT_PRICE : null,
+                'paid' => $expense->paid ? $expense->paid / Expense::FLOAT_TO_INT_PRICE : null,
+                'date' => $expense->date->format('Y-m-d'),
+            ]);
+        $paid_sum = 0;
+        foreach ($expenses as $expense) {
+            $paid_sum += $expense['paid'];
+        }
         return Inertia::render('ExpenseCommon/Index', [
             'filters' => Request::only('search', 'page'),
-            'expenses' => Expense::whereNull('organization_id')->orderByDesc('date')
-                ->paginate(10)
-                ->withQueryString()
-                ->through(fn ($expense) => [
-                    'id' => $expense->id,
-                    'name' => $expense->name,
-                    'category' => $expense->category->name,
-                    'fullname' => $expense->user->last_name . ' ' .  $expense->user->first_name,
-                    'price' => $expense->price ? $expense->price / Expense::FLOAT_TO_INT_PRICE : null,
-                    'paid' => $expense->paid ? $expense->paid / Expense::FLOAT_TO_INT_PRICE : null,
-                    'date' => $expense->date->format('Y-m-d'),
-                ]),
+            'expenses' => $expenses,
+            'paid_sum' => $paid_sum
         ]);
     }
 
@@ -79,7 +84,7 @@ class ExpenseCommonController extends Controller
             'expense_category_id' => ['required'],
             'price' => ['required', 'numeric', 'min:0', 'max:5000000000'],
         ]);
-        
+
         Request::merge([
             'price' => Request::input('price') * Expense::FLOAT_TO_INT_PRICE,
         ]);

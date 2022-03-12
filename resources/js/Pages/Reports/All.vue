@@ -2,7 +2,7 @@
     <div>
         <Head title="Отчеты" />
         <h1 class="mb-6 text-2xl font-semibold">
-            <Link class="text-sky-500 hover:text-sky-700" :href="`/reports?organization_id=${organization.id}`">Отчеты</Link>
+            <Link class="text-sky-500 hover:text-sky-700" :href="'/reports?organization_id='+organization.id+(form.begin ? '&begin='+form.begin : '')+(form.end ? '&end='+form.end : '')">Отчеты</Link>
             <span class="text-sky-500 font-medium">/</span>
             {{ organization.name }}
         </h1>
@@ -29,22 +29,22 @@
                         </div>
                     </td>
                     <td class="border-l border-t">
-                        <Link class="flex items-center px-4 py-3 hover:underline font-medium" :href="`/reports/${organization.id}/${supplier.id}/${invoice.id}/items`">
+                        <Link class="flex items-center px-4 py-3 hover:underline font-medium" :href="`/reports/${organization.id}/${supplier.id}/${invoice.id}/items?`+(form.begin ? '&begin='+form.begin : '')+(form.end ? '&end='+form.end : '')">
                             {{ invoice.name }}
                         </Link>
                     </td>
                     <td class="border-l border-t">
-                        <Link class="flex items-center px-4 py-3 hover:underline" :href="`/reports/${organization.id}/${supplier.id}/${invoice.id}/items`">
+                        <Link class="flex items-center px-4 py-3 hover:underline" :href="`/reports/${organization.id}/${supplier.id}/${invoice.id}/items?`+(form.begin ? '&begin='+form.begin : '')+(form.end ? '&end='+form.end : '')">
                             {{ invoice.accepted }}
                         </Link>
                     </td>
                     <td class="w-2/6 border-l border-t">
-                        <Link class="flex items-center px-4 py-3 hover:underline whitespace-nowrap" :href="`/reports/${organization.id}/${supplier.id}/${invoice.id}/items`">
+                        <Link class="flex items-center px-4 py-3 hover:underline whitespace-nowrap" :href="`/reports/${organization.id}/${supplier.id}/${invoice.id}/items?`+(form.begin ? '&begin='+form.begin : '')+(form.end ? '&end='+form.end : '')">
                             {{ invoice.sum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
                         </Link>
                     </td>
                     <td class="border-l border-t">
-                        <Link class="flex items-center px-4 py-3 hover:underline" :href="`/reports/${organization.id}/${supplier.id}/${invoice.id}/items`">
+                        <Link class="flex items-center px-4 py-3 hover:underline" :href="`/reports/${organization.id}/${supplier.id}/${invoice.id}/items?`+(form.begin ? '&begin='+form.begin : '')+(form.end ? '&end='+form.end : '')">
                             {{ invoice.date }}
                         </Link>
                     </td>
@@ -54,6 +54,14 @@
                                 <span v-if="invoice.pay" class="px-2 py-1 text-green-700 whitespace-nowrap font-semibold leading-tight bg-green-100 rounded-full"> Оплачен </span>
                                 <span v-else class="px-2 py-1 text-red-700 whitespace-nowrap font-semibold leading-tight bg-red-100 rounded-full"> Не оплачен </span>
                             </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr v-if="invoices.length !== 0">
+                    <td class="px-4 py-4 font-semibold border-t" colspan="3">ИТОГО</td>
+                    <td class="border-l border-t"  colspan="3">
+                        <div class="flex items-center px-4 whitespace-nowrap font-semibold">
+                            {{ sum_pay?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
                         </div>
                     </td>
                 </tr>
@@ -95,11 +103,14 @@ export default {
         organization: Object,
         supplier: Object,
         invoices: Object,
+        sum_pay: Number,
     },
     data() {
         return {
             form: {
                 search: this.filters.search,
+                begin: this.filters.begin,
+                end: this.filters.end,
             },
         }
     },

@@ -2,9 +2,9 @@
     <div>
         <Head title="Отчеты" />
         <h1 class="mb-6 text-2xl font-semibold">
-            <Link class="text-sky-500 hover:text-sky-700" :href="`/reports?organization_id=${organization.id}`">Отчеты</Link>
+            <Link class="text-sky-500 hover:text-sky-700" :href="`/reports?organization_id=${organization.id}`+(form.begin ? '&begin='+form.begin : '')+(form.end ? '&end='+form.end : '')">Отчеты</Link>
             <span class="text-sky-500 font-medium">/</span>
-            <Link class="text-sky-500 hover:text-sky-700" :href="`/reports/${organization.id}/${supplier.id}/all`">
+            <Link class="text-sky-500 hover:text-sky-700" :href="`/reports/${organization.id}/${supplier.id}/all?`+(form.begin ? 'begin='+form.begin : '')+(form.end ? '&end='+form.end : '')">
             {{ organization.name }}
             </Link>
             <span class="text-sky-500 font-medium">/</span>
@@ -95,11 +95,20 @@ export default {
     },
     layout: Layout,
     props: {
+        filters: Object,
         organization: Object,
         supplier: Object,
         invoice: Object,
         invoice_items: Object,
         items: Object,
+    },
+    data() {
+        return {
+            form: {
+                begin: this.filters.begin,
+                end: this.filters.end,
+            },
+        }
     },
     methods: {
         pay() {

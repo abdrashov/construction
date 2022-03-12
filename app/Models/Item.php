@@ -17,6 +17,11 @@ class Item extends Model
         'name', 'measurement_id', 'sort'
     ];
 
+    public function invoiceItems()
+    {
+        return $this->hasMany(InvoiceItem::class);
+    }
+
     public function measurement()
     {
         return $this->belongsTo(Measurement::class);

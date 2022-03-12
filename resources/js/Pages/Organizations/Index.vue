@@ -12,9 +12,6 @@
                 </select>
             </search-filter>
             <div>
-                <Link class="btn-indigo mr-2" :href="`/expense-common`">
-                    <span>Раходы</span>
-                </Link>
                 <Link v-if="auth.user.role === 'Супер Администратор' || auth.user.role === 'Администратор'" class="btn-blue" href="/organizations/create">
                     <span>Создать</span>
                     <span class="hidden md:inline">&nbsp;Объект</span>

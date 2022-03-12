@@ -63,7 +63,7 @@
                     <span>Фильтр/Поиск</span>
                 </button>
                 <Link class="btn-indigo mr-2" :href="`/organizations/${organization.id}/expense`">
-                    <span>Раходы</span>
+                    <span>Расходы</span>
                 </Link>
                 <Link class="btn-blue" :href="`/organizations/${organization.id}/invoices/create`">
                     <span>Создать</span>

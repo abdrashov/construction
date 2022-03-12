@@ -20,4 +20,8 @@ class InvoiceItem extends Model
     public const FLOAT_TO_INT_PRICE = 100;
     public const FLOAT_TO_INT_COUNT = 10000;
 
+    public function invoice()
+    {
+        return $this->belongsTo(Invoice::class);
+    }
 }
