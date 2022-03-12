@@ -316,7 +316,7 @@ class ReportsController extends Controller
 
     public function items()
     {
-        $items = Item::orderByDesc('sort')->orderBy('name')
+        $items = Item::orderBy('name')
             ->whereHas('invoiceItems', function ($query) {
                 $query->whereHas('invoice', function ($query) {
                     $query->whereHas('organization', function ($query) {
@@ -327,6 +327,9 @@ class ReportsController extends Controller
             ->withCount(['invoiceItems AS invoice_items_count' => function ($query) {
                 $query->select(DB::raw('SUM(count) as invoice_items_count'));
             }])
+            ->withCount(['invoiceItems AS invoice_items_price' => function ($query) {
+                $query->select(DB::raw('SUM(count * price) as invoice_items_price'));
+            }])
             ->with('measurement')
             ->get()
             ->transform(fn ($item) => [
@@ -334,7 +337,13 @@ class ReportsController extends Controller
                 'name' => $item->name,
                 'measurement' => $item->measurement ? $item->measurement->name : '',
                 'count' => $item->invoice_items_count / InvoiceItem::FLOAT_TO_INT_COUNT,
+                'sum' => $item->invoice_items_price / (InvoiceItem::FLOAT_TO_INT_COUNT * InvoiceItem::FLOAT_TO_INT_PRICE),
             ]);
+
+        $sum_item = 0;
+        foreach ($items as $item) {
+            $sum_item += $item['sum'];
+        }
         // ->paginate(20)
         // ->withQueryString()
         // ->through(fn ($item) => [
@@ -348,6 +357,7 @@ class ReportsController extends Controller
             'filters' => Request::all('search', 'organization_id'),
             'organizations' => Organization::get(),
             'items' => $items,
+            'sum_item' => $sum_item,
         ]);
     }
 }

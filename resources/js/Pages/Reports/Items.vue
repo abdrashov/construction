@@ -25,6 +25,7 @@
                     <th class="px-4 py-3 w-10 border-r">#</th>
                     <th class="px-4 py-3 border-l border-r">Название Товара</th>
                     <th class="px-4 py-3 border-l border-r">Использовался</th>
+                    <th class="px-4 py-3 border-l border-r">Сумма</th>
                 </tr>
                 <tr v-for="(item, index) in items" :key="item.id">
                     <td class="border-t">
@@ -41,6 +42,19 @@
                         <div class="flex items-center px-4 py-2 font-medium">
                             {{ item.count }} 
                             {{ item.measurement }}
+                        </div>
+                    </td>
+                    <td class="border-l border-t">
+                        <div class="flex items-center px-4 whitespace-nowrap font-semibold">
+                            {{ item.sum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
+                        </div>
+                    </td>
+                </tr>
+                <tr v-if="items.length !== 0">
+                    <td class="px-4 py-4 font-semibold border-t" colspan="3">ИТОГО</td>
+                    <td class="border-l border-t">
+                        <div class="flex items-center px-4 whitespace-nowrap font-semibold">
+                            {{ sum_item?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
                         </div>
                     </td>
                 </tr>
@@ -81,6 +95,7 @@ export default {
         filters: Object,
         organizations: Object,
         items: Object,
+        sum_item: Number,
     },
     data() {
         return {

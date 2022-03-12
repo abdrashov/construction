@@ -17,11 +17,6 @@ class InvoiceItemsController extends Controller
     {
         if (!$invoice->status) {
 
-            $item_ids = array_map(
-                fn($item_id) => $item_id['item_id'],
-                $invoice->invoiceItems()->select('id', 'item_id')->get()->toArray()
-            );
-
             return Inertia::render('InvoiceItems/Index', [
                 'filters' => Request::only('search', 'page'),
                 'organization' => [
@@ -47,7 +42,6 @@ class InvoiceItemsController extends Controller
                     'measurement' => $item->measurement,
                 ]),
                 'items' => Item::filter(Request::only('search'))
-                    ->whereNotIn('id', $item_ids)
                     ->with('measurement')
                     ->paginate(10)
                     ->withQueryString()
@@ -88,10 +82,6 @@ class InvoiceItemsController extends Controller
 
     public function store(Invoice $invoice, Item $item)
     {
-        if ($invoice->invoiceItems()->where('item_id', $item->id)->exists()) {
-            return Redirect::back()->with('error', 'Товар уже добавлено.');
-        }
-
         $invoice->invoiceItems()->create([
             'name' => $item->name,
             'item_id' => $item->id,
