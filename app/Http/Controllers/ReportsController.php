@@ -329,7 +329,7 @@ class ReportsController extends Controller
                     ->where('status', true);
             })
             ->orderBy('name')
-            ->groupBy('id')
+            ->groupBy('item_id')
             ->get()
             ->transform(fn ($item) => [
                 'id' => $item->id,
