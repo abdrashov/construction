@@ -1,7 +1,7 @@
 <template>
     <div>
-        <Head title="Товары" />
-        <h1 class="mb-6 text-2xl font-semibold">Товары</h1>
+        <Head title="Категория товаров" />
+        <h1 class="mb-6 text-2xl font-semibold">Категория товаров</h1>
         <div class="flex items-center justify-between mb-6">
             <search-filter v-model="form.search" class="w-full max-w-md mr-4" @reset="reset">
                 <label class="block text-gray-700">Удаленные:</label>
@@ -9,11 +9,6 @@
                     <option :value="null" />
                     <option value="with">Все</option>
                     <option value="only">Только Удаленные</option>
-                </select>
-                <label class="block mt-3 text-gray-700">Категории:</label>
-                <select v-model="form.item_category_id" class="w-full mt-1 form-select">
-                    <option :value="null" />
-                    <option v-for="item_category in item_categories" :key="item_category.id" :value="item_category.id">{{  item_category.name }}</option>
                 </select>
             </search-filter>
             <button @click="create.modal = true" class="btn-blue">
@@ -23,41 +18,32 @@
         <div class="overflow-x-auto text-sm bg-white shadow">
             <table class="w-full">
                 <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
-                    <th class="px-4 py-3">Название</th>
-                    <th class="px-4 py-3">Категория</th>
-                    <th class="px-4 py-3" colspan="2">Измерения</th>
+                    <th class="px-4 py-3" colspan="2">Название</th>
                 </tr>
-                <tr v-for="item in items.data" :key="item.id">
+                <tr v-for="item_category in item_categories.data" :key="item_category.id">
                     <td class="border-t">
-                        <Link :href="`/reference/items/${item.id}/edit`" class="flex items-center px-4 py-2 font-medium ">
-                            {{ item.name }}
-                            <icon v-if="item.deleted_at" name="trash" class="flex-shrink-0 w-3 h-3 ml-2 fill-gray-400" />
-                        </Link>
-                    </td>
-                    <td class="border-t">
-                        <Link :href="`/reference/items/${item.id}/edit`" class="flex items-center px-4 py-2">
-                            {{ item.сategory }}
-                        </Link>
-                    </td>
-                    <td class="border-t">
-                        <Link :href="`/reference/items/${item.id}/edit`" class="flex items-center px-4 py-2">
-                            {{ item.measurement }}
+                        <Link :href="`/reference/item-categories/${item_category.id}/edit`" class="flex items-center px-4 py-2 font-medium">
+                            {{ item_category.name }}
+                            <icon v-if="item_category.deleted_at" name="trash" class="flex-shrink-0 w-3 h-3 ml-2 fill-gray-400" />
                         </Link>
                     </td>
                     <td class="w-16 border-t">
                         <div class="flex items-center justify-end px-4 py-1">
-                            <Link class="flex items-center justify-end px-2 py-2 ml-2 text-xs font-medium leading-5 text-gray-500 duration-200 bg-gray-100 rounded-lg focus:shadow-outline-gray hover:text-orange-400 hover:bg-orange-100 focus:outline-none" :href="`/reference/items/${item.id}/edit`">
+                            <Link
+                                class="flex items-center justify-end px-2 py-2 ml-2 text-xs font-medium leading-5 text-gray-500 duration-200 bg-gray-100 rounded-lg focus:shadow-outline-gray hover:text-orange-400 hover:bg-orange-100 focus:outline-none"
+                                :href="`/reference/item-categories/${item_category.id}/edit`"
+                            >
                                 <icon name="right" class="w-4 h-4" />
                             </Link>
                         </div>
                     </td>
                 </tr>
-                <tr v-if="items.data.length === 0">
-                    <td class="px-4 py-4 border-t" colspan="3">Не найдено.</td>
+                <tr v-if="item_categories.data.length === 0">
+                    <td class="px-4 py-4 border-t" colspan="2">Не найдено.</td>
                 </tr>
             </table>
         </div>
-        <pagination class="mt-6" :links="items.links" />
+        <pagination class="mt-6" :links="item_categories.links" />
         <Modal @close="create.modal = !create.modal" :isOpen="create.modal">
             <div class="w-full">
                 <div class="flex flex-row items-start mb-8 text-xl font-medium">
@@ -73,14 +59,6 @@
                 </div>
                 <form @submit.prevent="store">
                     <text-input v-model="form_create.name" :error="form_create.errors.name" class="w-full pb-5" label="Название" />
-                    <select-input v-model="form_create.item_category_id" :error="form_create.errors.item_category_id" class="w-full pb-5" label="Категория">
-                        <option :value="null"></option>
-                        <option v-for="item_category in item_categories" :key="item_category.id" :value="item_category.id">{{ item_category.name }}</option>
-                    </select-input>
-                    <select-input v-model="form_create.measurement_id" :error="form_create.errors.measurement_id" class="w-full pb-5" label="Измерение">
-                        <option :value="null"></option>
-                        <option v-for="measurement in measurements" :key="measurement.id" :value="measurement.id">{{ measurement.name }}</option>
-                    </select-input>
                     <loading-button :loading="form_create.processing" class="btn-blue" type="submit">Создать</loading-button>
                 </form>
             </div>
@@ -100,7 +78,6 @@ import LoadingButton from '@/Shared/LoadingButton'
 import SearchFilter from '@/Shared/SearchFilter'
 import Modal from '@/Shared/Modal'
 import TextInput from '@/Shared/TextInput'
-import SelectInput from '@/Shared/SelectInput'
 
 export default {
     components: {
@@ -112,13 +89,10 @@ export default {
         Modal,
         TextInput,
         LoadingButton,
-        SelectInput,
     },
     layout: Layout,
     props: {
         filters: Object,
-        items: Object,
-        measurements: Object,
         item_categories: Object,
     },
     data() {
@@ -129,24 +103,21 @@ export default {
             form: {
                 search: this.filters.search,
                 trashed: this.filters.trashed,
-                item_category_id: this.filters.item_category_id
             },
             form_create: this.$inertia.form({
                 name: null,
-                measurement_id: null,
-                item_category_id: null,
             }),
         }
     },
+    remember: 'form_create',
     watch: {
         form: {
             deep: true,
             handler: throttle(function () {
-                this.$inertia.get('/reference/items', pickBy(this.form), { preserveState: true })
+                this.$inertia.get('/reference/item-categories', pickBy(this.form), { preserveState: true })
             }, 150),
         },
     },
-    remember: 'form_create',
     methods: {
         reset() {
             this.form = mapValues(this.form, () => null)

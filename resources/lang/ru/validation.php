@@ -141,6 +141,7 @@ return [
         'measurement_id' => 'Измерение',
         'supplier_id' => 'Поставщик',
         'date' => 'Дата',
-        'price' => 'Сумма'
+        'price' => 'Сумма',
+        'item_category_id' => 'Категория товара'
     ],
 ];

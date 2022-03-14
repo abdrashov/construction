@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Reference;
 
 use App\Http\Controllers\Controller;
 use App\Models\Item;
+use App\Models\ItemCategory;
 use App\Models\Measurement;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
@@ -15,15 +16,17 @@ class ItemController extends Controller
     public function index()
     {
         return Inertia::render('Reference/Items/Index', [
-            'filters' => Request::all('search', 'trashed'),
+            'filters' => Request::all('search', 'trashed', 'item_category_id'),
+            'item_categories' => ItemCategory::orderBy('sort')->orderBy('name')->get(),
             'items' => Item::orderBy('name')
-                ->filter(Request::only('search', 'trashed'))
-                ->with('measurement')
+                ->filter(Request::only('search', 'trashed', 'item_category_id'))
+                ->with(['itemCategory', 'measurement'])
                 ->paginate(10)
                 ->withQueryString()
                 ->through(fn ($item) => [
                     'id' => $item->id,
                     'name' => $item->name,
+                    'сategory' => $item->itemCategory ? $item->itemCategory->name : 'Удален!',
                     'measurement' => $item->measurement ? $item->measurement->name : 'Удален!',
                 ]),
             'measurements' => Measurement::get(),
@@ -35,6 +38,7 @@ class ItemController extends Controller
         Item::create(
             Request::validate([
                 'name' => ['required', 'max:255', Rule::unique('items')],
+                'item_category_id' => ['required', 'max:255'],
                 'measurement_id' => ['required', 'max:255'],
             ])
         );
@@ -48,10 +52,12 @@ class ItemController extends Controller
             'item' => [
                 'id' => $item->id,
                 'name' => $item->name,
+                'item_category_id' => $item->item_category_id,
                 'measurement_id' => $item->measurement_id,
                 'deleted_at' => $item->deleted_at,
             ],
             'measurements' => Measurement::get(),
+            'item_categories' => ItemCategory::orderBy('sort')->orderBy('name')->get(),
         ]);
     }
 
@@ -60,6 +66,7 @@ class ItemController extends Controller
         $item->update(
             Request::validate([
                 'name' => ['required', 'max:255', Rule::unique('items')->ignore($item->id)],
+                'item_category_id' => ['required', 'max:255'],
                 'measurement_id' => ['required', 'max:255'],
             ])
         );

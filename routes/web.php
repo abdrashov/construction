@@ -1,16 +1,17 @@
 <?php
 
+use App\Http\Controllers\AuditLogsController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\ImagesController;
-use App\Http\Controllers\InvoiceItemsController;
-use App\Http\Controllers\InvoicesController;
-use App\Http\Controllers\AuditLogsController;
 use App\Http\Controllers\ExpenseCommonController;
 use App\Http\Controllers\ExpenseCommonHistoryController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\ExpenseHistoryController;
+use App\Http\Controllers\ImagesController;
+use App\Http\Controllers\InvoiceItemsController;
+use App\Http\Controllers\InvoicesController;
 use App\Http\Controllers\OrganizationsController;
+use App\Http\Controllers\Reference\ItemCategoryController;
 use App\Http\Controllers\Reference\ItemController;
 use App\Http\Controllers\Reference\MeasurementsController;
 use App\Http\Controllers\Reference\SuppliersController;
@@ -191,6 +192,16 @@ Route::middleware('auth')->group(function () {
                 Route::put('{item}', 'update')->name('.update');
                 Route::delete('{item}', 'destroy')->name('.destroy');
                 Route::put('{item}/restore', 'restore')->name('.restore');
+            });
+
+            // ItemCategory
+            Route::prefix('item-categories')->name('.items-categories')->controller(ItemCategoryController::class)->group(function () {
+                Route::get('', 'index');
+                Route::post('', 'store')->name('.store');
+                Route::get('{item_category}/edit', 'edit')->name('.edit');
+                Route::put('{item_category}', 'update')->name('.update');
+                Route::delete('{item_category}', 'destroy')->name('.destroy');
+                Route::put('{item_category}/restore', 'restore')->name('.restore');
             });
 
             // Measurement

@@ -6,7 +6,7 @@
             <span class="font-medium text-sky-500">/</span>
             {{ form.name }}
         </h1>
-        <trashed-message v-if="measurement.deleted_at" class="mb-6" @restore="restore"> Этот принимающи был удален. </trashed-message>
+        <trashed-message v-if="measurement.deleted_at" class="mb-6" @restore="restore"> Этот измерение был удален. </trashed-message>
         <div class="max-w-3xl overflow-hidden bg-white rounded-md shadow">
             <form @submit.prevent="update">
                 <div class="flex flex-wrap px-4 py-3 ">

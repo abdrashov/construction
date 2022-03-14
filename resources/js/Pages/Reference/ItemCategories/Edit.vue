@@ -2,26 +2,18 @@
     <div>
         <Head :title="form.name" />
         <h1 class="mb-6 text-2xl font-semibold">
-            <Link class="text-sky-500 hover:text-sky-700" href="/reference/items">Товары</Link>
+            <Link class="text-sky-500 hover:text-sky-700" href="/reference/item-categories">Категория товаров</Link>
             <span class="font-medium text-sky-500">/</span>
             {{ form.name }}
         </h1>
-        <trashed-message v-if="item.deleted_at" class="mb-6" @restore="restore"> Этот товар был удален. </trashed-message>
-        <div class="max-w-3xl overflow-hidden bg-white rounded-lg shadow">
+        <trashed-message v-if="item_category.deleted_at" class="mb-6" @restore="restore"> Этот категория товаров был удален. </trashed-message>
+        <div class="max-w-3xl overflow-hidden bg-white rounded-md shadow">
             <form @submit.prevent="update">
                 <div class="flex flex-wrap px-4 py-3 ">
-                    <text-input v-model="form.name" :error="form.errors.name" class="w-full pb-4" label="Названия" />
-                    <select-input v-model="form.item_category_id" :error="form.errors.item_category_id" class="w-full pb-4" label="Категория">
-                        <option :value="null"></option>
-                        <option v-for="item_category in item_categories" :key="item_category.id" :value="item_category.id">{{ item_category.name }}</option>
-                    </select-input>
-                    <select-input v-model="form.measurement_id" :error="form.errors.measurement_id" class="w-full pb-4" label="Измерение">
-                        <option :value="null"></option>
-                        <option v-for="measurement in measurements" :key="measurement.id" :value="measurement.id">{{ measurement.name }}</option>
-                    </select-input>
+                    <text-input v-model="form.name" :error="form.errors.name" class="w-full pb-4" label="Название" />
                 </div>
                 <div class="flex items-center px-5 py-3 border-t border-gray-100 bg-gray-50">
-                    <button v-if="!item.deleted_at" class="text-sm text-red-600 hover:underline" tabindex="-1" type="button" @click="destroy">Удалить</button>
+                    <button v-if="!item_category.deleted_at" class="text-sm text-red-600 hover:underline" tabindex="-1" type="button" @click="destroy">Удалить</button>
                     <loading-button :loading="form.processing" class="ml-auto btn-green" type="submit">Обновить</loading-button>
                 </div>
             </form>
@@ -50,23 +42,19 @@ export default {
     },
     layout: Layout,
     props: {
-        item: Object,
-        item_categories: Object,
-        measurements: Object,
+        item_category: Object,
     },
     remember: 'form',
     data() {
         return {
             form: this.$inertia.form({
-                name: this.item.name,
-                item_category_id: this.item.item_category_id,
-                measurement_id: this.item.measurement_id,
+                name: this.item_category.name,
             }),
         }
     },
     methods: {
         update() {
-            this.form.put(`/reference/items/${this.item.id}`)
+            this.form.put(`/reference/item-categories/${this.item_category.id}`)
         },
         destroy() {
             this.$swal({
@@ -79,7 +67,7 @@ export default {
                 cancelButtonText: 'Отмена',
             }).then((result) => {
                 if (result.isConfirmed) {
-                    this.$inertia.delete(`/reference/items/${this.item.id}`)
+                    this.$inertia.delete(`/reference/item-categories/${this.item_category.id}`)
                 }
             })
         },
@@ -94,7 +82,7 @@ export default {
                 cancelButtonText: 'Отмена',
             }).then((result) => {
                 if (result.isConfirmed) {
-                    this.$inertia.put(`/reference/items/${this.item.id}/restore`)
+                    this.$inertia.put(`/reference/item-categories/${this.item_category.id}/restore`)
                 }
             })
         },

@@ -3,63 +3,74 @@
         <Head title="Отчеты" />
         <h1 class="mb-6 text-2xl font-semibold">Отчеты</h1>
         <div class="mb-2">
-            <Link href="/reports" class="btn-blue inline-block mt-2 md:mt-0">
+            <Link href="/reports" class="inline-block mt-2 btn-blue md:mt-0">
                 <span>По поставщикам</span>
             </Link>
-            <Link href="/reports/items" class="btn-blue inline-block ml-0 mt-2 md:ml-2 md:mt-0">
+            <Link href="/reports/items" class="inline-block mt-2 ml-0 btn-blue md:ml-2 md:mt-0">
                 <span>По товарам</span>
             </Link>
         </div>
         <div class="items-center justify-between mb-6 md:flex">
             <div class="items-center w-full md:flex md:w-1/2">
-                <select v-model="form.organization_id" class="form-select-icon relative px-4 py-3 w-full rounded focus:shadow-outline appearance-none">
+                <select v-model="form.organization_id" class="relative w-full px-4 py-3 rounded appearance-none form-select-icon focus:shadow-outline">
                     <option :value="null">Выберите объект</option>
                     <option v-for="organization in organizations" :key="organization.id" :value="organization.id">{{ organization.name }}</option>
                 </select>
-                <button class="hidden ml-3 w-8 text-gray-500 hover:text-gray-700 focus:text-indigo-500 text-sm md:block" type="button" @click="reset">Сброс</button>
+                <button class="hidden w-8 ml-3 text-sm text-gray-500 hover:text-gray-700 focus:text-indigo-500 md:block" type="button" @click="reset">Сброс</button>
             </div>
         </div>
-        <div class="text-sm bg-white shadow overflow-x-auto">
+        <div class="overflow-x-auto text-sm bg-white shadow">
             <table class="w-full">
-                <tr class="text-left text-gray-500 text-xs font-semibold tracking-wide bg-gray-50 border-b uppercase">
-                    <th class="px-4 py-3 w-10 border-r">#</th>
+                <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
+                    <th class="w-10 px-4 py-3 border-r">#</th>
                     <th class="px-4 py-3 border-l border-r">Название Товара</th>
                     <th class="px-4 py-3 border-l border-r">Использовался</th>
                     <th class="px-4 py-3 border-l border-r">Сумма</th>
+                    <th class="px-4 py-3 border-l border-r">Итого</th>
                 </tr>
-                <tr v-for="(item, index) in items" :key="item.id">
-                    <td class="border-t">
-                        <div class="flex items-center px-4 py-2 font-medium">
-                            {{ index + 1 }}
+                <tr v-for="item in items" :key="item.id">
+                    <td class="border-t" :colspan="item.count ? 1 : 5">
+                        <div :class="'flex items-center px-4  ' + (item.count ? 'py-2 font-medium' : 'py-4 font-semibold')">
+                            {{ item.count ? item.index : item.name }}
                         </div>
                     </td>
-                    <td class="border-l border-t">
+                    <td v-if="item.count" class="border-t border-l">
                         <div class="flex items-center px-4 py-2 font-medium">
                             {{ item.name }}
                         </div>
                     </td>
-                    <td class="border-l border-t">
+                    <td v-if="item.count" class="border-t border-l">
                         <div class="flex items-center px-4 py-2 font-medium">
-                            {{ item.count }} 
+                            {{ item.count }}
                             {{ item.measurement }}
                         </div>
                     </td>
-                    <td class="border-l border-t">
-                        <div class="flex items-center px-4 whitespace-nowrap font-semibold">
-                            {{ item.sum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
+                    <td v-if="item.count" class="border-t border-l">
+                        <div class="flex items-center px-4 font-semibold whitespace-nowrap">
+                            {{ item.sum?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
+                        </div>
+                    </td>
+                    <td v-if="item.count" class="border-t border-l">
+                        <div class="flex items-center px-4 font-semibold whitespace-nowrap">
+                            {{ item.category_sum?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
                         </div>
                     </td>
                 </tr>
                 <tr v-if="items.length !== 0">
                     <td class="px-4 py-4 font-semibold border-t" colspan="3">ИТОГО</td>
-                    <td class="border-l border-t">
-                        <div class="flex items-center px-4 whitespace-nowrap font-semibold">
+                    <td class="border-t border-l">
+                        <div class="flex items-center px-4 font-semibold whitespace-nowrap">
                             {{ sum_item?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
+                        </div>
+                    </td>
+                    <td class="border-t border-l">
+                        <div class="flex items-center px-4 font-semibold whitespace-nowrap">
+                            {{ sum_item_category?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
                         </div>
                     </td>
                 </tr>
                 <tr v-if="items.length === 0">
-                    <td class="px-4 py-4 border-t" colspan="3">Не найдено.</td>
+                    <td class="px-4 py-4 border-t" colspan="5">Не найдено.</td>
                 </tr>
             </table>
         </div>
@@ -96,6 +107,7 @@ export default {
         organizations: Object,
         items: Object,
         sum_item: Number,
+        sum_item_category: Number,
     },
     data() {
         return {

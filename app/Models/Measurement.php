@@ -35,5 +35,5 @@ class Measurement extends Model
         });
     }
 
-    
+
 }
