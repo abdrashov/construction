@@ -29,7 +29,7 @@ class ExpenseCommonController extends Controller
                 'fullname' => $expense->user->last_name . ' ' .  $expense->user->first_name,
                 'price' => $expense->price ? $expense->price / Expense::FLOAT_TO_INT_PRICE : null,
                 'paid' => $expense->paid ? $expense->paid / Expense::FLOAT_TO_INT_PRICE : null,
-                'date' => $expense->date->format('Y-m-d'),
+                'date' => $expense->date->format('d.m.Y'),
             ]);
         $paid_sum = 0;
         foreach ($expenses as $expense) {
@@ -49,7 +49,7 @@ class ExpenseCommonController extends Controller
                 'id' => $organization->id,
                 'name' => $organization->name,
             ],
-            'categories' => ExpenseCategory::orderBy('name')->get(),
+            'categories' => ExpenseCategory::orderBy('sort')->orderBy('name')->get(),
         ]);
     }
 

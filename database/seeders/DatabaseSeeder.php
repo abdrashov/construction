@@ -34,13 +34,13 @@ class DatabaseSeeder extends Seeder
         User::factory(8)->create();
 
         Measurement::create([
-            'name' => 'кг'
+            'name' => 'кг',
         ]);
         Measurement::create([
-            'name' => 'т'
+            'name' => 'т',
         ]);
         Measurement::create([
-            'name' => 'м'
+            'name' => 'м',
         ]);
 
         Item::factory(80)->create();
@@ -48,19 +48,15 @@ class DatabaseSeeder extends Seeder
         Organization::factory(4)->create();
         Invoice::factory(5)->create();
         InvoiceItem::factory(30)->create();
-        ExpenseCategory::create(
-            [
-                'name' => 'Услуга',
-            ]
-        );
+        ExpenseCategory::create([
+            'name' => 'Услуга',
+        ]);
         ExpenseCategory::create([
             'name' => 'Зарплата',
         ]);
-        ExpenseCategory::create(
-            [
-                'name' => 'Прочие',
-            ]
-        );
+        ExpenseCategory::create([
+            'name' => 'Прочие',
+        ]);
         Expense::factory(5)->create();
         ExpenseHistory::factory(30)->create();
     }

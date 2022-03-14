@@ -14,6 +14,6 @@ class ExpenseCategory extends Model
     use SpatieLogsActivity;
 
     protected $fillable = [
-        'name'
+        'name', 'sort'
     ];
 }

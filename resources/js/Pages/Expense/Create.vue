@@ -18,7 +18,7 @@
                         <text-input v-model="form.name" :error="form.errors.name" class="pb-4 pr-0 w-full lg:pr-4 lg:w-1/2" label="Название" />
                         <div class="pb-4 w-full lg:w-1/2">
                             <label class="form-label">Дата:</label>
-                            <date-picker v-model="form.date" mode="date" is24hr :masks="{ input: 'YYYY-MM-DD' }">
+                            <date-picker v-model="form.date" mode="date" is24hr :masks="{ input: 'DD.MM.YYYY' }">
                                 <template v-slot="{ inputValue, inputEvents }">
                                     <input class="form-input" :class="{ error: form.errors.date }" :value="inputValue" v-on="inputEvents" />
                                 </template>

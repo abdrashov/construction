@@ -3,35 +3,35 @@
         <Head :title="form.name" />
         <h1 class="mb-6 text-2xl font-semibold">
             <Link class="text-sky-500 hover:text-sky-700" href="/organizations">Объекты</Link>
-            <span class="text-sky-500 font-medium">/</span>
+            <span class="font-medium text-sky-500">/</span>
             {{ form.name }}
         </h1>
         <trashed-message v-if="organization.deleted_at" class="mb-6" @restore="restore"> Эта объект была удалена. </trashed-message>
 
-        <div v-if="auth.user.role === 'Супер Администратор' || auth.user.role === 'Администратор'" class="w-full bg-white shadow overflow-hidden">
+        <div v-if="auth.user.role === 'Супер Администратор' || auth.user.role === 'Администратор'" class="w-full overflow-hidden bg-white shadow">
             <form @submit.prevent="update">
                 <div class="items-start lg:flex">
-                    <div class="flex flex-wrap px-4 py-3 w-full lg:pr-0 lg:w-1/2">
-                        <text-input v-model="form.name" class="pb-4 w-full text-sm" label="Название" />
-                        <text-input v-model="form.address" class="pb-4 w-full text-sm" label="Адрес" />
+                    <div class="flex flex-wrap w-full px-4 py-3 lg:pr-0 lg:w-1/2">
+                        <text-input v-model="form.name" class="w-full pb-4 text-sm" label="Название" />
+                        <text-input v-model="form.address" class="w-full pb-4 text-sm" label="Адрес" />
                     </div>
-                    <div class="flex flex-wrap px-4 py-3 w-full lg:w-1/2">
-                        <label class="form-label text-sm">Зав склад:</label>
+                    <div class="flex flex-wrap w-full px-4 py-3 lg:w-1/2">
+                        <label class="text-sm form-label">Зав склад:</label>
                         <div v-for="(user, index) in user_form" :key="index" class="flex w-full">
-                            <text-input v-model="user.lastname" class="pb-2 pr-2 w-1/2 text-sm" placeholder="Фамилия" />
-                            <text-input v-model="user.firstname" class="pb-2 pr-2 w-1/2 text-sm" placeholder="Имя" />
+                            <text-input v-model="user.lastname" class="w-1/2 pb-2 pr-2 text-sm" placeholder="Фамилия" />
+                            <text-input v-model="user.firstname" class="w-1/2 pb-2 pr-2 text-sm" placeholder="Имя" />
                             <button
                                 v-if="index !== 0"
                                 type="submit"
                                 @click.prevent="deleteUser(index)"
-                                class="focus:shadow-outline-gray flex items-center justify-end mb-4 px-2 py-2 text-gray-500 hover:text-red-400 text-sm font-medium leading-5 bg-gray-100 hover:bg-red-100 rounded-lg focus:outline-none duration-200"
+                                class="flex items-center justify-end px-2 py-2 mb-4 text-sm font-medium leading-5 text-gray-500 duration-200 bg-gray-100 rounded-lg focus:shadow-outline-gray hover:text-red-400 hover:bg-red-100 focus:outline-none"
                                 aria-label="Delete"
                             >
                                 <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
                                 </svg>
                             </button>
-                            <div v-if="index === 0" class="focus:shadow-outline-gray flex items-center justify-end mb-4 px-2 py-2 text-yellow-500 text-sm font-medium leading-5 bg-yellow-100 rounded-lg focus:outline-none">
+                            <div v-if="index === 0" class="flex items-center justify-end px-2 py-2 mb-4 text-sm font-medium leading-5 text-yellow-500 bg-yellow-100 rounded-lg focus:shadow-outline-gray focus:outline-none">
                                 <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
                                     <path
                                         d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
@@ -40,29 +40,29 @@
                             </div>
                         </div>
                         <div class="w-full text-right">
-                            <button @click.prevent="addUser()" class="mr-6 px-2 py-1 text-white whitespace-nowrap text-xs font-semibold leading-4 bg-blue-400 hover:bg-orange-400 focus:bg-orange-400 rounded">Добавить поля</button>
+                            <button @click.prevent="addUser()" class="px-2 py-1 mr-6 text-xs font-semibold leading-4 text-white bg-blue-400 rounded whitespace-nowrap hover:bg-orange-400 focus:bg-orange-400">Добавить поля</button>
                         </div>
                     </div>
                 </div>
-                <div class="flex items-center px-5 py-3 bg-gray-50 border-t border-gray-100">
-                    <button v-if="!organization.deleted_at" class="text-red-600 hover:underline text-sm" tabindex="-1" type="button" @click="destroy">Удалить Объект</button>
-                    <loading-button :loading="form.processing" class="btn-green ml-auto" type="submit">Обновить Объект</loading-button>
+                <div class="flex items-center px-5 py-3 border-t border-gray-100 bg-gray-50">
+                    <button v-if="!organization.deleted_at" class="text-sm text-red-600 hover:underline" tabindex="-1" type="button" @click="destroy">Удалить Объект</button>
+                    <loading-button :loading="form.processing" class="ml-auto btn-green" type="submit">Обновить Объект</loading-button>
                 </div>
             </form>
         </div>
 
-        <div class="mb-3 mt-6 text-xl md:flex md:items-center md:justify-between">
+        <div class="mt-6 mb-3 text-xl md:flex md:items-center md:justify-between">
             <div class="mr-4">
-                <h2 class="text-gray-600 font-semibold">Накладные</h2>
+                <h2 class="font-semibold text-gray-600">Накладные</h2>
             </div>
             <div class="">
-                <Link class="ml-3 mr-2 text-gray-500 hover:text-gray-700 focus:text-indigo-500 text-sm" v-if="filters.name || filters.date || filters.supplier_id || filters.accepted || filters.status || filters.pay" :href="`/organizations/${this.organization.id}/invoices`">
+                <Link class="ml-3 mr-2 text-sm text-gray-500 hover:text-gray-700 focus:text-indigo-500" v-if="filters.name || filters.date || filters.supplier_id || filters.accepted || filters.status || filters.pay" :href="`/organizations/${this.organization.id}/invoices`">
                     <span>Сброс</span>
                 </Link>
-                <button @click="search.modal = true" class="btn-gray mr-2">
+                <button @click="search.modal = true" class="mr-2 btn-gray">
                     <span>Фильтр/Поиск</span>
                 </button>
-                <Link class="btn-indigo mr-2" :href="`/organizations/${organization.id}/expense`">
+                <Link class="mr-2 btn-indigo" :href="`/organizations/${organization.id}/expense`">
                     <span>Расходы</span>
                 </Link>
                 <Link class="btn-blue" :href="`/organizations/${organization.id}/invoices/create`">
@@ -71,75 +71,78 @@
                 </Link>
             </div>
         </div>
-        <div class="text-sm bg-white shadow overflow-x-auto">
+        <div class="overflow-x-auto text-sm bg-white shadow">
             <table class="w-full">
-                <tr class="text-left text-gray-500 text-xs font-semibold tracking-wide bg-gray-50 border-b uppercase">
-                    <th class="px-4 py-3 w-12">#</th>
+                <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
+                    <th class="w-12 px-4 py-3">#</th>
                     <th class="px-2 py-3 border-l">Номер</th>
                     <th class="px-2 py-3 border-l">Поставщик</th>
-                    <th class="px-2 py-3 border-l">Принял</th>
                     <th class="px-2 py-3 border-l">Сумма</th>
                     <th class="px-2 py-3 border-l">Статусы</th>
+                    <th class="px-2 py-3 border-l">Дата</th>
                     <th colspan="2" class="px-4 py-3 border-l">Информация</th>
                 </tr>
                 <tr v-for="(invoice, index) in organization.invoices.data" :key="invoice.id">
                     <td class="w-12 border-t">
-                        <div class="flex items-center px-4 py-3 text-gray-900 font-medium">
+                        <div class="flex items-center px-4 py-3 font-medium text-gray-900">
                             {{ (organization.invoices.current_page - 1) * organization.invoices.per_page + index + 1 }}
                         </div>
                     </td>
-                    <td class="border-l border-t">
-                        <Link class="flex items-center px-2 py-3 text-gray-900 font-medium" :href="`/invoices/${invoice.id}/invoice-items`">
+                    <td class="border-t border-l">
+                        <Link class="flex items-center px-2 py-3 font-medium text-gray-900" :href="`/invoices/${invoice.id}/invoice-items`">
                             {{ invoice.name }}
-                            <icon v-if="invoice.deleted_at" name="trash" class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400" />
+                            <icon v-if="invoice.deleted_at" name="trash" class="flex-shrink-0 w-3 h-3 ml-2 fill-gray-400" />
                         </Link>
                     </td>
-                    <td class="border-l border-t">
+                    <td class="border-t border-l">
                         <Link class="flex items-center px-2 py-3" :href="`/invoices/${invoice.id}/invoice-items`" tabindex="-1">
                             {{ invoice.supplier }}
                         </Link>
                     </td>
-                    <td class="border-l border-t">
-                        <Link class="flex items-center px-2 py-3" :href="`/invoices/${invoice.id}/invoice-items`" tabindex="-1">
-                            {{ invoice.accepted }}
-                        </Link>
-                    </td>
-                    <td class="border-l border-t">
+                    <td class="border-t border-l">
                         <Link class="flex items-center px-2 py-3 whitespace-nowrap" :href="`/invoices/${invoice.id}/invoice-items`" tabindex="-1">
                             {{ invoice.sum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
                         </Link>
                     </td>
-                    <td class="border-l border-t">
+                    <td class="border-t border-l">
                         <div class="flex mx-2 text-xs">
-                            <Link v-if="invoice.pay && invoice.status" class="px-2 py-1 whitespace-nowrap font-semibold leading-tight bg-gradient-to-r rounded-full from-green-100 to-blue-100" :href="`/invoices/${invoice.id}/invoice-items`" tabindex="-1">
+                            <Link v-if="invoice.pay && invoice.status" class="px-2 py-1 font-semibold leading-tight rounded-full whitespace-nowrap bg-gradient-to-r from-green-100 to-blue-100" :href="`/invoices/${invoice.id}/invoice-items`" tabindex="-1">
                                 <span class="text-green-700"> Оплачен </span>
                                 /
                                 <span class="text-blue-700"> Подвержен </span>
                             </Link>
-                            <Link v-else-if="!invoice.pay && invoice.status" class="px-2 py-1 whitespace-nowrap font-semibold leading-tight bg-gradient-to-r rounded-full from-red-100 to-blue-100" :href="`/invoices/${invoice.id}/invoice-items`" tabindex="-1">
+                            <Link v-else-if="!invoice.pay && invoice.status" class="px-2 py-1 font-semibold leading-tight rounded-full whitespace-nowrap bg-gradient-to-r from-red-100 to-blue-100" :href="`/invoices/${invoice.id}/invoice-items`" tabindex="-1">
                                 <span class="text-red-700"> Не оплачен </span>
                                 /
                                 <span class="text-blue-700"> Подвержен </span>
                             </Link>
-                            <Link v-else-if="!invoice.pay && !invoice.status" class="px-2 py-1 whitespace-nowrap font-semibold leading-tight bg-gradient-to-r rounded-full from-red-100 to-gray-100" :href="`/invoices/${invoice.id}/invoice-items`" tabindex="-1">
+                            <Link v-else-if="!invoice.pay && !invoice.status" class="px-2 py-1 font-semibold leading-tight rounded-full whitespace-nowrap bg-gradient-to-r from-red-100 to-gray-100" :href="`/invoices/${invoice.id}/invoice-items`" tabindex="-1">
                                 <span class="text-red-700"> Не оплачен </span>
                                 /
                                 <span class="text-gray-700"> Не подтвержден </span>
                             </Link>
                         </div>
                     </td>
-                    <td class="border-l border-t">
+                    <td class="border-t border-l">
+                        <Link class="flex items-center px-2 py-3 whitespace-nowrap" :href="`/invoices/${invoice.id}/invoice-items`" tabindex="-1">
+                            {{ invoice.date }}
+                        </Link>
+                    </td>
+                    <td class="border-t border-l">
                         <Link class="flex items-center px-2 py-3" :href="`/invoices/${invoice.id}/invoice-items`" tabindex="-1">
                             <div>
                                 <div>{{ invoice.fullname }}</div>
-                                <div class="text-gray-700 whitespace-nowrap text-xs font-medium">{{ invoice.date }}</div>
+                                <div class="text-xs font-medium text-gray-700">
+                                    Создано:
+                                    <span class="whitespace-nowrap"> {{ invoice.created }}</span>
+                                </div>
                             </div>
                         </Link>
                     </td>
-                    <td class="w-16 border-l border-t">
+                    <td class="w-16 border-t border-l">
                         <div class="flex items-center justify-end px-4 py-1">
                             <Link
-                                class="focus:shadow-outline-gray flex items-center justify-end ml-2 px-2 py-2 text-gray-500 hover:text-orange-400 text-xs font-medium leading-5 bg-gray-100 hover:bg-orange-100 rounded-lg focus:outline-none duration-200"
+                                class="flex items-center justify-end px-2 py-2 ml-2 text-xs font-medium leading-5 text-gray-500 duration-200 bg-gray-100 rounded-lg focus:shadow-outline-gray hover:text-orange-400 hover:bg-orange-100 focus:outline-none"
                                 :href="`/invoices/${invoice.id}/invoice-items`"
                             >
                                 <icon name="right" class="w-4 h-4" />
@@ -162,7 +165,7 @@
                 <li class="pb-4">
                     <div class="w-full">
                         <label class="form-label">Дата:</label>
-                        <date-picker v-model="search.date" mode="date" is24hr :masks="{ input: 'YYYY-MM-DD' }">
+                        <date-picker v-model="search.date" mode="date" is24hr :masks="{ input: 'DD.MM.YYYY' }">
                             <template v-slot="{ inputValue, inputEvents }">
                                 <input class="form-input" :value="inputValue" v-on="inputEvents" />
                             </template>

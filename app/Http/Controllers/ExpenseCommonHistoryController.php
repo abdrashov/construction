@@ -23,7 +23,7 @@ class ExpenseCommonHistoryController extends Controller
     {
         return Inertia::render('ExpenseCommonHistory/Index', [
             'filters' => Request::only('search', 'page'),
-            'categories' => ExpenseCategory::orderBy('name')->get(),
+            'categories' => ExpenseCategory::orderBy('sort')->orderBy('name')->get(),
             'expense' => [
                 'id' => $expense->id,
                 'name' => $expense->name,
@@ -40,7 +40,7 @@ class ExpenseCommonHistoryController extends Controller
                     'name' => $expense->name,
                     'fullname' => $expense->user->last_name . ' ' .  $expense->user->first_name,
                     'price' => $expense->price / ExpenseHistory::FLOAT_TO_INT_PRICE,
-                    'date' => $expense->date->format('Y-m-d'),
+                    'date' => $expense->date->format('d.m.Y'),
                 ]),
         ]);
     }
@@ -94,7 +94,7 @@ class ExpenseCommonHistoryController extends Controller
         $expense->update([
             'paid' => $expense->paid - $expense_history->price
         ]);
-        
+
         $expense_history->delete();
 
         return Redirect::back()->with('success', 'Удален.');

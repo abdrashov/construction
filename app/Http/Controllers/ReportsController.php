@@ -185,7 +185,7 @@ class ReportsController extends Controller
                 'id' => $invoice->id,
                 'name' => $invoice->name,
                 'pay' => $invoice->pay,
-                'date' => $invoice->date->format('Y-m-d'),
+                'date' => $invoice->date->format('d.m.Y'),
                 'accepted' => $invoice->accepted,
                 'sum' => $invoice->invoiceItems()->select(DB::raw('SUM(count * price) as sum'))->value('sum') / (InvoiceItem::FLOAT_TO_INT_PRICE * InvoiceItem::FLOAT_TO_INT_COUNT),
             ]);
@@ -224,7 +224,7 @@ class ReportsController extends Controller
             ->transform(fn ($invoice) => [
                 'id' => $invoice->id,
                 'name' => $invoice->name,
-                'date' => $invoice->date->format('Y-m-d'),
+                'date' => $invoice->date->format('d.m.Y'),
                 'accepted' => $invoice->accepted,
                 'sum' => $invoice->invoiceItems()->select(DB::raw('SUM(count * price) as sum'))->value('sum') / (InvoiceItem::FLOAT_TO_INT_PRICE * InvoiceItem::FLOAT_TO_INT_COUNT),
             ]);
@@ -264,7 +264,7 @@ class ReportsController extends Controller
             ->transform(fn ($invoice) => [
                 'id' => $invoice->id,
                 'name' => $invoice->name,
-                'date' => $invoice->date->format('Y-m-d'),
+                'date' => $invoice->date->format('d.m.Y'),
                 'accepted' => $invoice->accepted,
                 'sum' => $invoice->invoiceItems()->select(DB::raw('SUM(count * price) as sum'))->value('sum') / (InvoiceItem::FLOAT_TO_INT_PRICE * InvoiceItem::FLOAT_TO_INT_COUNT),
             ]);
@@ -298,7 +298,7 @@ class ReportsController extends Controller
                 'name' => $invoice->name,
                 'status' => $invoice->status,
                 'pay' => $invoice->pay,
-                'date' => $invoice->date->format('Y-m-d'),
+                'date' => $invoice->date->format('d.m.Y'),
                 'supplier' => $invoice->supplier,
                 'accepted' => $invoice->accepted,
                 'file' => $invoice->file ? '\\file\\' . $invoice->file : '',

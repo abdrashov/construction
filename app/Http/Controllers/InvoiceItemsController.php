@@ -64,7 +64,7 @@ class InvoiceItemsController extends Controller
                 'name' => $invoice->name,
                 'status' => $invoice->status,
                 'pay' => $invoice->pay,
-                'date' => $invoice->date->format('Y-m-d'),
+                'date' => $invoice->date->format('d.m.Y'),
                 'supplier' => $invoice->supplier,
                 'accepted' => $invoice->accepted,
                 'file' => $invoice->file ? '\\file\\' . $invoice->file : '',

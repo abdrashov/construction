@@ -100,7 +100,7 @@ Route::middleware('auth')->group(function () {
         Route::put('{organization}/restore', 'restore')->name('.restore');
     });
 
-    Route::middleware('role:Супер Администратор,Бухгалтер,Кассир')->group(function () {
+    Route::middleware('role:Супер Администратор,Кассир')->group(function () {
 
         // Reports
         Route::prefix('reports')->name('reports')->controller(ReportsController::class)->group(function () {

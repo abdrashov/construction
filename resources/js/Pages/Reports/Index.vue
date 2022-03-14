@@ -93,7 +93,7 @@
                 <li class="pb-4">
                     <div class="w-full">
                         <label class="form-label">Дата от:</label>
-                        <date-picker v-model="search.begin" mode="date" is24hr :masks="{ input: 'YYYY-MM-DD' }">
+                        <date-picker v-model="search.begin" mode="date" is24hr :masks="{ input: 'DD.MM.YYYY' }">
                             <template v-slot="{ inputValue, inputEvents }">
                                 <input class="form-input" :value="inputValue" v-on="inputEvents" />
                             </template>
@@ -103,7 +103,7 @@
                 <li class="pb-4">
                     <div class="w-full">
                         <label class="form-label">Дата до:</label>
-                        <date-picker v-model="search.end" mode="date" is24hr :masks="{ input: 'YYYY-MM-DD' }">
+                        <date-picker v-model="search.end" mode="date" is24hr :masks="{ input: 'DD.MM.YYYY' }">
                             <template v-slot="{ inputValue, inputEvents }">
                                 <input class="form-input" :value="inputValue" v-on="inputEvents" />
                             </template>

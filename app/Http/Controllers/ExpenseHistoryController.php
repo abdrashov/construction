@@ -27,7 +27,7 @@ class ExpenseHistoryController extends Controller
                 'id' => $expense->organization->id,
                 'name' => $expense->organization->name,
             ],
-            'categories' => ExpenseCategory::orderBy('name')->get(),
+            'categories' => ExpenseCategory::orderBy('sort')->orderBy('name')->get(),
             'expense' => [
                 'id' => $expense->id,
                 'name' => $expense->name,
@@ -44,7 +44,7 @@ class ExpenseHistoryController extends Controller
                     'name' => $expense->name,
                     'fullname' => $expense->user->last_name . ' ' .  $expense->user->first_name,
                     'price' => $expense->price / ExpenseHistory::FLOAT_TO_INT_PRICE,
-                    'date' => $expense->date->format('Y-m-d'),
+                    'date' => $expense->date->format('d.m.Y'),
                 ]),
         ]);
     }
@@ -79,7 +79,7 @@ class ExpenseHistoryController extends Controller
         $expense->update([
             'paid' => $expense->paid - $expense_history->price
         ]);
-        
+
         $expense_history->delete();
 
         return Redirect::back()->with('success', 'Удален.');
