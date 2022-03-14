@@ -51,7 +51,7 @@ class ReportsController extends Controller
             })
             ->groupBy('suppliers.id')
             ->get()
-            ->transform(fn($report) => [
+            ->transform(fn ($report) => [
                 'id' => $report->id,
                 'supplier_id' => $report->supplier_id,
                 'supplier' => $report->supplier,
@@ -87,7 +87,7 @@ class ReportsController extends Controller
             })
             ->groupBy('suppliers.id')
             ->get()
-            ->transform(fn($report) => [
+            ->transform(fn ($report) => [
                 'id' => $report->id,
                 'supplier_id' => $report->supplier_id,
                 'supplier' => $report->supplier,
@@ -188,7 +188,7 @@ class ReportsController extends Controller
                 $query->where('date', '<=', $search);
             })
             ->get()
-            ->transform(fn($invoice) => [
+            ->transform(fn ($invoice) => [
                 'id' => $invoice->id,
                 'name' => $invoice->name,
                 'pay' => $invoice->pay,
@@ -233,7 +233,7 @@ class ReportsController extends Controller
             })
             ->where('status', 1)
             ->get()
-            ->transform(fn($invoice) => [
+            ->transform(fn ($invoice) => [
                 'id' => $invoice->id,
                 'name' => $invoice->name,
                 'date' => $invoice->date->format('d.m.Y'),
@@ -278,7 +278,7 @@ class ReportsController extends Controller
             })
             ->where('status', 1)
             ->get()
-            ->transform(fn($invoice) => [
+            ->transform(fn ($invoice) => [
                 'id' => $invoice->id,
                 'name' => $invoice->name,
                 'date' => $invoice->date->format('d.m.Y'),
@@ -326,7 +326,7 @@ class ReportsController extends Controller
                 'file' => $invoice->file ? '\\file\\' . $invoice->file : '',
                 'sum' => $invoice->invoiceItems()->select(DB::raw('SUM(count * price) as sum'))->value('sum') / (InvoiceItem::FLOAT_TO_INT_PRICE * InvoiceItem::FLOAT_TO_INT_COUNT),
             ],
-            'invoice_items' => $invoice->invoiceItems->transform(fn($item) => [
+            'invoice_items' => $invoice->invoiceItems->transform(fn ($item) => [
                 'id' => $item->id,
                 'name' => $item->name,
                 'count' => $item->count / InvoiceItem::FLOAT_TO_INT_COUNT,
@@ -339,61 +339,107 @@ class ReportsController extends Controller
     public function items()
     {
 
+        // $items = InvoiceItem::select(
+        //     'id',
+        //     'name',
+        //     'measurement',
+        //     'item_id',
+        //     DB::raw('SUM(count) as items_count'),
+        //     DB::raw('SUM(count * price) as items_price'),
+        // )
+        //     ->whereHas('invoice', function ($query) {
+        //         $query->where('organization_id', Request::input('organization_id'))
+        //             ->where('status', true);
+        //     })
+        //     ->with('item.itemCategory')
+        //     ->orderBy('name')
+        //     ->groupBy('item_id')
+        //     ->get()
+        //     ->transform(fn($item) => [
+        //         'id' => $item->id,
+        //         'name' => $item->name,
+        //         'item_category' => $item->item?->itemCategory ? $item->item?->itemCategory->name : null,
+        //         'item_category_sort' => $item->item?->itemCategory ? $item->item?->itemCategory->sort : null,
+        //         'measurement' => $item->measurement,
+        //         'count' => $item->items_count / InvoiceItem::FLOAT_TO_INT_COUNT,
+        //         'sum' => $item->items_price / (InvoiceItem::FLOAT_TO_INT_COUNT * InvoiceItem::FLOAT_TO_INT_PRICE),
+        //     ])->toArray();
+
+        // array_multisort(array_map(function ($element) {
+        //     return $element['item_category'];
+        // }, $items), SORT_ASC, $items);
+
+        // array_multisort(array_map(function ($element) {
+        //     return $element['name'];
+        // }, $items), SORT_ASC, $items);
+
+        // usort($items, function ($a, $b) {
+        //     return ($a['item_category_sort'] - $b['item_category_sort']);
+        // });
+
         $items = InvoiceItem::select(
-            'id',
-            'name',
-            'measurement',
-            'item_id',
-            DB::raw('SUM(count) as items_count'),
-            DB::raw('SUM(count * price) as items_price'),
+            'invoice_items.id',
+            'invoice_items.name',
+            'item_categories.id as item_category_id',
+            'item_categories.name as item_category',
+            'invoice_items.measurement',
+            DB::raw('SUM(invoice_items.count) as count'),
+            DB::raw('SUM(invoice_items.count * invoice_items.price) as sum'),
         )
-            ->whereHas('invoice', function ($query) {
-                $query->where('organization_id', Request::input('organization_id'))
-                    ->where('status', true);
-            })
-            ->with('item.itemCategory')
-            ->orderBy('name')
-            ->groupBy('item_id')
+            ->join('invoices', 'invoice_items.invoice_id', '=', 'invoices.id')
+            ->join('items', 'invoice_items.item_id', '=', 'items.id')
+            ->join('item_categories', 'items.item_category_id', '=', 'item_categories.id')
+            ->where('invoices.organization_id', Request::input('organization_id'))
+            ->where('invoices.status', true)
+            ->groupBy('invoice_items.item_id')
+            ->orderBy('item_categories.sort')
+            ->orderBy('item_categories.name')
+            ->orderBy('invoice_items.name')
             ->get()
-            ->transform(fn($item) => [
+            ->transform(fn ($item) => [
                 'id' => $item->id,
                 'name' => $item->name,
-                'item_category' => $item->item?->itemCategory ? $item->item?->itemCategory->name : null,
-                'item_category_sort' => $item->item?->itemCategory ? $item->item?->itemCategory->sort : null,
+                'item_category_id' => $item->item_category_id,
+                'item_category' => $item->item_category,
                 'measurement' => $item->measurement,
-                'count' => $item->items_count / InvoiceItem::FLOAT_TO_INT_COUNT,
-                'sum' => $item->items_price / (InvoiceItem::FLOAT_TO_INT_COUNT * InvoiceItem::FLOAT_TO_INT_PRICE),
+                'count' => $item->count / InvoiceItem::FLOAT_TO_INT_COUNT,
+                'sum' => $item->sum / (InvoiceItem::FLOAT_TO_INT_COUNT * InvoiceItem::FLOAT_TO_INT_PRICE),
             ])->toArray();
 
-        array_multisort(array_map(function ($element) {
-            return $element['item_category'];
-        }, $items), SORT_ASC, $items);
-
-        array_multisort(array_map(function ($element) {
-            return $element['name'];
-        }, $items), SORT_ASC, $items);
-
-        usort($items, function ($a, $b) {
-            return ($a['item_category_sort'] - $b['item_category_sort']);
-        });
+        //     dd( $items);
 
         $item_categories = [];
         $item_category = 0;
-        $valdate = true;
+        $valdate = 0;
         for ($index = 0; $index < count($items); $index++) {
-            if ($index - 1 >= 0 && $items[$index - 1]['item_category'] != $items[$index]['item_category']) {
-                $valdate = true;
-            }
-            if ($valdate) {
+            if ($valdate != $items[$index]['item_category_id']) {
                 $item_categories[] = [
                     'name' => $items[$index]['item_category'],
                 ];
-                $valdate = false;
             }
+
             $item_categories[] = ['index' => $index + 1] + $items[$index];
             $item_category += $items[$index]['sum'];
 
-            if ($index + 1 >= count($items) || $items[$index + 1]['item_category'] != $items[$index]['item_category']) {
+            // if ($index - 1 >= 0 && $items[$index - 1]['item_category'] != $items[$index]['item_category']) {
+            //     $valdate = true;
+            // }
+            // if ($valdate) {
+            //     $item_categories[] = [
+            //         'name' => $items[$index]['item_category'],
+            //     ];
+            //     $valdate = false;
+            // }
+            // $item_categories[] = ['index' => $index + 1] + $items[$index];
+            // $item_category += $items[$index]['sum'];
+
+            // if ($index + 1 >= count($items) || $items[$index + 1]['item_category'] != $items[$index]['item_category']) {
+            //     $item_categories[count($item_categories) - 1] += ['category_sum' => $item_category];
+            //     $item_category = 0;
+            // }
+            $valdate = $items[$index]['item_category_id'];
+
+            if (empty($items[$index+1]) || $items[$index]['item_category_id'] != $items[$index+1]['item_category_id']) {
                 $item_categories[count($item_categories) - 1] += ['category_sum' => $item_category];
                 $item_category = 0;
             }
