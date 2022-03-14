@@ -23,8 +23,8 @@ class InvoiceItemFactory extends Factory
             'invoice_id' => Invoice::inRandomOrder()->value('id'), 
             'name' => $item->name, 
             'item_id' => $item->id, 
-            'count' => $this->faker->numberBetween(10000),
-            'price' => $this->faker->numberBetween(5000000000),
+            'count' => $this->faker->numberBetween(1, 5).'0000',
+            'price' => $this->faker->numberBetween(1, 10).'00',
             'measurement' => $measurement->name,
             'measurement_id' => $measurement->id,
         ];
