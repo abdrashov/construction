@@ -23,7 +23,7 @@ class ItemController extends Controller
                 ->with(['itemCategory', 'measurement'])
                 ->paginate(10)
                 ->withQueryString()
-                ->through(fn ($item) => [
+                ->through(fn($item) => [
                     'id' => $item->id,
                     'name' => $item->name,
                     'сategory' => $item->itemCategory ? $item->itemCategory->name : 'Удален!',
@@ -76,6 +76,10 @@ class ItemController extends Controller
 
     public function destroy(Item $item)
     {
+        if ($item->invoiceItems()->exists()) {
+            return Redirect::back()->with('error', 'Невозможно удалить, этот товар уже используется в накладных.');
+        }
+
         $item->delete();
 
         return Redirect::back()->with('success', 'Удален.');
