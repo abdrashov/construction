@@ -365,9 +365,14 @@ class ReportsController extends Controller
                 'sum' => $item->items_price / (InvoiceItem::FLOAT_TO_INT_COUNT * InvoiceItem::FLOAT_TO_INT_PRICE),
             ])->toArray();
 
+        array_multisort(array_map(function($element) {
+            return $element['item_category'];
+        }, $items), SORT_ASC, $items);
+
         usort($items, function ($a, $b) {
             return ($a['item_category_sort'] - $b['item_category_sort']);
         });
+
 
         $item_categories = [];
         $item_category = 0;
