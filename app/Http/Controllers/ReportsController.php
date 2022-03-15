@@ -30,28 +30,24 @@ class ReportsController extends Controller
                 'suppliers.name as supplier',
                 DB::raw('SUM(invoice_items.price * invoice_items.count) as pay_sum'),
             )
-            ->join('invoices', function ($query) {
-                $query->on('suppliers.id', '=', 'invoices.supplier_id')
-                    ->where('invoices.status', true)
-                    ->where('invoices.pay', true)
-                    ->when(Request::input('begin') ?? null, function ($query, $search) {
-                        $query->where('invoices.date', '>=', $search);
-                    })
-                    ->when(Request::input('end') ?? null, function ($query, $search) {
-                        $query->where('invoices.date', '<=', $search);
-                    });
+            ->join('invoices', 'suppliers.id', '=', 'invoices.supplier_id')
+            ->join('invoice_items', 'invoices.id', '=', 'invoice_items.invoice_id')
+            ->join('organizations', 'invoices.organization_id', '=', 'organizations.id')
+            ->where('organizations.id', Request::input('organization_id'))
+            ->whereNull('organizations.deleted_at')
+            ->whereNull('invoice_items.deleted_at')
+            ->where('invoices.status', true)
+            ->where('invoices.pay', true)
+            ->when(Request::input('begin') ?? null, function ($query, $search) {
+                $query->where('invoices.date', '>=', $search);
             })
-            ->join('invoice_items', function ($query) {
-                $query->on('invoices.id', '=', 'invoice_items.invoice_id');
+            ->when(Request::input('end') ?? null, function ($query, $search) {
+                $query->where('invoices.date', '<=', $search);
             })
-            ->join('organizations', function ($query) {
-                $query->on('invoices.organization_id', '=', 'organizations.id')
-                    ->where('organizations.id', Request::input('organization_id'))
-                    ->whereNull('organizations.deleted_at');
-            })
+            ->whereNull('invoices.deleted_at')
             ->groupBy('suppliers.id')
             ->get()
-            ->transform(fn ($report) => [
+            ->transform(fn($report) => [
                 'id' => $report->id,
                 'supplier_id' => $report->supplier_id,
                 'supplier' => $report->supplier,
@@ -66,28 +62,24 @@ class ReportsController extends Controller
                 'suppliers.name as supplier',
                 DB::raw('SUM(invoice_items.price * invoice_items.count) as not_pay_sum'),
             )
-            ->join('invoices', function ($query) {
-                $query->on('suppliers.id', '=', 'invoices.supplier_id')
-                    ->where('invoices.status', true)
-                    ->where('invoices.pay', false)
-                    ->when(Request::input('begin') ?? null, function ($query, $search) {
-                        $query->where('invoices.date', '>=', $search);
-                    })
-                    ->when(Request::input('end') ?? null, function ($query, $search) {
-                        $query->where('invoices.date', '<=', $search);
-                    });
+            ->join('invoices', 'suppliers.id', '=', 'invoices.supplier_id')
+            ->join('invoice_items', 'invoices.id', '=', 'invoice_items.invoice_id')
+            ->join('organizations', 'invoices.organization_id', '=', 'organizations.id')
+            ->where('organizations.id', Request::input('organization_id'))
+            ->whereNull('organizations.deleted_at')
+            ->whereNull('invoice_items.deleted_at')
+            ->where('invoices.status', true)
+            ->where('invoices.pay', false)
+            ->when(Request::input('begin') ?? null, function ($query, $search) {
+                $query->where('invoices.date', '>=', $search);
             })
-            ->join('invoice_items', function ($query) {
-                $query->on('invoices.id', '=', 'invoice_items.invoice_id');
+            ->when(Request::input('end') ?? null, function ($query, $search) {
+                $query->where('invoices.date', '<=', $search);
             })
-            ->join('organizations', function ($query) {
-                $query->on('invoices.organization_id', '=', 'organizations.id')
-                    ->where('organizations.id', Request::input('organization_id'))
-                    ->whereNull('organizations.deleted_at');
-            })
+            ->whereNull('invoices.deleted_at')
             ->groupBy('suppliers.id')
             ->get()
-            ->transform(fn ($report) => [
+            ->transform(fn($report) => [
                 'id' => $report->id,
                 'supplier_id' => $report->supplier_id,
                 'supplier' => $report->supplier,
@@ -188,7 +180,7 @@ class ReportsController extends Controller
                 $query->where('date', '<=', $search);
             })
             ->get()
-            ->transform(fn ($invoice) => [
+            ->transform(fn($invoice) => [
                 'id' => $invoice->id,
                 'name' => $invoice->name,
                 'pay' => $invoice->pay,
@@ -233,7 +225,7 @@ class ReportsController extends Controller
             })
             ->where('status', 1)
             ->get()
-            ->transform(fn ($invoice) => [
+            ->transform(fn($invoice) => [
                 'id' => $invoice->id,
                 'name' => $invoice->name,
                 'date' => $invoice->date->format('d.m.Y'),
@@ -278,7 +270,7 @@ class ReportsController extends Controller
             })
             ->where('status', 1)
             ->get()
-            ->transform(fn ($invoice) => [
+            ->transform(fn($invoice) => [
                 'id' => $invoice->id,
                 'name' => $invoice->name,
                 'date' => $invoice->date->format('d.m.Y'),
@@ -326,7 +318,7 @@ class ReportsController extends Controller
                 'file' => $invoice->file ? '\\file\\' . $invoice->file : '',
                 'sum' => $invoice->invoiceItems()->select(DB::raw('SUM(count * price) as sum'))->value('sum') / (InvoiceItem::FLOAT_TO_INT_PRICE * InvoiceItem::FLOAT_TO_INT_COUNT),
             ],
-            'invoice_items' => $invoice->invoiceItems->transform(fn ($item) => [
+            'invoice_items' => $invoice->invoiceItems->transform(fn($item) => [
                 'id' => $item->id,
                 'name' => $item->name,
                 'count' => $item->count / InvoiceItem::FLOAT_TO_INT_COUNT,
@@ -396,7 +388,7 @@ class ReportsController extends Controller
             ->orderBy('item_categories.name')
             ->orderBy('invoice_items.name')
             ->get()
-            ->transform(fn ($item) => [
+            ->transform(fn($item) => [
                 'id' => $item->id,
                 'name' => $item->name,
                 'item_category_id' => $item->item_category_id,
@@ -439,7 +431,7 @@ class ReportsController extends Controller
             // }
             $valdate = $items[$index]['item_category_id'];
 
-            if (empty($items[$index+1]) || $items[$index]['item_category_id'] != $items[$index+1]['item_category_id']) {
+            if (empty($items[$index + 1]) || $items[$index]['item_category_id'] != $items[$index + 1]['item_category_id']) {
                 $item_categories[count($item_categories) - 1] += ['category_sum' => $item_category];
                 $item_category = 0;
             }
