@@ -449,17 +449,12 @@ class ReportsController extends Controller
         foreach ($items as $item) {
             $sum_item += $item['sum'];
         }
-        $sum_item_category = 0;
-        foreach ($item_categories as $item_category) {
-            $sum_item_category += $item_category['category_sum'] ?? 0;
-        }
 
         return Inertia::render('Reports/Items', [
             'filters' => Request::all('search', 'organization_id'),
             'organizations' => Organization::get(),
             'items' => $item_categories,
             'sum_item' => $sum_item,
-            'sum_item_category' => $sum_item_category,
         ]);
     }
 }

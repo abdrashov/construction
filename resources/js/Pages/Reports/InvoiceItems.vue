@@ -3,58 +3,58 @@
         <Head title="Отчеты" />
         <h1 class="mb-6 text-2xl font-semibold">
             <Link class="text-sky-500 hover:text-sky-700" :href="`/reports?organization_id=${organization.id}`+(form.begin ? '&begin='+form.begin : '')+(form.end ? '&end='+form.end : '')">Отчеты</Link>
-            <span class="text-sky-500 font-medium">/</span>
+            <span class="font-medium text-sky-500">/</span>
             <Link class="text-sky-500 hover:text-sky-700" :href="`/reports/${organization.id}/${supplier.id}/all?`+(form.begin ? 'begin='+form.begin : '')+(form.end ? '&end='+form.end : '')">
             {{ organization.name }}
             </Link>
-            <span class="text-sky-500 font-medium">/</span>
+            <span class="font-medium text-sky-500">/</span>
             {{ invoice.name }}
         </h1>
 
-        <div class="text-sm bg-white shadow overflow-x-auto">
+        <div class="overflow-x-auto text-sm bg-white shadow">
             <table class="w-full">
-                <tr class="text-left text-gray-500 text-xs font-semibold tracking-wide bg-gray-50 border-b uppercase">
-                    <th class="px-4 py-3 w-12">#</th>
+                <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
+                    <th class="w-12 px-4 py-3">#</th>
                     <th class="px-4 py-3 border-l">Название</th>
                     <th class="px-4 py-3 border-l">Количество</th>
                     <th class="px-4 py-3 border-l">Цена</th>
                     <th class="px-4 py-3 border-l">Сумма</th>
                 </tr>
                 <tr v-for="(item, index) in invoice_items" :key="item.id">
-                    <td class="border-t w-12">
-                        <div class="flex items-center px-4 py-1 text-gray-900 font-medium">
+                    <td class="w-12 border-t">
+                        <div class="flex items-center px-4 py-1 font-medium text-gray-900">
                             {{ index + 1 }}
                         </div>
                     </td>
-                    <td class="border-l border-t">
-                        <div class="flex items-center px-4 py-2 text-gray-900 font-medium">
+                    <td class="border-t border-l">
+                        <div class="flex items-center px-4 py-2 font-medium text-gray-900">
                             {{ item.name }}
-                            <icon v-if="item.deleted_at" name="trash" class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400" />
+                            <icon v-if="item.deleted_at" name="trash" class="flex-shrink-0 w-3 h-3 ml-2 fill-gray-400" />
                         </div>
                     </td>
-                    <td class="border-l border-t">
-                        <div class="flex items-center px-4 py-2 text-gray-700 whitespace-nowrap font-medium">
+                    <td class="border-t border-l">
+                        <div class="flex items-center px-4 py-2 font-medium text-gray-700 whitespace-nowrap">
                             {{ item.count }}
-                            <span class="pl-1 text-gray-400 font-semibold">
+                            <span class="pl-1 font-semibold text-gray-400">
                                 {{ item.measurement }}
                             </span>
                         </div>
                     </td>
-                    <td class="border-l border-t">
-                        <div class="flex items-center px-4 py-2 text-gray-700 whitespace-nowrap font-medium">
+                    <td class="border-t border-l">
+                        <div class="flex items-center px-4 py-2 font-medium text-gray-700 whitespace-nowrap">
                             {{ item.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
                         </div>
                     </td>
-                    <td class="border-l border-t">
-                        <div class="flex items-center px-4 py-2 text-indigo-800 whitespace-nowrap font-semibold">
+                    <td class="border-t border-l">
+                        <div class="flex items-center px-4 py-2 font-semibold text-indigo-800 whitespace-nowrap">
                             {{ (item.count * item.price).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
                         </div>
                     </td>
                 </tr>
-                <tr v-if="invoice_items.length !== 0">
-                    <td class="px-4 py-4 border-t font-semibold" colspan="4">ИТОГО</td>
-                    <td class="border-t border-l ">
-                        <div class="flex items-center px-4 whitespace-nowrap font-semibold">
+                <tr v-if="invoice_items.length !== 0" class="bg-amber-200">
+                    <td class="px-4 py-4 font-semibold border-t" colspan="4">ИТОГО</td>
+                    <td class="border-t border-l">
+                        <div class="flex items-center px-4 font-semibold whitespace-nowrap">
                             {{ invoice.sum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
                         </div>
                     </td>

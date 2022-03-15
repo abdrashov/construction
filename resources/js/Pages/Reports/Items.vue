@@ -58,14 +58,9 @@
                 </tr>
                 <tr v-if="items.length !== 0" class="bg-amber-200">
                     <td class="px-4 py-3 font-semibold border-t" colspan="3">ИТОГО</td>
-                    <td class="border-t border-l">
+                    <td class="border-t border-l" colspan="2">
                         <div class="flex items-center px-4 font-semibold whitespace-nowrap">
                             {{ sum_item?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
-                        </div>
-                    </td>
-                    <td class="border-t border-l">
-                        <div class="flex items-center px-4 font-semibold whitespace-nowrap">
-                            {{ sum_item_category?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
                         </div>
                     </td>
                 </tr>
@@ -107,7 +102,6 @@ export default {
         organizations: Object,
         items: Object,
         sum_item: Number,
-        sum_item_category: Number,
     },
     data() {
         return {
