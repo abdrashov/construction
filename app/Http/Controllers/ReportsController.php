@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Expense;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
+use App\Models\ItemCategory;
 use App\Models\Organization;
 use App\Models\Supplier;
 use Carbon\Carbon;
@@ -13,6 +15,53 @@ use Inertia\Inertia;
 
 class ReportsController extends Controller
 {
+    public function common()
+    {
+        if (!is_null(Request::input('begin'))) {
+            Request::merge(['begin' => (new Carbon(Request::input('begin')))->format('Y-m-d')]);
+        }
+
+        if (!is_null(Request::input('end'))) {
+            Request::merge(['end' => (new Carbon(Request::input('end')))->format('Y-m-d')]);
+        }
+
+        $invoice_sum = Invoice::where('organization_id', Request::input('organization_id'))
+            ->join('invoice_items', 'invoice_items.invoice_id', '=', 'invoices.id')
+            ->whereNull('invoices.deleted_at')
+            ->whereNull('invoice_items.deleted_at')
+            ->where('invoices.status', true)
+            ->when(Request::input('begin') ?? null, function ($query, $search) {
+                $query->where('invoices.date', '>=', $search);
+            })
+            ->when(Request::input('end') ?? null, function ($query, $search) {
+                $query->where('invoices.date', '<=', $search);
+            })
+            ->select(DB::raw('SUM(invoice_items.price * invoice_items.count) as sum'))
+            ->groupBy('invoices.organization_id')
+            ->value('sum');
+
+        $expense_sum = Expense::where('organization_id', Request::input('organization_id'))
+            ->join('expense_histories', 'expenses.id', '=', 'expense_histories.expense_id')
+            ->whereNull('expenses.deleted_at')
+            ->whereNull('expense_histories.deleted_at')
+            ->when(Request::input('begin') ?? null, function ($query, $search) {
+                $query->where('expense_histories.date', '>=', $search);
+            })
+            ->when(Request::input('end') ?? null, function ($query, $search) {
+                $query->where('expense_histories.date', '<=', $search);
+            })
+            ->select('expenses.*', DB::raw('SUM(expense_histories.price) as sum'))
+            ->groupBy('expenses.organization_id')
+            ->value('sum');
+
+        return Inertia::render('Reports/Common', [
+            'filters' => Request::all('organization_id', 'begin', 'end'),
+            'organizations' => Organization::get(),
+            'invoice_sum' => (float) $invoice_sum / (InvoiceItem::FLOAT_TO_INT_PRICE * InvoiceItem::FLOAT_TO_INT_COUNT),
+            'expense_sum' => (float) $expense_sum / Expense::FLOAT_TO_INT_PRICE
+        ]);
+    }
+
     public function index()
     {
         if (!is_null(Request::input('begin'))) {
@@ -47,7 +96,7 @@ class ReportsController extends Controller
             ->whereNull('invoices.deleted_at')
             ->groupBy('suppliers.id')
             ->get()
-            ->transform(fn($report) => [
+            ->transform(fn ($report) => [
                 'id' => $report->id,
                 'supplier_id' => $report->supplier_id,
                 'supplier' => $report->supplier,
@@ -79,7 +128,7 @@ class ReportsController extends Controller
             ->whereNull('invoices.deleted_at')
             ->groupBy('suppliers.id')
             ->get()
-            ->transform(fn($report) => [
+            ->transform(fn ($report) => [
                 'id' => $report->id,
                 'supplier_id' => $report->supplier_id,
                 'supplier' => $report->supplier,
@@ -180,7 +229,7 @@ class ReportsController extends Controller
                 $query->where('date', '<=', $search);
             })
             ->get()
-            ->transform(fn($invoice) => [
+            ->transform(fn ($invoice) => [
                 'id' => $invoice->id,
                 'name' => $invoice->name,
                 'pay' => $invoice->pay,
@@ -225,7 +274,7 @@ class ReportsController extends Controller
             })
             ->where('status', 1)
             ->get()
-            ->transform(fn($invoice) => [
+            ->transform(fn ($invoice) => [
                 'id' => $invoice->id,
                 'name' => $invoice->name,
                 'date' => $invoice->date->format('d.m.Y'),
@@ -270,7 +319,7 @@ class ReportsController extends Controller
             })
             ->where('status', 1)
             ->get()
-            ->transform(fn($invoice) => [
+            ->transform(fn ($invoice) => [
                 'id' => $invoice->id,
                 'name' => $invoice->name,
                 'date' => $invoice->date->format('d.m.Y'),
@@ -318,7 +367,7 @@ class ReportsController extends Controller
                 'file' => $invoice->file ? '\\file\\' . $invoice->file : '',
                 'sum' => $invoice->invoiceItems()->select(DB::raw('SUM(count * price) as sum'))->value('sum') / (InvoiceItem::FLOAT_TO_INT_PRICE * InvoiceItem::FLOAT_TO_INT_COUNT),
             ],
-            'invoice_items' => $invoice->invoiceItems->transform(fn($item) => [
+            'invoice_items' => $invoice->invoiceItems->transform(fn ($item) => [
                 'id' => $item->id,
                 'name' => $item->name,
                 'count' => $item->count / InvoiceItem::FLOAT_TO_INT_COUNT,
@@ -330,6 +379,13 @@ class ReportsController extends Controller
 
     public function items()
     {
+        if (!is_null(Request::input('begin'))) {
+            Request::merge(['begin' => (new Carbon(Request::input('begin')))->format('Y-m-d')]);
+        }
+
+        if (!is_null(Request::input('end'))) {
+            Request::merge(['end' => (new Carbon(Request::input('end')))->format('Y-m-d')]);
+        }
 
         // $items = InvoiceItem::select(
         //     'id',
@@ -383,13 +439,22 @@ class ReportsController extends Controller
             ->join('item_categories', 'items.item_category_id', '=', 'item_categories.id')
             ->where('invoices.organization_id', Request::input('organization_id'))
             ->where('invoices.status', true)
+            ->when(Request::input('begin') ?? null, function ($query, $search) {
+                $query->where('invoices.date', '>=', $search);
+            })
+            ->when(Request::input('end') ?? null, function ($query, $search) {
+                $query->where('invoices.date', '<=', $search);
+            })
+            ->when(Request::input('item_category_id') ?? null, function ($query, $search) {
+                $query->where('item_categories.id', $search);
+            })
             ->whereNull('invoices.deleted_at')
             ->groupBy('invoice_items.item_id')
             ->orderBy('item_categories.sort')
             ->orderBy('item_categories.name')
             ->orderBy('invoice_items.name')
             ->get()
-            ->transform(fn($item) => [
+            ->transform(fn ($item) => [
                 'id' => $item->id,
                 'name' => $item->name,
                 'item_category_id' => $item->item_category_id,
@@ -444,10 +509,150 @@ class ReportsController extends Controller
         }
 
         return Inertia::render('Reports/Items', [
-            'filters' => Request::all('search', 'organization_id'),
+            'filters' => Request::all('organization_id', 'begin', 'end', 'item_category_id'),
             'organizations' => Organization::get(),
+            'item_categories' => ItemCategory::get(),
             'items' => $item_categories,
             'sum_item' => $sum_item,
+        ]);
+    }
+
+    public function exportItem()
+    {
+        if (Request::input('begin') == 'null')
+            Request::merge(['begin' => null]);
+
+        if (Request::input('end') == 'null')
+            Request::merge(['end' => null]);
+
+        if (Request::input('item_category_id') == 'null')
+            Request::merge(['item_category_id' => null]);
+
+        if (!is_null(Request::input('begin'))) {
+            Request::merge(['begin' => (new Carbon(Request::input('begin')))->format('Y-m-d')]);
+        }
+
+        if (!is_null(Request::input('end'))) {
+            Request::merge(['end' => (new Carbon(Request::input('end')))->format('Y-m-d')]);
+        }
+
+        $items = InvoiceItem::select(
+            'invoice_items.id',
+            'invoice_items.name',
+            'item_categories.id as item_category_id',
+            'item_categories.name as item_category',
+            'invoice_items.measurement',
+            DB::raw('SUM(invoice_items.count) as count'),
+            DB::raw('SUM(invoice_items.count * invoice_items.price) as sum'),
+        )
+            ->join('invoices', 'invoice_items.invoice_id', '=', 'invoices.id')
+            ->join('items', 'invoice_items.item_id', '=', 'items.id')
+            ->join('item_categories', 'items.item_category_id', '=', 'item_categories.id')
+            ->where('invoices.organization_id', Request::input('organization_id'))
+            ->where('invoices.status', true)
+            ->when(Request::input('begin') ?? null, function ($query, $search) {
+                $query->where('invoices.date', '>=', $search);
+            })
+            ->when(Request::input('end') ?? null, function ($query, $search) {
+                $query->where('invoices.date', '<=', $search);
+            })
+            ->when(Request::input('item_category_id') ?? null, function ($query, $search) {
+                $query->where('item_categories.id', $search);
+            })
+            ->whereNull('invoices.deleted_at')
+            ->groupBy('invoice_items.item_id')
+            ->orderBy('item_categories.sort')
+            ->orderBy('item_categories.name')
+            ->orderBy('invoice_items.name')
+            ->get()
+            ->transform(fn ($item) => [
+                'id' => $item->id,
+                'name' => $item->name,
+                'item_category_id' => $item->item_category_id,
+                'item_category' => $item->item_category,
+                'measurement' => $item->measurement,
+                'count' => $item->count / InvoiceItem::FLOAT_TO_INT_COUNT,
+                'sum' => $item->sum / (InvoiceItem::FLOAT_TO_INT_COUNT * InvoiceItem::FLOAT_TO_INT_PRICE),
+            ])->toArray();
+
+        $item_categories = [];
+        $item_category = 0;
+        $valdate = 0;
+        for ($index = 0; $index < count($items); $index++) {
+            if ($valdate != $items[$index]['item_category_id']) {
+                $item_categories[] = [
+                    'name' => $items[$index]['item_category'],
+                ];
+            }
+
+            $item_categories[] = ['index' => $index + 1] + $items[$index];
+            $item_category += $items[$index]['sum'];
+
+            $valdate = $items[$index]['item_category_id'];
+
+            if (empty($items[$index + 1]) || $items[$index]['item_category_id'] != $items[$index + 1]['item_category_id']) {
+                $item_categories[count($item_categories) - 1] += ['category_sum' => $item_category];
+                $item_category = 0;
+            }
+        }
+
+        $sum_item = 0;
+        foreach ($items as $item) {
+            $sum_item += $item['sum'];
+        }
+
+        $html = '';
+        $html = $html .  '<table class="w-full border text-sm bg-white">';
+        $html = $html .  '<tr class="text-xs font-semibold tracking-wide text-left uppercase border-b">
+            <th class="w-10 px-4 py-3 border-r">#</th>
+            <th class="px-4 py-3 border-l border-r">Название Товара</th>
+            <th class="px-4 py-3 border-l border-r">Использовался</th>
+            <th class="px-4 py-3 border-l border-r">Сумма</th>
+            <th class="px-4 py-3 border-l border-r">Итого</th>
+        </tr>';
+        foreach ($item_categories as $item_category) {
+            $html = $html .  '<tr>';
+            if (!empty($item_category['count'])) {
+                $html = $html .  '<td class="border-t" colspan="1">';
+                $html = $html .  '<div class="flex items-center px-4 py-1 font-medium">';
+                $html = $html .  $item_category['index'];
+                $html = $html .  '</div>';
+                $html = $html .  '</td>';
+                $html = $html .  '<td  class="border-t border-l">';
+                $html = $html .  '<div class="flex items-center px-4 py-1 font-medium">';
+                $html = $html .  $item_category['name'];
+                $html = $html .  '</div>';
+                $html = $html .  '</td>';
+                $html = $html .  '<td class="border-t border-l">';
+                $html = $html .  '<div class="flex items-center px-4 py-1 font-medium">';
+                $html = $html .  $item_category['count'];
+                $html = $html .  $item_category['measurement'];
+                $html = $html .  '</div>';
+                $html = $html .  '</td>';
+                $html = $html .  '<td  class="border-t border-l">';
+                $html = $html .  '<div class="flex items-center px-4 font-semibold whitespace-nowrap">';
+                $html = $html .  $item_category['sum'];
+                $html = $html .  '</div>';
+                $html = $html .  '</td>';
+                $html = $html .  '<td  class="border-t border-l">';
+                $html = $html .  '<div class="flex items-center px-4 font-semibold whitespace-nowrap">';
+                $html = $html .  (empty($item_category['category_sum']) ? '' : $item_category['category_sum']);
+                $html = $html .  '</div>';
+                $html = $html .  '</td>';
+            } else {
+                $html = $html .  '<td class="border-t" colspan="5">';
+                $html = $html .  '<div class="flex items-center px-4 py-1 font-semibold">';
+                $html = $html .   $item_category['name'];
+                $html = $html .  '</div>';
+                $html = $html .  '</td>';
+            }
+            $html = $html .  '</tr>';
+        }
+        $html = $html .  '</table>';
+
+        return Inertia::render('Reports/Export', [
+            'title' => 'Отчет',
+            'reports' => $html
         ]);
     }
 }

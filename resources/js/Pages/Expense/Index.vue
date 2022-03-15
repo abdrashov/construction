@@ -10,7 +10,11 @@
         </h1>
 
         <div class="flex items-center justify-end mt-6 mb-3 text-xl">
-            <Link :href="`/organizations/${organization.id}/expense/create`" class="mr-2 btn-indigo">
+                <button class="hidden mr-3 w-8 text-gray-500 hover:text-gray-700 focus:text-indigo-500 text-sm md:block" type="button" @click="reset">Сброс</button>
+                <button @click="form.modal = true" class="btn-gray mt-2 md:mt-0">
+                    <span>Фильтр/Поиск</span>
+                </button>
+            <Link :href="`/organizations/${organization.id}/expense/create`" class="md:ml-2 btn-indigo">
                 <span>Добавить</span>
                 <span class="hidden md:inline">&nbsp;Расходы</span>
             </Link>
@@ -84,6 +88,36 @@
                 </tr>
             </table>
         </div>
+        <ModalLeft @serach="getData" @close="form.modal = !form.modal" :isOpen="form.modal">
+            <ul role="list" class="-my-6">
+                <li class="pb-4">
+                    <select-input v-model="form.expense_category_id" class="w-full" label="Категория">
+                        <option :value="null"></option>
+                        <option v-for="expense_category in expense_categories" :key="expense_category.id" :value="expense_category.id">{{ expense_category.name }}</option>
+                    </select-input>
+                </li>
+                <li class="pb-4">
+                    <div class="w-full">
+                        <label class="form-label">Дата от:</label>
+                        <date-picker v-model="form.begin" mode="date" is24hr :masks="{ input: 'DD.MM.YYYY' }">
+                            <template v-slot="{ inputValue, inputEvents }">
+                                <input class="form-input" :value="inputValue" v-on="inputEvents" />
+                            </template>
+                        </date-picker>
+                    </div>
+                </li>
+                <li class="pb-4">
+                    <div class="w-full">
+                        <label class="form-label">Дата до:</label>
+                        <date-picker v-model="form.end" mode="date" is24hr :masks="{ input: 'DD.MM.YYYY' }">
+                            <template v-slot="{ inputValue, inputEvents }">
+                                <input class="form-input" :value="inputValue" v-on="inputEvents" />
+                            </template>
+                        </date-picker>
+                    </div>
+                </li>
+            </ul>
+        </ModalLeft>
     </div>
 </template>
 
@@ -92,9 +126,13 @@ import { Head, Link } from '@inertiajs/inertia-vue3'
 import Icon from '@/Shared/Icon'
 import Layout from '@/Shared/Layout'
 import TextInput from '@/Shared/TextInput'
+import mapValues from 'lodash/mapValues'
 import SelectInput from '@/Shared/SelectInput'
 import LoadingButton from '@/Shared/LoadingButton'
 import TrashedMessage from '@/Shared/TrashedMessage'
+import ModalLeft from '@/Shared/ModalLeft'
+import pickBy from 'lodash/pickBy'
+import { Calendar, DatePicker } from 'v-calendar'
 import 'v-calendar/dist/style.css'
 
 export default {
@@ -106,6 +144,8 @@ export default {
         SelectInput,
         TextInput,
         TrashedMessage,
+        DatePicker,
+        ModalLeft,
     },
     layout: Layout,
     props: {
@@ -114,6 +154,29 @@ export default {
         expenses: Object,
         filters: Object,
         paid_sum: Number,
+        expense_categories: Object,
+    },
+    data() {
+        return {
+            form: {
+                modal: false,
+                begin: this.filters.begin,
+                end: this.filters.end,
+                expense_category_id: this.filters.expense_category_id
+            },
+        }
+    },
+    methods: {
+        reset() {
+            this.form.begin = null
+            this.form.end = null
+            this.form.expense_category_id = null
+            this.$inertia.get(`/organizations/${this.organization.id}/expense`, pickBy(), { preserveState: true })
+        },
+        getData() {
+                this.$inertia.get(`/organizations/${this.organization.id}/expense`, pickBy(this.form), { preserveState: true })
+                this.form.modal = false
+        }
     },
 }
 </script>

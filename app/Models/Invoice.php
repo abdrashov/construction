@@ -38,11 +38,6 @@ class Invoice extends Model
         return $this->hasMany(InvoiceItem::class);
     }
 
-    public function invoiceItemsPriceSum()
-    {
-        return $this->hasMany(InvoiceItem::class)->select(DB::raw('SUM(count * price) as sum'));
-    }
-
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['name'] ?? null, function ($query, $search) {

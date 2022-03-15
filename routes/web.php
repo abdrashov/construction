@@ -102,9 +102,10 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::middleware('role:Супер Администратор,Кассир')->group(function () {
-
+        
         // Reports
         Route::prefix('reports')->name('reports')->controller(ReportsController::class)->group(function () {
+            Route::get('common', 'common');
             Route::get('', 'index');
             Route::get('{organization}/{supplier}/all', 'all')
                 ->name('.all');
@@ -116,6 +117,9 @@ Route::middleware('auth')->group(function () {
                 ->name('.invoice.item');
             Route::get('items', 'items')
                 ->name('.items');
+
+            Route::get('export-item', 'exportItem')
+                    ->name('.export-item');
         });
     });
 

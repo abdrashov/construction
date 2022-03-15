@@ -3,10 +3,13 @@
         <Head title="Отчеты" />
         <h1 class="mb-6 text-2xl font-semibold">Отчеты</h1>
         <div class="mb-2">
-            <Link href="/reports" class="inline-block mt-2 btn-blue md:mt-0">
+            <Link href="/reports/common" class="inline-block mt-2 btn-blue md:mt-0">
+                <span>Общий</span>
+            </Link>
+            <Link href="/reports" class="btn-blue inline-block ml-0 mt-2 md:ml-2 md:mt-0">
                 <span>По поставщикам</span>
             </Link>
-            <Link href="/reports/items" class="inline-block mt-2 ml-0 btn-blue md:ml-2 md:mt-0">
+            <Link href="/reports/items" class="btn-blue inline-block ml-0 mt-2 md:ml-2 md:mt-0">
                 <span>По товарам</span>
             </Link>
         </div>
@@ -18,6 +21,14 @@
                 </select>
                 <button class="hidden w-8 ml-3 text-sm text-gray-500 hover:text-gray-700 focus:text-indigo-500 md:block" type="button" @click="reset">Сброс</button>
             </div>
+            <div class="flex">
+                <a target="_blank" :href="`/reports/export-item?`+getUrlParams()" class="flex items-center justify-end mr-2 px-2 py-2 text-white text-xs font-medium leading-5 bg-indigo-400 hover:bg-indigo-500 rounded-lg focus:outline-none duration-200">
+                    <icon name="export" class="w-5 h-5" />
+                </a>
+                <button @click="form.modal = true" class="btn-gray mt-2 md:mt-0">
+                    <span>Фильтр/Поиск</span>
+                </button>
+            </div>
         </div>
         <div class="overflow-x-auto text-sm bg-white shadow">
             <table class="w-full">
@@ -26,7 +37,7 @@
                     <th class="px-4 py-3 border-l border-r">Название Товара</th>
                     <th class="px-4 py-3 border-l border-r">Использовался</th>
                     <th class="px-4 py-3 border-l border-r">Сумма</th>
-                    <th class="px-4 py-3 border-l border-r">Итого</th>
+                    <th class="px-4 py-3 border-l">Итого</th>
                 </tr>
                 <tr v-for="item in items" :key="item.id">
                     <td class="border-t" :colspan="item.count ? 1 : 5" :class="(!item.count ? 'bg-sky-200' : '')">
@@ -69,6 +80,36 @@
                 </tr>
             </table>
         </div>
+        <ModalLeft @serach="getData" @close="form.modal = !form.modal" :isOpen="form.modal">
+            <ul role="list" class="-my-6">
+                <li class="pb-4">
+                    <select-input v-model="form.item_category_id" class="w-full" label="Категория">
+                        <option :value="null"></option>
+                        <option v-for="item_category in item_categories" :key="item_category.id" :value="item_category.id">{{ item_category.name }}</option>
+                    </select-input>
+                </li>
+                <li class="pb-4">
+                    <div class="w-full">
+                        <label class="form-label">Дата от:</label>
+                        <date-picker v-model="form.begin" mode="date" is24hr :masks="{ input: 'DD.MM.YYYY' }">
+                            <template v-slot="{ inputValue, inputEvents }">
+                                <input class="form-input" :value="inputValue" v-on="inputEvents" />
+                            </template>
+                        </date-picker>
+                    </div>
+                </li>
+                <li class="pb-4">
+                    <div class="w-full">
+                        <label class="form-label">Дата до:</label>
+                        <date-picker v-model="form.end" mode="date" is24hr :masks="{ input: 'DD.MM.YYYY' }">
+                            <template v-slot="{ inputValue, inputEvents }">
+                                <input class="form-input" :value="inputValue" v-on="inputEvents" />
+                            </template>
+                        </date-picker>
+                    </div>
+                </li>
+            </ul>
+        </ModalLeft>
     </div>
 </template>
 
@@ -83,7 +124,10 @@ import mapValues from 'lodash/mapValues'
 import Pagination from '@/Shared/Pagination'
 import LoadingButton from '@/Shared/LoadingButton'
 import TextInput from '@/Shared/TextInput'
+import ModalLeft from '@/Shared/ModalLeft'
 import SelectInput from '@/Shared/SelectInput'
+import { Calendar, DatePicker } from 'v-calendar'
+import 'v-calendar/dist/style.css'
 
 export default {
     components: {
@@ -95,6 +139,8 @@ export default {
         TextInput,
         LoadingButton,
         SelectInput,
+        ModalLeft,
+        DatePicker,
     },
     layout: Layout,
     props: {
@@ -102,12 +148,16 @@ export default {
         organizations: Object,
         items: Object,
         sum_item: Number,
+        item_categories: Object,
     },
     data() {
         return {
             form: {
                 organization_id: this.filters.organization_id,
-                search: this.filters.search,
+                modal: false,
+                begin: this.filters.begin,
+                end: this.filters.end,
+                item_category_id: this.filters.item_category_id
             },
         }
     },
@@ -123,6 +173,13 @@ export default {
         reset() {
             this.form = mapValues(this.form, () => null)
         },
+        getData() {
+                this.$inertia.get('/reports/items', pickBy(this.form), { preserveState: true })
+                this.form.modal = false
+        },
+        getUrlParams() {
+            return new URLSearchParams({ ...this.form, ...this.search }).toString()
+        }
     },
 }
 </script>

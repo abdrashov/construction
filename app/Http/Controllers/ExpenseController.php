@@ -20,7 +20,25 @@ class ExpenseController extends Controller
 {
     public function Index(Organization $organization)
     {
-        $expenses = $organization->expenses()->orderByDesc('date')
+        if (!is_null(Request::input('begin'))) {
+            Request::merge(['begin' => (new Carbon(Request::input('begin')))->format('Y-m-d')]);
+        }
+
+        if (!is_null(Request::input('end'))) {
+            Request::merge(['end' => (new Carbon(Request::input('end')))->format('Y-m-d')]);
+        }
+
+        $expenses = $organization->expenses()
+            ->orderByDesc('date')
+            ->when(Request::input('begin') ?? null, function ($query, $search) {
+                $query->where('date', '>=', $search);
+            })
+            ->when(Request::input('end') ?? null, function ($query, $search) {
+                $query->where('date', '<=', $search);
+            })
+            ->when(Request::input('expense_category_id') ?? null, function ($query, $search) {
+                $query->where('expense_category_id', $search);
+            })
             ->get()
             ->transform(fn ($expense) => [
                 'id' => $expense->id,
@@ -38,13 +56,14 @@ class ExpenseController extends Controller
         }
 
         return Inertia::render('Expense/Index', [
-            'filters' => Request::only('search', 'page'),
+            'filters' => Request::only('begin', 'end', 'expense_category_id'),
             'organization' => [
                 'id' => $organization->id,
                 'name' => $organization->name,
             ],
             'expenses' => $expenses,
-            'paid_sum' => $paid_sum
+            'paid_sum' => $paid_sum,
+            'expense_categories' => ExpenseCategory::get()
         ]);
     }
 
