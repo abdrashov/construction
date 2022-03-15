@@ -3,20 +3,20 @@
         <Head :title="organization.name" />
         <h1 class="mb-6 text-2xl font-semibold">
             <Link class="text-sky-500 hover:text-sky-700" href="/organizations">Объекты</Link>
-            <span class="text-sky-500 font-medium">/</span>
+            <span class="font-medium text-sky-500">/</span>
             <Link class="text-sky-500 hover:text-sky-700" :href="`/organizations/${organization.id}/invoices`">{{ organization.name }}</Link>
-            <span class="text-sky-500 font-medium">/</span>
+            <span class="font-medium text-sky-500">/</span>
             <Link class="text-sky-500 hover:text-sky-700" :href="`/organizations/${organization.id}/expense`">{{ expense.name }}</Link>
-            <span class="text-sky-500 font-medium">/</span>
+            <span class="font-medium text-sky-500">/</span>
             Оплата
         </h1>
 
-        <div class="w-full bg-white shadow overflow-hidden">
+        <div class="w-full overflow-hidden bg-white shadow">
             <form @submit.prevent="update">
                 <div class="items-start lg:flex">
-                    <div class="flex flex-wrap px-4 py-3 w-full">
-                        <text-input v-model="form_update.name" :error="form_update.errors.name" class="pb-4 pr-0 w-full lg:pr-4 lg:w-1/2" label="Название" />
-                        <div class="pb-4 w-full lg:w-1/2">
+                    <div class="flex flex-wrap w-full px-4 py-3">
+                        <text-input v-model="form_update.name" :error="form_update.errors.name" class="w-full pb-4 pr-0 lg:pr-4 lg:w-1/2" label="Название" />
+                        <div class="w-full pb-4 lg:w-1/2">
                             <label class="form-label">Дата:</label>
                             <date-picker v-model="form_update.date" mode="date" is24hr :masks="{ input: 'DD.MM.YYYY' }">
                                 <template v-slot="{ inputValue, inputEvents }">
@@ -25,31 +25,31 @@
                             </date-picker>
                             <div v-if="form_update.errors.date" class="form-error">{{ form_update.errors.date }}</div>
                         </div>
-                        <select-input v-model="form_update.expense_category_id" :error="form_update.errors.expense_category_id" class="pb-4 pr-0 w-full lg:pr-4 lg:w-1/3" label="Категория">
+                        <select-input v-model="form_update.expense_category_id" :error="form_update.errors.expense_category_id" class="w-full pb-4 pr-0 lg:pr-4 lg:w-1/3" label="Категория">
                             <option :value="null"></option>
                             <option v-for="supplier in categories" :key="supplier.id" :value="supplier.id">{{ supplier.name }}</option>
                         </select-input>
-                        <text-input v-maska="'#*.##'" v-model="form_update.price"  :error="form_update.errors.price" class="pb-4  pr-0 w-full lg:pr-4 lg:w-1/3" label="Договарная сумма" />
-                        <text-input v-maska="'#*.##'" disabled v-model="expense.paid"  class="pb-4 w-full lg:w-1/3" label="Оплаченная сумма" />
+                        <text-input v-maska="'#*.##'" v-model="form_update.price"  :error="form_update.errors.price" class="w-full pb-4 pr-0 lg:pr-4 lg:w-1/3" label="Договарная сумма" />
+                        <text-input v-maska="'#*.##'" disabled v-model="expense.paid"  class="w-full pb-4 lg:w-1/3" label="Оплаченная сумма" />
                     </div>
                 </div>
-                <div class="flex items-center px-5 py-3 bg-gray-50 border-t border-gray-100">
-                    <loading-button :loading="form_update.processing" class="btn-green ml-auto" type="submit">Обновить Расход</loading-button>
+                <div class="flex items-center px-5 py-3 border-t border-gray-100 bg-gray-50">
+                    <loading-button :loading="form_update.processing" class="ml-auto btn-green" type="submit">Обновить Расход</loading-button>
                 </div>
             </form>
         </div>
 
-        <div class="flex items-center justify-end mb-3 mt-6 text-xl">
-            <button @click="create.modal = true" class="btn-blue mr-2">
+        <div class="flex items-center justify-end mt-6 mb-3 text-xl">
+            <button @click="create.modal = true" class="mr-2 btn-blue">
                 <span>Добавить</span>
                 <span class="hidden md:inline">&nbsp;Оплату</span>
             </button>
         </div>
 
-        <div class="text-sm bg-white shadow overflow-x-auto">
+        <div class="overflow-x-auto text-sm bg-white shadow">
             <table class="w-full">
-                <tr class="text-left text-gray-500 text-xs font-semibold tracking-wide bg-gray-50 border-b uppercase">
-                    <th class="px-4 py-3 w-12">#</th>
+                <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
+                    <th class="w-12 px-4 py-3">#</th>
                     <th class="px-2 py-3 border-l">Сумма</th>
                     <th class="px-2 py-3 border-l">Дата</th>
                     <th class="px-2 py-3 border-l">Заметка</th>
@@ -57,33 +57,33 @@
                 </tr>
                 <tr v-for="(history, index) in expenses_histories.data" :key="history.id">
                     <td class="w-12 border-t">
-                        <div class="flex items-center px-4 py-3 text-gray-900 font-medium">
+                        <div class="flex items-center px-4 py-1 font-medium text-gray-900">
                             {{ (expenses_histories.current_page - 1) * expenses_histories.per_page + index + 1 }}
                         </div>
                     </td>
-                    <td class="border-l border-t">
-                        <div class="flex items-center px-2 py-3 text-gray-900">
+                    <td class="border-t border-l">
+                        <div class="flex items-center px-2 py-1 text-gray-900">
                             {{ history.price }}
                         </div>
                     </td>
-                    <td class="border-l border-t">
-                        <div class="flex items-center px-2 py-3 text-gray-900">
+                    <td class="border-t border-l">
+                        <div class="flex items-center px-2 py-1 text-gray-900">
                             {{ history.date }}
                         </div>
                     </td>
-                    <td class="border-l border-t">
-                        <div class="flex items-center px-2 py-3 text-gray-900">
+                    <td class="border-t border-l">
+                        <div class="flex items-center px-2 py-1 text-gray-900">
                             {{ history.name }}
                         </div>
                     </td>
-                    <td class="border-l border-t">
-                        <div class="flex items-center px-2 py-3 text-gray-900">
+                    <td class="border-t border-l">
+                        <div class="flex items-center px-2 py-1 text-gray-900">
                             {{ history.fullname }}
                         </div>
                     </td>
-                    <td class="w-16 border-l border-t">
-                        <div class="flex items-center justify-end px-4 py-1">
-                            <Link :href="`/organizations/expenses/${expense.id}/${history.id}`" method="delete" as="button" class="focus:shadow-outline-gray flex items-center justify-end ml-2 px-2 py-2 text-gray-500 hover:text-red-400 text-xs font-medium leading-5 bg-gray-100 hover:bg-red-100 rounded-lg focus:outline-none duration-200" >
+                    <td class="w-10 border-t border-l">
+                        <div class="flex items-center justify-end px-2 py-1">
+                            <Link :href="`/organizations/expenses/${expense.id}/${history.id}`" method="delete" as="button" class="flex items-center justify-end px-1 py-1 text-xs font-medium leading-5 text-gray-500 duration-200 bg-gray-100 rounded-lg focus:shadow-outline-gray hover:text-red-400 hover:bg-red-100 focus:outline-none" >
                                 <icon name="delete" class="w-4 h-4" />
                             </Link>
                         </div>
@@ -98,9 +98,9 @@
         <Modal @close="create.modal = !create.modal" :isOpen="create.modal">
             <div class="w-full">
                 <div class="flex flex-row items-start mb-8 text-xl font-medium">
-                    <div class="mw-auto flex flex-col pr-10 w-full text-left font-medium">Оплата</div>
-                    <div class="flex flex-shrink-0 items-center ml-auto mr-0 text-indigo-900 font-bold space-x-4">
-                        <button @click="create.modal = false" type="submit" class="p-2 hover:text-gray-50 focus:text-gray-50 text-gray-800 bg-gray-100 hover:bg-gray-500 focus:bg-gray-500 rounded-full duration-200">
+                    <div class="flex flex-col w-full pr-10 font-medium text-left mw-auto">Оплата</div>
+                    <div class="flex items-center flex-shrink-0 ml-auto mr-0 space-x-4 font-bold text-indigo-900">
+                        <button @click="create.modal = false" type="submit" class="p-2 text-gray-800 duration-200 bg-gray-100 rounded-full hover:text-gray-50 focus:text-gray-50 hover:bg-gray-500 focus:bg-gray-500">
                             <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
                                 <path opacity="0.4" d="M6 19.7C5.7 19.7 5.5 19.6 5.3 19.4C4.9 19 4.9 18.4 5.3 18L18 5.3C18.4 4.9 19 4.9 19.4 5.3C19.8 5.7 19.8 6.29999 19.4 6.69999L6.7 19.4C6.5 19.6 6.3 19.7 6 19.7Z" />
                                 <path d="M18.8 19.7C18.5 19.7 18.3 19.6 18.1 19.4L5.40001 6.69999C5.00001 6.29999 5.00001 5.7 5.40001 5.3C5.80001 4.9 6.40001 4.9 6.80001 5.3L19.5 18C19.9 18.4 19.9 19 19.5 19.4C19.3 19.6 19 19.7 18.8 19.7Z" />
@@ -109,8 +109,8 @@
                     </div>
                 </div>
                 <form @submit.prevent="store">
-                    <text-input v-maska="'#*.##'" v-model="form.price" :error="form.errors.price" class="pb-5 w-full" label="Сумма" />
-                    <div class="pb-4 w-full">
+                    <text-input v-maska="'#*.##'" v-model="form.price" :error="form.errors.price" class="w-full pb-5" label="Сумма" />
+                    <div class="w-full pb-4">
                         <label class="form-label">Дата:</label>
                         <date-picker v-model="form.date" mode="date" is24hr :masks="{ input: 'DD.MM.YYYY' }">
                             <template v-slot="{ inputValue, inputEvents }">
@@ -119,7 +119,7 @@
                         </date-picker>
                         <div v-if="form.errors.date" class="form-error">{{ form.errors.date }}</div>
                     </div>
-                    <text-input v-model="form.name"  :error="form.errors.name" class="pb-5 w-full" label="Заметка" />
+                    <text-input v-model="form.name"  :error="form.errors.name" class="w-full pb-5" label="Заметка" />
                     <loading-button :loading="form.processing" class="btn-blue" type="submit">Оплатить</loading-button>
                 </form>
             </div>

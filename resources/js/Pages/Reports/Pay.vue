@@ -3,55 +3,55 @@
         <Head title="Отчеты" />
         <h1 class="mb-6 text-2xl font-semibold">
             <Link class="text-sky-500 hover:text-sky-700" :href="'/reports?organization_id='+organization.id+(form.begin ? '&begin='+form.begin : '')+(form.end ? '&end='+form.end : '')">Отчеты</Link>
-            <span class="text-sky-500 font-medium">/</span>
+            <span class="font-medium text-sky-500">/</span>
             {{ organization.name }}
         </h1>
         <div class="flex items-center mb-6">
             <div class="w-full rounded shadow md:flex md:w-3/4">
-                <input class="relative px-4 py-3 w-full rounded focus:shadow-outline" autocomplete="off" type="text" name="search" placeholder="Поиск…" v-model="form.search" />
+                <input class="relative w-full px-4 py-3 rounded focus:shadow-outline" autocomplete="off" type="text" name="search" placeholder="Поиск…" v-model="form.search" />
             </div>
-            <button class="hidden ml-3 w-8 text-gray-500 hover:text-gray-700 focus:text-indigo-500 text-sm md:block" type="button" @click="reset">Сброс</button>
+            <button class="hidden w-8 ml-3 text-sm text-gray-500 hover:text-gray-700 focus:text-indigo-500 md:block" type="button" @click="reset">Сброс</button>
         </div>
-        <div class="text-sm bg-white shadow overflow-x-auto">
+        <div class="overflow-x-auto text-sm bg-white shadow">
             <table class="w-full">
-                <tr class="text-left text-gray-500 text-xs font-semibold tracking-wide bg-gray-50 border-b uppercase">
-                    <th class="px-4 py-3 w-12">#</th>
+                <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
+                    <th class="w-12 px-4 py-3">#</th>
                     <th class="px-4 py-3 border-l">Номер накладной</th>
                     <th class="px-4 py-3 border-l">Зав склад</th>
                     <th class="px-4 py-3 border-l">Сумма</th>
                     <th class="px-4 py-3 border-l">Дата</th>
                 </tr>
-                <tr v-for="(invoice, index) in invoices" :key="invoice.id" class="hover:bg-amber-50 focus:bg-amber-50 duration-150">
+                <tr v-for="(invoice, index) in invoices" :key="invoice.id" class="duration-150 hover:bg-amber-50 focus:bg-amber-50">
                     <td class="border-t">
-                        <div class="flex items-center px-4 py-2 font-medium">
+                        <div class="flex items-center px-4 py-1 font-medium">
                             {{ index + 1 }}
                         </div>
                     </td>
-                    <td class="border-l border-t">
-                        <Link class="flex items-center px-4 py-3 hover:underline font-medium" :href="`/reports/${organization.id}/${supplier.id}/${invoice.id}/items?`+(form.begin ? '&begin='+form.begin : '')+(form.end ? '&end='+form.end : '')">
+                    <td class="border-t border-l">
+                        <Link class="flex items-center px-4 py-1 font-medium hover:underline" :href="`/reports/${organization.id}/${supplier.id}/${invoice.id}/items?`+(form.begin ? '&begin='+form.begin : '')+(form.end ? '&end='+form.end : '')">
                             {{ invoice.name }}
                         </Link>
                     </td>
-                    <td class="border-l border-t">
-                        <Link class="flex items-center px-4 py-3 hover:underline" :href="`/reports/${organization.id}/${supplier.id}/${invoice.id}/items?`+(form.begin ? '&begin='+form.begin : '')+(form.end ? '&end='+form.end : '')">
+                    <td class="border-t border-l">
+                        <Link class="flex items-center px-4 py-1 hover:underline" :href="`/reports/${organization.id}/${supplier.id}/${invoice.id}/items?`+(form.begin ? '&begin='+form.begin : '')+(form.end ? '&end='+form.end : '')">
                             {{ invoice.accepted }}
                         </Link>
                     </td>
-                    <td class="w-2/6 border-l border-t">
-                        <Link class="flex items-center px-4 py-3 hover:underline whitespace-nowrap" :href="`/reports/${organization.id}/${supplier.id}/${invoice.id}/items?`+(form.begin ? '&begin='+form.begin : '')+(form.end ? '&end='+form.end : '')">
+                    <td class="w-2/6 border-t border-l">
+                        <Link class="flex items-center px-4 py-1 hover:underline whitespace-nowrap" :href="`/reports/${organization.id}/${supplier.id}/${invoice.id}/items?`+(form.begin ? '&begin='+form.begin : '')+(form.end ? '&end='+form.end : '')">
                             {{ invoice.sum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
                         </Link>
                     </td>
-                    <td class="border-l border-t">
-                        <Link class="flex items-center px-4 py-3 hover:underline" :href="`/reports/${organization.id}/${supplier.id}/${invoice.id}/items?`+(form.begin ? '&begin='+form.begin : '')+(form.end ? '&end='+form.end : '')">
+                    <td class="border-t border-l">
+                        <Link class="flex items-center px-4 py-1 hover:underline" :href="`/reports/${organization.id}/${supplier.id}/${invoice.id}/items?`+(form.begin ? '&begin='+form.begin : '')+(form.end ? '&end='+form.end : '')">
                             {{ invoice.date }}
                         </Link>
                     </td>
                 </tr>
-                <tr v-if="invoices.length !== 0">
-                    <td class="px-4 py-4 font-semibold border-t" colspan="3">ИТОГО</td>
-                    <td class="border-l border-t"  colspan="2">
-                        <div class="flex items-center px-4 whitespace-nowrap font-semibold">
+                <tr v-if="invoices.length !== 0" class="bg-amber-200">
+                    <td class="px-4 py-3 font-semibold border-t" colspan="3">ИТОГО</td>
+                    <td class="border-t border-l"  colspan="2">
+                        <div class="flex items-center px-4 font-semibold whitespace-nowrap">
                             {{ sum_pay?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
                         </div>
                     </td>

@@ -43,11 +43,11 @@ class DatabaseSeeder extends Seeder
             'name' => 'м',
         ]);
 
-        Item::factory(80)->create();
-        Supplier::factory(10)->create();
-        Organization::factory(4)->create();
-        Invoice::factory(5)->create();
-        InvoiceItem::factory(30)->create();
+        Item::factory(100)->create();
+        Supplier::factory(5)->create();
+        Organization::factory(2)->create();
+        Invoice::factory(20)->create();
+        InvoiceItem::factory(100)->create();
         ExpenseCategory::create([
             'name' => 'Услуга',
         ]);
@@ -56,8 +56,9 @@ class DatabaseSeeder extends Seeder
         ]);
         ExpenseCategory::create([
             'name' => 'Прочие',
+            'sort' => '1',
         ]);
-        Expense::factory(5)->create();
+        Expense::factory(10)->create();
         ExpenseHistory::factory(30)->create();
     }
 }

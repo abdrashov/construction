@@ -20,11 +20,11 @@ class InvoiceItemFactory extends Factory
         $measurement = Measurement::inRandomOrder()->first();
 
         return [
-            'invoice_id' => Invoice::inRandomOrder()->value('id'), 
-            'name' => $item->name, 
-            'item_id' => $item->id, 
+            'invoice_id' => Invoice::inRandomOrder()->value('id'),
+            'name' => $item->name,
+            'item_id' => $item->id,
             'count' => $this->faker->numberBetween(1, 5).'0000',
-            'price' => $this->faker->numberBetween(1, 10).'00',
+            'price' => $this->faker->numberBetween(1, 10).'0000',
             'measurement' => $measurement->name,
             'measurement_id' => $measurement->id,
         ];

@@ -29,24 +29,24 @@
                     <th class="px-4 py-3 border-l border-r">Итого</th>
                 </tr>
                 <tr v-for="item in items" :key="item.id">
-                    <td class="border-t" :colspan="item.count ? 1 : 5">
-                        <div :class="'flex items-center px-4  ' + (item.count ? 'py-2 font-medium' : 'py-4 font-semibold')">
+                    <td class="border-t" :colspan="item.count ? 1 : 5" :class="(!item.count ? 'bg-sky-200' : '')">
+                        <div :class="'flex items-center px-4 py-1 ' + (item.count ? 'font-medium' : 'font-semibold')">
                             {{ item.count ? item.index : item.name }}
                         </div>
                     </td>
                     <td v-if="item.count" class="border-t border-l">
-                        <div class="flex items-center px-4 py-2 font-medium">
+                        <div class="flex items-center px-4 py-1 font-medium">
                             {{ item.name }}
                         </div>
                     </td>
                     <td v-if="item.count" class="border-t border-l">
-                        <div class="flex items-center px-4 py-2 font-medium">
+                        <div class="flex items-center px-4 py-1 font-medium">
                             {{ item.count }}
                             {{ item.measurement }}
                         </div>
                     </td>
                     <td v-if="item.count" class="border-t border-l">
-                        <div class="flex items-center px-4 font-semibold whitespace-nowrap">
+                        <div class="flex items-center px-4 font-semibold text-green-600 whitespace-nowrap">
                             {{ item.sum?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
                         </div>
                     </td>
@@ -56,8 +56,8 @@
                         </div>
                     </td>
                 </tr>
-                <tr v-if="items.length !== 0">
-                    <td class="px-4 py-4 font-semibold border-t" colspan="3">ИТОГО</td>
+                <tr v-if="items.length !== 0" class="bg-amber-200">
+                    <td class="px-4 py-3 font-semibold border-t" colspan="3">ИТОГО</td>
                     <td class="border-t border-l">
                         <div class="flex items-center px-4 font-semibold whitespace-nowrap">
                             {{ sum_item?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
@@ -70,7 +70,7 @@
                     </td>
                 </tr>
                 <tr v-if="items.length === 0">
-                    <td class="px-4 py-4 border-t" colspan="5">Не найдено.</td>
+                    <td class="px-4 py-3 border-t" colspan="5">Не найдено.</td>
                 </tr>
             </table>
         </div>

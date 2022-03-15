@@ -23,6 +23,10 @@ class CreateItemCategoriesTable extends Migration
         });
         ItemCategory::create([
             'name' => 'Другие',
+            'sort' => 1
+        ]);
+        ItemCategory::create([
+            'name' => 'Бетоны',
         ]);
     }
 
