@@ -383,6 +383,7 @@ class ReportsController extends Controller
             ->join('item_categories', 'items.item_category_id', '=', 'item_categories.id')
             ->where('invoices.organization_id', Request::input('organization_id'))
             ->where('invoices.status', true)
+            ->whereNull('invoices.deleted_at')
             ->groupBy('invoice_items.item_id')
             ->orderBy('item_categories.sort')
             ->orderBy('item_categories.name')
