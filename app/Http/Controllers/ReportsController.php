@@ -658,7 +658,7 @@ class ReportsController extends Controller
             $html = $html . $item_category['not_pay_sum'];
             $html = $html . '</td>';
             $html = $html . '<td>';
-            $html = $html . $item_category['pay_sum'] * $item_category['not_pay_sum'];
+            $html = $html . $item_category['pay_sum'] + $item_category['not_pay_sum'];
             $html = $html . '</td>';
             $html = $html . '</tr>';
         }
