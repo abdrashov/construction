@@ -39,6 +39,7 @@ class ExpenseController extends Controller
             ->when(Request::input('expense_category_id') ?? null, function ($query, $search) {
                 $query->where('expense_category_id', $search);
             })
+            ->whereNull('expense_histories.deleted_at')
             ->with(['category', 'user'])
             ->groupBy('expenses.id')
             ->select(
