@@ -646,7 +646,7 @@ class ReportsController extends Controller
         foreach ($reports_merge as $item_category) {
             $html = $html . '<tr>';
             $html = $html . '<td colspan="1">';
-            $html = $html . $index++;
+            $html = $html . ++$index;
             $html = $html . '</td>';
             $html = $html . '<td>';
             $html = $html . $item_category['supplier'];
