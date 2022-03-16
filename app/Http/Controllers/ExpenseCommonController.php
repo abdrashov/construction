@@ -5,13 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Expense;
 use App\Models\ExpenseCategory;
 use App\Models\Invoice;
-use App\Models\InvoiceItem;
-use App\Models\Item;
 use App\Models\Organization;
-use App\Models\Supplier;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
 use Inertia\Inertia;
@@ -30,21 +26,22 @@ class ExpenseCommonController extends Controller
 
         $expenses = Expense::whereNull('organization_id')
             ->orderByDesc('date')
-            ->when(Request::input('begin') ?? null, function ($query, $search) {
-                $query->where('date', '>=', $search);
-            })
-            ->when(Request::input('end') ?? null, function ($query, $search) {
-                $query->where('date', '<=', $search);
+            ->whereHas('expenseHistories', function ($query) {
+                $query->when(Request::input('begin') ?? null, function ($query, $search) {
+                    $query->where('date', '>=', $search);
+                })->when(Request::input('end') ?? null, function ($query, $search) {
+                    $query->where('date', '<=', $search);
+                });
             })
             ->when(Request::input('expense_category_id') ?? null, function ($query, $search) {
                 $query->where('expense_category_id', $search);
             })
             ->get()
-            ->transform(fn ($expense) => [
+            ->transform(fn($expense) => [
                 'id' => $expense->id,
                 'name' => $expense->name,
                 'category' => $expense->category->name,
-                'fullname' => $expense->user->last_name . ' ' .  $expense->user->first_name,
+                'fullname' => $expense->user->last_name . ' ' . $expense->user->first_name,
                 'price' => $expense->price ? $expense->price / Expense::FLOAT_TO_INT_PRICE : null,
                 'paid' => $expense->paid ? $expense->paid / Expense::FLOAT_TO_INT_PRICE : null,
                 'date' => $expense->date->format('d.m.Y'),
@@ -57,7 +54,7 @@ class ExpenseCommonController extends Controller
             'filters' => Request::only('begin', 'end', 'expense_category_id'),
             'expenses' => $expenses,
             'paid_sum' => $paid_sum,
-            'expense_categories' => ExpenseCategory::get()
+            'expense_categories' => ExpenseCategory::get(),
         ]);
     }
 
@@ -74,7 +71,9 @@ class ExpenseCommonController extends Controller
 
     public function store()
     {
-        if (!is_null(Request::input('date'))) Request::merge(['date' => (new Carbon(Request::input('date')))->format('Y-m-d')]);
+        if (!is_null(Request::input('date'))) {
+            Request::merge(['date' => (new Carbon(Request::input('date')))->format('Y-m-d')]);
+        }
 
         Request::validate([
             'name' => ['required', 'max:255'],
@@ -85,7 +84,7 @@ class ExpenseCommonController extends Controller
 
         Request::merge([
             'price' => Request::input('price') ? Request::input('price') * Expense::FLOAT_TO_INT_PRICE : null,
-            'user_id' => Auth::id()
+            'user_id' => Auth::id(),
         ]);
 
         $expense = Expense::create(Request::only('name', 'date', 'price', 'expense_category_id', 'user_id'));
@@ -95,7 +94,9 @@ class ExpenseCommonController extends Controller
 
     public function update(Organization $organization, Expense $expense)
     {
-        if (!is_null(Request::input('date'))) Request::merge(['date' => (new Carbon(Request::input('date')))->format('Y-m-d')]);
+        if (!is_null(Request::input('date'))) {
+            Request::merge(['date' => (new Carbon(Request::input('date')))->format('Y-m-d')]);
+        }
 
         Request::validate([
             'name' => ['required', 'max:255'],

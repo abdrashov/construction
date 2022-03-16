@@ -3,87 +3,90 @@
         <Head title="Отчеты" />
         <h1 class="mb-6 text-2xl font-semibold">Отчеты</h1>
         <div class="mb-2">
-            <Link href="/reports/common" class="btn-blue inline-block mt-2 md:mt-0">
+            <Link href="/reports/common" class="inline-block mt-2 btn-blue md:mt-0">
                 <span>Общий</span>
             </Link>
-            <Link href="/reports" class="btn-blue inline-block ml-0 mt-2 md:ml-2 md:mt-0">
+            <Link href="/reports" class="inline-block mt-2 ml-0 btn-blue md:ml-2 md:mt-0">
                 <span>По поставщикам</span>
             </Link>
-            <Link href="/reports/items" class="btn-blue inline-block ml-0 mt-2 md:ml-2 md:mt-0">
+            <Link href="/reports/items" class="inline-block mt-2 ml-0 btn-blue md:ml-2 md:mt-0">
                 <span>По товарам</span>
             </Link>
         </div>
         <div class="items-center justify-between mb-6 md:flex">
             <div class="items-center w-full md:flex md:w-1/2">
-                <select v-model="form.organization_id" class="form-select-icon relative px-4 py-3 w-full rounded focus:shadow-outline appearance-none">
+                <select v-model="form.organization_id" class="relative w-full px-4 py-3 rounded appearance-none form-select-icon focus:shadow-outline">
                     <option :value="null">Выберите объект</option>
                     <option v-for="organization in organizations" :key="organization.id" :value="organization.id">{{ organization.name }}</option>
                 </select>
-                <button class="hidden ml-3 w-8 text-gray-500 hover:text-gray-700 focus:text-indigo-500 text-sm md:block" type="button" @click="reset">Сброс</button>
+                <button class="hidden w-8 ml-3 text-sm text-gray-500 hover:text-gray-700 focus:text-indigo-500 md:block" type="button" @click="reset">Сброс</button>
             </div>
             <div class="flex">
-                <!-- <button @click="exportFile()" class="flex items-center justify-end mr-2 px-2 py-2 text-white text-xs font-medium leading-5 bg-indigo-400 hover:bg-indigo-500 rounded-lg focus:outline-none duration-200">
+                <!-- <button @click="exportFile()" class="flex items-center justify-end px-2 py-2 mr-2 text-xs font-medium leading-5 text-white duration-200 bg-indigo-400 rounded-lg hover:bg-indigo-500 focus:outline-none">
                     <icon name="export" class="w-5 h-5" />
                 </button> -->
+                <a target="_blank" :href="`/reports/export-index?` + getUrlParams()" class="flex items-center justify-end px-2 py-2 mr-2 text-xs font-medium leading-5 text-white duration-200 bg-indigo-400 rounded-lg hover:bg-indigo-500 focus:outline-none">
+                    <icon name="export" class="w-5 h-5" />
+                </a>
 
-                <button @click="search.modal = true" class="btn-gray mt-2 md:mt-0">
+                <button @click="search.modal = true" class="mt-2 btn-gray md:mt-0">
                     <span>Фильтр/Поиск</span>
                 </button>
             </div>
         </div>
-        <div class="text-sm bg-white shadow overflow-x-auto" id="table_to_print">
+        <div class="overflow-x-auto text-sm bg-white shadow" id="table_to_print">
             <table class="w-full">
-                <tr class="text-left text-gray-500 text-xs font-semibold tracking-wide bg-gray-50 border-b uppercase">
-                    <th class="px-4 py-3 w-12 border-r" rowspan="2">#</th>
-                    <th class="px-4 py-3 w-1/2 border-r" rowspan="2">Поставщик</th>
-                    <th class="px-4 py-3 w-1/2 border-r" colspan="3">Накладные</th>
+                <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
+                    <th class="w-12 px-4 py-3 border-r" rowspan="2">#</th>
+                    <th class="w-1/2 px-4 py-3 border-r" rowspan="2">Поставщик</th>
+                    <th class="w-1/2 px-4 py-3 border-r" colspan="3">Накладные</th>
                 </tr>
-                <tr class="text-left text-gray-500 text-xs font-semibold tracking-wide bg-gray-50 border-b uppercase">
+                <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
                     <th class="px-4 py-3 border-r">Оплачен</th>
                     <th class="px-4 py-3 border-r">Не оплачен</th>
                     <th class="px-4 py-3 border-r">Сумма</th>
                 </tr>
-                <tr v-for="(report, index) in reports" :key="report.supplier_id" class="hover:bg-amber-50 focus:bg-amber-50 duration-150">
+                <tr v-for="(report, index) in reports" :key="report.supplier_id" class="duration-150 hover:bg-amber-50 focus:bg-amber-50">
                     <td class="border-t">
                         <div class="flex items-center px-4 py-1 font-medium">
                             {{ index + 1 }}
                         </div>
                     </td>
-                    <td class="border-l border-t">
-                        <button @click="link(report.id, report.supplier_id, 'all')" class="flex items-center px-4 py-1 hover:underline font-medium">
+                    <td class="border-t border-l">
+                        <button @click="link(report.id, report.supplier_id, 'all')" class="flex items-center px-4 py-1 font-medium hover:underline">
                             {{ report.supplier }}
                         </button>
                     </td>
-                    <td class="border-l border-t">
-                        <button @click="link(report.id, report.supplier_id, 'pay')" class="flex items-center px-4 py-1 text-green-600 hover:underline whitespace-nowrap font-semibold">
+                    <td class="border-t border-l">
+                        <button @click="link(report.id, report.supplier_id, 'pay')" class="flex items-center px-4 py-1 font-semibold text-green-600 hover:underline whitespace-nowrap">
                             {{ report.pay_sum?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
                         </button>
                     </td>
-                    <td class="border-l border-t">
-                        <button @click="link(report.id, report.supplier_id, 'not_pay')" class="flex items-center px-4 py-1 text-red-600 hover:underline whitespace-nowrap font-semibold">
+                    <td class="border-t border-l">
+                        <button @click="link(report.id, report.supplier_id, 'not_pay')" class="flex items-center px-4 py-1 font-semibold text-red-600 hover:underline whitespace-nowrap">
                             {{ report.not_pay_sum?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
                         </button>
                     </td>
-                    <td class="border-l border-t">
-                        <div class="flex items-center px-4 py-1 whitespace-nowrap font-semibold" :href="`/reports/${report.id}/${report.supplier_id}/not_pay`">
+                    <td class="border-t border-l">
+                        <div class="flex items-center px-4 py-1 font-semibold whitespace-nowrap" :href="`/reports/${report.id}/${report.supplier_id}/not_pay`">
                             {{ (report.pay_sum + report.not_pay_sum).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
                         </div>
                     </td>
                 </tr>
                 <tr v-if="reports.length !== 0" class="bg-amber-200">
                     <td class="px-4 py-3 font-semibold border-t" colspan="2">ИТОГО</td>
-                    <td class="border-l border-t">
-                        <div class="flex items-center px-4 whitespace-nowrap font-semibold">
+                    <td class="border-t border-l">
+                        <div class="flex items-center px-4 font-semibold whitespace-nowrap">
                             {{ sum_pay?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
                         </div>
                     </td>
-                    <td class="border-l border-t">
-                        <div class="flex items-center px-4 whitespace-nowrap font-semibold">
+                    <td class="border-t border-l">
+                        <div class="flex items-center px-4 font-semibold whitespace-nowrap">
                             {{ not_sum_pay?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
                         </div>
                     </td>
-                    <td class="border-l border-t">
-                        <div class="flex items-center px-4 whitespace-nowrap font-semibold">
+                    <td class="border-t border-l">
+                        <div class="flex items-center px-4 font-semibold whitespace-nowrap">
                             {{ (sum_pay + not_sum_pay).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
                         </div>
                     </td>
@@ -213,8 +216,19 @@ export default {
             // htmlToPdf.getPdf('table_to_print', 'Регистрационная форма основной информации о владельце')
         },
         getUrlParams() {
-            return new URLSearchParams({ ...this.form, ...this.search }).toString()
-        }
+            let begin = ''
+            let end = ''
+            if (this.search.begin) {
+                let d = new Date(this.search.begin)
+                begin = ('0' + d.getDate()).slice(-2) + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + d.getFullYear()
+            }
+            if (this.search.end) {
+                let d = new Date(this.search.end)
+                end = ('0' + d.getDate()).slice(-2) + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + d.getFullYear()
+            }
+
+            return new URLSearchParams({ organization_id: this.form.organization_id, begin: begin, end: end }).toString()
+        },
     },
 }
 </script>

@@ -6,10 +6,10 @@
             <Link href="/reports/common" class="inline-block mt-2 btn-blue md:mt-0">
                 <span>Общий</span>
             </Link>
-            <Link href="/reports" class="btn-blue inline-block ml-0 mt-2 md:ml-2 md:mt-0">
+            <Link href="/reports" class="inline-block mt-2 ml-0 btn-blue md:ml-2 md:mt-0">
                 <span>По поставщикам</span>
             </Link>
-            <Link href="/reports/items" class="btn-blue inline-block ml-0 mt-2 md:ml-2 md:mt-0">
+            <Link href="/reports/items" class="inline-block mt-2 ml-0 btn-blue md:ml-2 md:mt-0">
                 <span>По товарам</span>
             </Link>
         </div>
@@ -22,10 +22,10 @@
                 <button class="hidden w-8 ml-3 text-sm text-gray-500 hover:text-gray-700 focus:text-indigo-500 md:block" type="button" @click="reset">Сброс</button>
             </div>
             <div class="flex">
-                <a target="_blank" :href="`/reports/export-item?`+getUrlParams()" class="flex items-center justify-end mr-2 px-2 py-2 text-white text-xs font-medium leading-5 bg-indigo-400 hover:bg-indigo-500 rounded-lg focus:outline-none duration-200">
+                <a target="_blank" :href="`/reports/export-item?` + getUrlParams()" class="flex items-center justify-end px-2 py-2 mr-2 text-xs font-medium leading-5 text-white duration-200 bg-indigo-400 rounded-lg hover:bg-indigo-500 focus:outline-none">
                     <icon name="export" class="w-5 h-5" />
                 </a>
-                <button @click="form.modal = true" class="btn-gray mt-2 md:mt-0">
+                <button @click="form.modal = true" class="mt-2 btn-gray md:mt-0">
                     <span>Фильтр/Поиск</span>
                 </button>
             </div>
@@ -40,7 +40,7 @@
                     <th class="px-4 py-3 border-l">Итого</th>
                 </tr>
                 <tr v-for="item in items" :key="item.id">
-                    <td class="border-t" :colspan="item.count ? 1 : 5" :class="(!item.count ? 'bg-sky-200' : '')">
+                    <td class="border-t" :colspan="item.count ? 1 : 5" :class="!item.count ? 'bg-sky-200' : ''">
                         <div :class="'flex items-center px-4 py-1 ' + (item.count ? 'font-medium' : 'font-semibold')">
                             {{ item.count ? item.index : item.name }}
                         </div>
@@ -157,7 +157,7 @@ export default {
                 modal: false,
                 begin: this.filters.begin,
                 end: this.filters.end,
-                item_category_id: this.filters.item_category_id
+                item_category_id: this.filters.item_category_id,
             },
         }
     },
@@ -174,12 +174,23 @@ export default {
             this.form = mapValues(this.form, () => null)
         },
         getData() {
-                this.$inertia.get('/reports/items', pickBy(this.form), { preserveState: true })
-                this.form.modal = false
+            this.$inertia.get('/reports/items', pickBy(this.form), { preserveState: true })
+            this.form.modal = false
         },
         getUrlParams() {
-            return new URLSearchParams({ ...this.form, ...this.search }).toString()
-        }
+            let begin = ''
+            let end = ''
+            if (this.form.begin) {
+                let d = new Date(this.form.begin)
+                begin = ('0' + d.getDate()).slice(-2) + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + d.getFullYear()
+            }
+            if (this.form.end) {
+                let d = new Date(this.form.end)
+                end = ('0' + d.getDate()).slice(-2) + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + d.getFullYear()
+            }
+
+            return new URLSearchParams({ organization_id: this.form.organization_id, item_category_id: this.form.item_category_id, begin: begin, end: end }).toString()
+        },
     },
 }
 </script>

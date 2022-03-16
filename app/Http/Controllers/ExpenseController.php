@@ -30,11 +30,12 @@ class ExpenseController extends Controller
 
         $expenses = $organization->expenses()
             ->orderByDesc('date')
-            ->when(Request::input('begin') ?? null, function ($query, $search) {
-                $query->where('date', '>=', $search);
-            })
-            ->when(Request::input('end') ?? null, function ($query, $search) {
-                $query->where('date', '<=', $search);
+            ->whereHas('expenseHistories', function ($query) {
+                $query->when(Request::input('begin') ?? null, function ($query, $search) {
+                    $query->where('date', '>=', $search);
+                })->when(Request::input('end') ?? null, function ($query, $search) {
+                    $query->where('date', '<=', $search);
+                });
             })
             ->when(Request::input('expense_category_id') ?? null, function ($query, $search) {
                 $query->where('expense_category_id', $search);

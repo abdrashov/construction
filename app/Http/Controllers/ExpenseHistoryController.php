@@ -22,7 +22,7 @@ class ExpenseHistoryController extends Controller
     public function Index(Expense $expense)
     {
         return Inertia::render('ExpenseHistory/Index', [
-            'filters' => Request::only('search', 'page'),
+            'filters' => Request::only('search', 'page', 'begin', 'end'),
             'organization' => [
                 'id' => $expense->organization->id,
                 'name' => $expense->organization->name,

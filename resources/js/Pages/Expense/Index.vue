@@ -10,8 +10,8 @@
         </h1>
 
         <div class="flex items-center justify-end mt-6 mb-3 text-xl">
-                <button class="hidden mr-3 w-8 text-gray-500 hover:text-gray-700 focus:text-indigo-500 text-sm md:block" type="button" @click="reset">Сброс</button>
-                <button @click="form.modal = true" class="btn-gray mt-2 md:mt-0">
+                <button class="hidden w-8 mr-3 text-sm text-gray-500 hover:text-gray-700 focus:text-indigo-500 md:block" type="button" @click="reset">Сброс</button>
+                <button @click="form.modal = true" class="mt-2 btn-gray md:mt-0">
                     <span>Фильтр/Поиск</span>
                 </button>
             <Link :href="`/organizations/${organization.id}/expense/create`" class="md:ml-2 btn-indigo">
@@ -98,7 +98,7 @@
                 </li>
                 <li class="pb-4">
                     <div class="w-full">
-                        <label class="form-label">Дата от:</label>
+                        <label class="form-label">Дата оплаты от:</label>
                         <date-picker v-model="form.begin" mode="date" is24hr :masks="{ input: 'DD.MM.YYYY' }">
                             <template v-slot="{ inputValue, inputEvents }">
                                 <input class="form-input" :value="inputValue" v-on="inputEvents" />
@@ -108,7 +108,7 @@
                 </li>
                 <li class="pb-4">
                     <div class="w-full">
-                        <label class="form-label">Дата до:</label>
+                        <label class="form-label">Дата оплаты до:</label>
                         <date-picker v-model="form.end" mode="date" is24hr :masks="{ input: 'DD.MM.YYYY' }">
                             <template v-slot="{ inputValue, inputEvents }">
                                 <input class="form-input" :value="inputValue" v-on="inputEvents" />
