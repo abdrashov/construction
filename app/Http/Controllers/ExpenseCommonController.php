@@ -8,6 +8,7 @@ use App\Models\Invoice;
 use App\Models\Organization;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
 use Inertia\Inertia;
@@ -26,26 +27,37 @@ class ExpenseCommonController extends Controller
 
         $expenses = Expense::whereNull('organization_id')
             ->orderByDesc('date')
-            ->whereHas('expenseHistories', function ($query) {
-                $query->when(Request::input('begin') ?? null, function ($query, $search) {
-                    $query->where('date', '>=', $search);
-                })->when(Request::input('end') ?? null, function ($query, $search) {
-                    $query->where('date', '<=', $search);
-                });
+            ->join('expense_histories', 'expenses.id', '=', 'expense_histories.expense_id')
+            ->when(Request::input('begin') ?? null, function ($query, $search) {
+                $query->where('expense_histories.date', '>=', $search);
+            })->when(Request::input('end') ?? null, function ($query, $search) {
+                $query->where('expense_histories.date', '<=', $search);
             })
             ->when(Request::input('expense_category_id') ?? null, function ($query, $search) {
                 $query->where('expense_category_id', $search);
             })
+            ->with(['category', 'user'])
+            ->select(
+                'expenses.id',
+                'expenses.name',
+                'expenses.user_id',
+                'expenses.expense_category_id',
+                'expenses.price',
+                DB::raw('SUM(expense_histories.price) as sum_paid'),
+                'expenses.date'
+            )
+            ->groupBy('expenses.id')
             ->get()
-            ->transform(fn($expense) => [
+            ->transform(fn ($expense) => [
                 'id' => $expense->id,
                 'name' => $expense->name,
                 'category' => $expense->category->name,
                 'fullname' => $expense->user->last_name . ' ' . $expense->user->first_name,
                 'price' => $expense->price ? $expense->price / Expense::FLOAT_TO_INT_PRICE : null,
-                'paid' => $expense->paid ? $expense->paid / Expense::FLOAT_TO_INT_PRICE : null,
+                'paid' => $expense->sum_paid ? $expense->sum_paid / Expense::FLOAT_TO_INT_PRICE : null,
                 'date' => $expense->date->format('d.m.Y'),
             ]);
+
         $paid_sum = 0;
         foreach ($expenses as $expense) {
             $paid_sum += $expense['paid'];

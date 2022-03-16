@@ -82,6 +82,16 @@ class InvoicesController extends Controller
         Request::merge(['supplier' => $supplier->name, 'user_id' => Auth::id()]);
 
         $invoice = $organization->invoices()
+            ->where('name', Request::input('name'))
+            ->where('supplier_id', Request::input('supplier_id'))
+            ->where('date', Request::input('date'))
+            ->first();
+
+        if ($invoice) {
+            return Redirect::route('invoice-items', $invoice->id)->with('error', 'Накладной уже существует...');
+        }
+
+        $invoice = $organization->invoices()
             ->create(Request::only('name', 'date', 'supplier_id', 'accepted', 'supplier', 'user_id'));
 
         if (Request::file('file')) {

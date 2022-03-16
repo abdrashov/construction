@@ -636,10 +636,13 @@ class ReportsController extends Controller
         $html = '';
         $html = $html . '<table>';
         $html = $html . '<tr>
-            <th>#</th>
-            <th>Название Товара</th>
-            <th>Использовался</th>
-            <th>Сумма</th>
+            <th rowspan="2">#</th>
+            <th rowspan="2">Поставщик</th>
+            <th colspan="3">Накладные</th>
+        </tr>';
+        $html = $html . '<tr>
+            <th>Оплачен</th>
+            <th>Не оплачен</th>
             <th>Итого</th>
         </tr>';
         $index = 0;

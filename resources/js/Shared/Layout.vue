@@ -15,10 +15,12 @@
                                 </div>
                             </template>
                         </dropdown>
-                        <div class="fixed flex flex-col justify-start hidden h-full bg-white md:block">
+                        <div class="fixed flex flex-col justify-start hidden h-full overflow-y-auto bg-white md:block">
                             <hr class="mx-5 mt-8 mb-5" />
 
                             <main-menu class="flex-shrink-0 hidden w-64 overflow-y-auto md:block" />
+
+                            <br />
                         </div>
                     </div>
                     <div class="container px-4 px-6 py-8 mx-auto md:flex-1 md:pb-24 md:pt-6 md:px-6 md:overflow-y-auto" scroll-region>
