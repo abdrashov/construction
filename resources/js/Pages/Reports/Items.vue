@@ -27,7 +27,7 @@
                 <tr class="text-left text-gray-500 text-xs font-semibold tracking-wide bg-gray-50 border-b uppercase">
                     <th class="px-4 py-3 w-10 border-r">#</th>
                     <th class="px-4 py-3 border-l border-r">Название Товара</th>
-                    <th class="px-4 py-3 border-l border-r">Использовался</th>
+                    <th class="px-4 py-3 border-l border-r">Количество</th>
                     <th class="px-4 py-3 border-l border-r">Сумма</th>
                     <th class="px-4 py-3 border-l">Итого</th>
                 </tr>

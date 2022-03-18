@@ -495,6 +495,8 @@ class ReportsController extends Controller
         $suppliers = InvoiceItem::select(
             'suppliers.id',
             'suppliers.name',
+            'invoices.name as invoice',
+            'invoices.date',
             'invoice_items.measurement',
             DB::raw('SUM(invoice_items.count * invoice_items.price) as sum'),
             DB::raw('SUM(invoice_items.count) as count'),
@@ -508,7 +510,10 @@ class ReportsController extends Controller
             ->whereNull('suppliers.deleted_at')
             ->whereNull('invoice_items.deleted_at')
             ->when(Request::input('search') ?? null, function ($query, $search) {
-                $query->where('suppliers.name', 'like', '%'.$search.'%');
+                $query->where(function ($query) use ($search) {
+                    $query->where('suppliers.name', 'like', '%' . $search . '%')
+                        ->orWhere('invoices.name', 'like', '%' . $search . '%');
+                });
             })
             ->when(Request::input('begin') ?? null, function ($query, $search) {
                 $query->where('invoices.date', '>=', $search);
@@ -520,20 +525,11 @@ class ReportsController extends Controller
             ->orderBy('suppliers.name')
             ->get()
             ->transform(function ($supplier) {
-                $date = 'За все время';
-                if (Request::input('begin') && Request::input('end')) {
-                    $date = (new Carbon(Request::input('begin')))->format('d.m.Y') . ' - ' . (new Carbon(Request::input('end')))->format('d.m.Y');
-                }
-                if (Request::input('begin') && !Request::input('end')) {
-                    $date = 'от:' . (new Carbon(Request::input('begin')))->format('d.m.Y');
-                }
-                if (!Request::input('begin') && Request::input('end')) {
-                    $date = 'до:' . (new Carbon(Request::input('end')))->format('d.m.Y');
-                }
                 return [
                     'id' => $supplier->id,
                     'name' => $supplier->name,
-                    'date' => $date,
+                    'invoice' => $supplier->invoice,
+                    'date' => $supplier->date ? (new Carbon($supplier->date))->format('d.m.Y') : '',
                     'count' => $supplier->count / InvoiceItem::FLOAT_TO_INT_COUNT,
                     'measurement' => $supplier->measurement,
                     'sum' => $supplier->sum / (InvoiceItem::FLOAT_TO_INT_COUNT * InvoiceItem::FLOAT_TO_INT_PRICE),
@@ -541,9 +537,11 @@ class ReportsController extends Controller
             })->toArray();
 
         $sum_pay = 0;
+        $count_pay = 0;
 
         foreach ($suppliers as $supplier) {
             $sum_pay += $supplier['sum'];
+            $count_pay += $supplier['count'];
         }
 
         return Inertia::render('Reports/ItemSupplier', [
@@ -551,7 +549,8 @@ class ReportsController extends Controller
             'organization' => $organization,
             'suppliers' => $suppliers,
             'item_id' => $item_id,
-            'sum_pay' => $sum_pay
+            'sum_pay' => $sum_pay,
+            'count_pay' => $count_pay
         ]);
     }
 
