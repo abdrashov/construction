@@ -2,75 +2,67 @@
     <div>
         <Head title="Отчеты" />
         <h1 class="mb-6 text-2xl font-semibold">Отчеты</h1>
-        <div class="mb-2">
-            <Link href="/reports/common" class="inline-block mt-2 btn-blue md:mt-0">
-                <span>Общий</span>
-            </Link>
-            <Link href="/reports" class="inline-block mt-2 ml-0 btn-blue md:ml-2 md:mt-0">
-                <span>По поставщикам</span>
-            </Link>
-            <Link href="/reports/items" class="inline-block mt-2 ml-0 btn-blue md:ml-2 md:mt-0">
-                <span>По товарам</span>
-            </Link>
-        </div>
+
+        <ReportNavbar />
+
         <div class="items-center justify-between mb-6 md:flex">
             <div class="items-center w-full md:flex md:w-1/2">
-                <select v-model="form.organization_id" class="relative w-full px-4 py-3 rounded appearance-none form-select-icon focus:shadow-outline">
+                <select v-model="form.organization_id" class="form-select-icon relative px-4 py-3 w-full rounded focus:shadow-outline appearance-none">
                     <option :value="null">Выберите объект</option>
                     <option v-for="organization in organizations" :key="organization.id" :value="organization.id">{{ organization.name }}</option>
                 </select>
-                <button class="hidden w-8 ml-3 text-sm text-gray-500 hover:text-gray-700 focus:text-indigo-500 md:block" type="button" @click="reset">Сброс</button>
+                <button class="hidden ml-3 w-8 text-gray-500 hover:text-gray-700 focus:text-indigo-500 text-sm md:block" type="button" @click="reset">Сброс</button>
             </div>
             <div class="flex">
-                <a target="_blank" :href="`/reports/export-item?` + getUrlParams()" class="flex items-center justify-end px-2 py-2 mr-2 text-xs font-medium leading-5 text-white duration-200 bg-indigo-400 rounded-lg hover:bg-indigo-500 focus:outline-none">
+                <a target="_blank" :href="`/reports/export-item?` + getUrlParams()" class="flex items-center justify-end mr-2 px-2 py-2 text-white text-xs font-medium leading-5 bg-indigo-400 hover:bg-indigo-500 rounded-lg focus:outline-none duration-200">
                     <icon name="export" class="w-5 h-5" />
                 </a>
-                <button @click="form.modal = true" class="mt-2 btn-gray md:mt-0">
+                <button @click="form.modal = true" class="btn-gray mt-2 md:mt-0">
                     <span>Фильтр/Поиск</span>
                 </button>
             </div>
         </div>
-        <div class="overflow-x-auto text-sm bg-white shadow">
+        <div class="text-sm bg-white shadow overflow-x-auto">
             <table class="w-full">
-                <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
-                    <th class="w-10 px-4 py-3 border-r">#</th>
+                <tr class="text-left text-gray-500 text-xs font-semibold tracking-wide bg-gray-50 border-b uppercase">
+                    <th class="px-4 py-3 w-10 border-r">#</th>
                     <th class="px-4 py-3 border-l border-r">Название Товара</th>
                     <th class="px-4 py-3 border-l border-r">Использовался</th>
                     <th class="px-4 py-3 border-l border-r">Сумма</th>
                     <th class="px-4 py-3 border-l">Итого</th>
                 </tr>
-                <tr v-for="item in items" :key="item.id">
+                <tr v-for="item in items" :key="item.id" class="hover:bg-amber-50 focus:bg-amber-50 duration-150">
                     <td class="border-t" :colspan="item.count ? 1 : 5" :class="!item.count ? 'bg-sky-200' : ''">
                         <div :class="'flex items-center px-4 py-1 ' + (item.count ? 'font-medium' : 'font-semibold')">
                             {{ item.count ? item.index : item.name }}
                         </div>
                     </td>
-                    <td v-if="item.count" class="border-t border-l">
-                        <div class="flex items-center px-4 py-1 font-medium">
+                    <td v-if="item.count" class="border-l border-t">
+                        <Link :href="`/reports/items/${form.organization_id}/${item.item_id}/supplier` + getUrlDatas()" class="flex items-center px-4 py-1 hover:underline font-medium">
                             {{ item.name }}
-                        </div>
+                        </Link>
                     </td>
-                    <td v-if="item.count" class="border-t border-l">
-                        <div class="flex items-center px-4 py-1 font-medium">
+                    <td v-if="item.count" class="border-l border-t">
+                        <Link :href="`/reports/items/${form.organization_id}/${item.item_id}/supplier` + getUrlDatas()" class="flex items-center px-4 py-1 hover:underline font-medium">
                             {{ item.count }}
                             {{ item.measurement }}
-                        </div>
+                        </Link>
                     </td>
-                    <td v-if="item.count" class="border-t border-l">
-                        <div class="flex items-center px-4 font-semibold text-green-600 whitespace-nowrap">
+                    <td v-if="item.count" class="border-l border-t">
+                        <Link :href="`/reports/items/${form.organization_id}/${item.item_id}/supplier` + getUrlDatas()" class="flex items-center px-4 text-green-600 hover:underline whitespace-nowrap font-semibold">
                             {{ item.sum?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
-                        </div>
+                        </Link>
                     </td>
-                    <td v-if="item.count" class="border-t border-l">
-                        <div class="flex items-center px-4 font-semibold whitespace-nowrap">
+                    <td v-if="item.count" class="border-l border-t">
+                        <div class="flex items-center px-4 whitespace-nowrap font-semibold">
                             {{ item.category_sum?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
                         </div>
                     </td>
                 </tr>
                 <tr v-if="items.length !== 0" class="bg-amber-200">
                     <td class="px-4 py-3 font-semibold border-t" colspan="3">ИТОГО</td>
-                    <td class="border-t border-l" colspan="2">
-                        <div class="flex items-center px-4 font-semibold whitespace-nowrap">
+                    <td class="border-l border-t" colspan="2">
+                        <div class="flex items-center px-4 whitespace-nowrap font-semibold">
                             {{ sum_item?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
                         </div>
                     </td>
@@ -126,6 +118,7 @@ import LoadingButton from '@/Shared/LoadingButton'
 import TextInput from '@/Shared/TextInput'
 import ModalLeft from '@/Shared/ModalLeft'
 import SelectInput from '@/Shared/SelectInput'
+import ReportNavbar from './ReportNavbar'
 import { Calendar, DatePicker } from 'v-calendar'
 import 'v-calendar/dist/style.css'
 
@@ -141,6 +134,7 @@ export default {
         SelectInput,
         ModalLeft,
         DatePicker,
+        ReportNavbar,
     },
     layout: Layout,
     props: {
@@ -190,6 +184,23 @@ export default {
             }
 
             return new URLSearchParams({ organization_id: this.form.organization_id, item_category_id: this.form.item_category_id, begin: begin, end: end }).toString()
+        },
+        getUrlDatas() {
+            let begin = ''
+            let end = ''
+            let url = ''
+            if (this.form.begin) {
+                let d = new Date(this.form.begin)
+                begin = ('0' + d.getDate()).slice(-2) + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + d.getFullYear()
+                url += '?' + new URLSearchParams({ begin: begin }).toString()
+            }
+            if (this.form.end) {
+                let d = new Date(this.form.end)
+                end = ('0' + d.getDate()).slice(-2) + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + d.getFullYear()
+                url += url == '' ? '?' + new URLSearchParams({ end: end }).toString() : '&' + new URLSearchParams({ end: end }).toString()
+            }
+
+            return url
         },
     },
 }

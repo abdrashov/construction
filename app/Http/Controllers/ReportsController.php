@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Expense;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
+use App\Models\Item;
 use App\Models\ItemCategory;
 use App\Models\Organization;
 use App\Models\Supplier;
@@ -96,7 +97,7 @@ class ReportsController extends Controller
             ->whereNull('invoices.deleted_at')
             ->groupBy('suppliers.id')
             ->get()
-            ->transform(fn($report) => [
+            ->transform(fn ($report) => [
                 'id' => $report->id,
                 'supplier_id' => $report->supplier_id,
                 'supplier' => $report->supplier,
@@ -128,7 +129,7 @@ class ReportsController extends Controller
             ->whereNull('invoices.deleted_at')
             ->groupBy('suppliers.id')
             ->get()
-            ->transform(fn($report) => [
+            ->transform(fn ($report) => [
                 'id' => $report->id,
                 'supplier_id' => $report->supplier_id,
                 'supplier' => $report->supplier,
@@ -219,7 +220,7 @@ class ReportsController extends Controller
         }
 
         $invoices = $organization->invoices()
-            ->filter(Request::only('search'))
+            ->filter(['name' => Request::input('search')])
             ->where('supplier_id', $supplier->id)
             ->where('status', 1)
             ->when(Request::input('begin') ?? null, function ($query, $search) {
@@ -229,7 +230,7 @@ class ReportsController extends Controller
                 $query->where('date', '<=', $search);
             })
             ->get()
-            ->transform(fn($invoice) => [
+            ->transform(fn ($invoice) => [
                 'id' => $invoice->id,
                 'name' => $invoice->name,
                 'pay' => $invoice->pay,
@@ -263,7 +264,7 @@ class ReportsController extends Controller
         }
 
         $invoices = $organization->invoices()
-            ->filter(Request::only('search'))
+            ->filter(['name' => Request::input('search')])
             ->where('supplier_id', $supplier->id)
             ->where('pay', true)
             ->when(Request::input('begin') ?? null, function ($query, $search) {
@@ -274,7 +275,7 @@ class ReportsController extends Controller
             })
             ->where('status', 1)
             ->get()
-            ->transform(fn($invoice) => [
+            ->transform(fn ($invoice) => [
                 'id' => $invoice->id,
                 'name' => $invoice->name,
                 'date' => $invoice->date->format('d.m.Y'),
@@ -308,7 +309,7 @@ class ReportsController extends Controller
         }
 
         $invoices = $organization->invoices()
-            ->filter(Request::only('search'))
+            ->filter(['name' => Request::input('search')])
             ->where('supplier_id', $supplier->id)
             ->where('pay', false)
             ->when(Request::input('begin') ?? null, function ($query, $search) {
@@ -319,7 +320,7 @@ class ReportsController extends Controller
             })
             ->where('status', 1)
             ->get()
-            ->transform(fn($invoice) => [
+            ->transform(fn ($invoice) => [
                 'id' => $invoice->id,
                 'name' => $invoice->name,
                 'date' => $invoice->date->format('d.m.Y'),
@@ -367,7 +368,7 @@ class ReportsController extends Controller
                 'file' => $invoice->file ? '\\file\\' . $invoice->file : '',
                 'sum' => $invoice->invoiceItems()->select(DB::raw('SUM(count * price) as sum'))->value('sum') / (InvoiceItem::FLOAT_TO_INT_PRICE * InvoiceItem::FLOAT_TO_INT_COUNT),
             ],
-            'invoice_items' => $invoice->invoiceItems->transform(fn($item) => [
+            'invoice_items' => $invoice->invoiceItems->transform(fn ($item) => [
                 'id' => $item->id,
                 'name' => $item->name,
                 'count' => $item->count / InvoiceItem::FLOAT_TO_INT_COUNT,
@@ -387,46 +388,9 @@ class ReportsController extends Controller
             Request::merge(['end' => (new Carbon(Request::input('end')))->format('Y-m-d')]);
         }
 
-        // $items = InvoiceItem::select(
-        //     'id',
-        //     'name',
-        //     'measurement',
-        //     'item_id',
-        //     DB::raw('SUM(count) as items_count'),
-        //     DB::raw('SUM(count * price) as items_price'),
-        // )
-        //     ->whereHas('invoice', function ($query) {
-        //         $query->where('organization_id', Request::input('organization_id'))
-        //             ->where('status', true);
-        //     })
-        //     ->with('item.itemCategory')
-        //     ->orderBy('name')
-        //     ->groupBy('item_id')
-        //     ->get()
-        //     ->transform(fn($item) => [
-        //         'id' => $item->id,
-        //         'name' => $item->name,
-        //         'item_category' => $item->item?->itemCategory ? $item->item?->itemCategory->name : null,
-        //         'item_category_sort' => $item->item?->itemCategory ? $item->item?->itemCategory->sort : null,
-        //         'measurement' => $item->measurement,
-        //         'count' => $item->items_count / InvoiceItem::FLOAT_TO_INT_COUNT,
-        //         'sum' => $item->items_price / (InvoiceItem::FLOAT_TO_INT_COUNT * InvoiceItem::FLOAT_TO_INT_PRICE),
-        //     ])->toArray();
-
-        // array_multisort(array_map(function ($element) {
-        //     return $element['item_category'];
-        // }, $items), SORT_ASC, $items);
-
-        // array_multisort(array_map(function ($element) {
-        //     return $element['name'];
-        // }, $items), SORT_ASC, $items);
-
-        // usort($items, function ($a, $b) {
-        //     return ($a['item_category_sort'] - $b['item_category_sort']);
-        // });
-
         $items = InvoiceItem::select(
             'invoice_items.id',
+            'invoice_items.item_id',
             'invoice_items.name',
             'item_categories.id as item_category_id',
             'item_categories.name as item_category',
@@ -454,8 +418,9 @@ class ReportsController extends Controller
             ->orderBy('item_categories.name')
             ->orderBy('invoice_items.name')
             ->get()
-            ->transform(fn($item) => [
+            ->transform(fn ($item) => [
                 'id' => $item->id,
+                'item_id' => $item->item_id,
                 'name' => $item->name,
                 'item_category_id' => $item->item_category_id,
                 'item_category' => $item->item_category,
@@ -517,6 +482,79 @@ class ReportsController extends Controller
         ]);
     }
 
+    public function itemSupplier(Organization $organization, $item_id)
+    {
+        if (!is_null(Request::input('begin'))) {
+            Request::merge(['begin' => (new Carbon(Request::input('begin')))->format('Y-m-d')]);
+        }
+
+        if (!is_null(Request::input('end'))) {
+            Request::merge(['end' => (new Carbon(Request::input('end')))->format('Y-m-d')]);
+        }
+
+        $suppliers = InvoiceItem::select(
+            'suppliers.id',
+            'suppliers.name',
+            'invoice_items.measurement',
+            DB::raw('SUM(invoice_items.count * invoice_items.price) as sum'),
+            DB::raw('SUM(invoice_items.count) as count'),
+        )
+            ->join('invoices', 'invoices.id', '=', 'invoice_items.invoice_id')
+            ->join('suppliers', 'suppliers.id', '=', 'invoices.supplier_id')
+            ->where('invoices.organization_id', $organization->id)
+            ->where('invoices.status', true)
+            ->where('invoice_items.item_id', $item_id)
+            ->whereNull('invoices.deleted_at')
+            ->whereNull('suppliers.deleted_at')
+            ->whereNull('invoice_items.deleted_at')
+            ->when(Request::input('search') ?? null, function ($query, $search) {
+                $query->where('suppliers.name', 'like', '%'.$search.'%');
+            })
+            ->when(Request::input('begin') ?? null, function ($query, $search) {
+                $query->where('invoices.date', '>=', $search);
+            })
+            ->when(Request::input('end') ?? null, function ($query, $search) {
+                $query->where('invoices.date', '<=', $search);
+            })
+            ->groupBy('suppliers.id')
+            ->orderBy('suppliers.name')
+            ->get()
+            ->transform(function ($supplier) {
+                $date = 'За все время';
+                if (Request::input('begin') && Request::input('end')) {
+                    $date = (new Carbon(Request::input('begin')))->format('d.m.Y') . ' - ' . (new Carbon(Request::input('end')))->format('d.m.Y');
+                }
+                if (Request::input('begin') && !Request::input('end')) {
+                    $date = 'от:' . (new Carbon(Request::input('begin')))->format('d.m.Y');
+                }
+                if (!Request::input('begin') && Request::input('end')) {
+                    $date = 'до:' . (new Carbon(Request::input('end')))->format('d.m.Y');
+                }
+                return [
+                    'id' => $supplier->id,
+                    'name' => $supplier->name,
+                    'date' => $date,
+                    'count' => $supplier->count / InvoiceItem::FLOAT_TO_INT_COUNT,
+                    'measurement' => $supplier->measurement,
+                    'sum' => $supplier->sum / (InvoiceItem::FLOAT_TO_INT_COUNT * InvoiceItem::FLOAT_TO_INT_PRICE),
+                ];
+            })->toArray();
+
+        $sum_pay = 0;
+
+        foreach ($suppliers as $supplier) {
+            $sum_pay += $supplier['sum'];
+        }
+
+        return Inertia::render('Reports/ItemSupplier', [
+            'filters' => Request::all('search', 'begin', 'end'),
+            'organization' => $organization,
+            'suppliers' => $suppliers,
+            'item_id' => $item_id,
+            'sum_pay' => $sum_pay
+        ]);
+    }
+
     public function exportIndex()
     {
         if (Request::input('begin') == 'null') {
@@ -563,7 +601,7 @@ class ReportsController extends Controller
             ->whereNull('invoices.deleted_at')
             ->groupBy('suppliers.id')
             ->get()
-            ->transform(fn($report) => [
+            ->transform(fn ($report) => [
                 'id' => $report->id,
                 'supplier_id' => $report->supplier_id,
                 'supplier' => $report->supplier,
@@ -595,7 +633,7 @@ class ReportsController extends Controller
             ->whereNull('invoices.deleted_at')
             ->groupBy('suppliers.id')
             ->get()
-            ->transform(fn($report) => [
+            ->transform(fn ($report) => [
                 'id' => $report->id,
                 'supplier_id' => $report->supplier_id,
                 'supplier' => $report->supplier,
@@ -734,7 +772,7 @@ class ReportsController extends Controller
             ->orderBy('item_categories.name')
             ->orderBy('invoice_items.name')
             ->get()
-            ->transform(fn($item) => [
+            ->transform(fn ($item) => [
                 'id' => $item->id,
                 'name' => $item->name,
                 'item_category_id' => $item->item_category_id,

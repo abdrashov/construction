@@ -109,7 +109,7 @@ export default {
         form: {
             deep: true,
             handler: throttle(function () {
-                this.$inertia.get(`/reports/${this.organization.id}/${this.supplier.id}/all`, pickBy(this.form), { preserveState: true })
+                this.$inertia.get(`/reports/${this.organization.id}/${this.supplier.id}/pay`, pickBy(this.form), { preserveState: true })
             }, 150),
         },
     },

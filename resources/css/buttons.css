@@ -1,21 +1,25 @@
 .btn-indigo {
-    @apply px-5 py-3 text-sm font-semibold leading-4 text-white duration-150 bg-indigo-400 rounded whitespace-nowrap hover:bg-indigo-500 focus:bg-indigo-500;
+    @apply px-5 cursor-pointer py-3 text-sm font-semibold leading-4 text-white duration-150 bg-indigo-400 rounded whitespace-nowrap hover:bg-indigo-500 focus:bg-indigo-500;
 }
 
 .btn-blue {
-    @apply px-5 py-3 text-sm font-semibold leading-4 text-white duration-150 bg-blue-400 rounded whitespace-nowrap hover:bg-blue-500 focus:bg-blue-500;
+    @apply px-5 cursor-pointer py-3 text-sm font-semibold leading-4 text-white duration-150 bg-blue-400 rounded whitespace-nowrap hover:bg-blue-500 focus:bg-blue-500;
 }
 
 .btn-green {
-    @apply px-5 py-3 text-sm font-semibold leading-4 text-white duration-150 bg-green-400 rounded whitespace-nowrap hover:bg-green-500 focus:bg-green-500;
+    @apply px-5 cursor-pointer py-3 text-sm font-semibold leading-4 text-white duration-150 bg-green-400 rounded whitespace-nowrap hover:bg-green-500 focus:bg-green-500;
 }
 
 .btn-cyan {
-    @apply px-5 py-3 text-sm font-semibold leading-4 text-white duration-150 rounded bg-cyan-400 whitespace-nowrap hover:bg-cyan-500 focus:bg-cyan-500;
+    @apply px-5 cursor-pointer py-3 text-sm font-semibold leading-4 text-white duration-150 rounded bg-cyan-400 whitespace-nowrap hover:bg-cyan-500 focus:bg-cyan-500;
 }
 
 .btn-gray {
-    @apply px-5 py-3 text-sm font-semibold leading-4 text-white duration-150 rounded bg-gray-400 whitespace-nowrap hover:bg-gray-500 focus:bg-gray-500;
+    @apply px-5 cursor-pointer py-3 text-sm font-semibold leading-4 text-white duration-150 rounded bg-gray-400 whitespace-nowrap hover:bg-gray-500 focus:bg-gray-500;
+}
+
+.btn-white {
+    @apply px-5 cursor-pointer py-3 text-sm font-semibold leading-4 border duration-150 rounded bg-white whitespace-nowrap hover:bg-blue-400 hover:text-white focus:bg-blue-400;
 }
 
 .btn-spinner,

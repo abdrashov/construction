@@ -115,13 +115,17 @@ Route::middleware('auth')->group(function () {
                 ->name('.not_pay');
             Route::get('{organization}/{supplier}/{invoice}/items', 'invoiceItem')
                 ->name('.invoice.item');
+
+
             Route::get('items', 'items')
                 ->name('.items');
+            Route::get('items/{organization}/{item}/supplier', 'itemSupplier')
+                ->name('.items.supplier');
 
-                Route::get('export-index', 'exportIndex')
+            Route::get('export-index', 'exportIndex')
                 ->name('.export-index');
-                Route::get('export-item', 'exportItem')
-                        ->name('.export-item');
+            Route::get('export-item', 'exportItem')
+                ->name('.export-item');
         });
     });
 

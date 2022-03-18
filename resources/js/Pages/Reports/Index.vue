@@ -2,17 +2,9 @@
     <div>
         <Head title="Отчеты" />
         <h1 class="mb-6 text-2xl font-semibold">Отчеты</h1>
-        <div class="mb-2">
-            <Link href="/reports/common" class="inline-block mt-2 btn-blue md:mt-0">
-                <span>Общий</span>
-            </Link>
-            <Link href="/reports" class="inline-block mt-2 ml-0 btn-blue md:ml-2 md:mt-0">
-                <span>По поставщикам</span>
-            </Link>
-            <Link href="/reports/items" class="inline-block mt-2 ml-0 btn-blue md:ml-2 md:mt-0">
-                <span>По товарам</span>
-            </Link>
-        </div>
+
+        <ReportNavbar/>
+
         <div class="items-center justify-between mb-6 md:flex">
             <div class="items-center w-full md:flex md:w-1/2">
                 <select v-model="form.organization_id" class="relative w-full px-4 py-3 rounded appearance-none form-select-icon focus:shadow-outline">
@@ -140,6 +132,7 @@ import LoadingButton from '@/Shared/LoadingButton'
 import TextInput from '@/Shared/TextInput'
 import SelectInput from '@/Shared/SelectInput'
 import ModalLeft from '@/Shared/ModalLeft'
+import ReportNavbar from './ReportNavbar'
 import { Calendar, DatePicker } from 'v-calendar'
 import 'v-calendar/dist/style.css'
 // import htmlToPdf from '@/htmlToPdf'
@@ -160,6 +153,7 @@ export default {
         SelectInput,
         ModalLeft,
         DatePicker,
+        ReportNavbar,
     },
     layout: Layout,
     props: {
