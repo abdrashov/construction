@@ -55,6 +55,9 @@ class SuppliersController extends Controller
 
     public function destroy(Supplier $supplier)
     {
+        if ($supplier->invoices()->exists()) {
+            return Redirect::back()->with('error', 'Невозможно удалить, этот поставщик уже используется в накладных.');
+        }
         $supplier->delete();
 
         return Redirect::back()->with('success', 'Удален.');

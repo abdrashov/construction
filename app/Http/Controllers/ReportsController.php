@@ -498,8 +498,8 @@ class ReportsController extends Controller
             'invoices.name as invoice',
             'invoices.date',
             'invoice_items.measurement',
-            DB::raw('SUM(invoice_items.count * invoice_items.price) as sum'),
-            DB::raw('SUM(invoice_items.count) as count'),
+            DB::raw('invoice_items.price as price'),
+            DB::raw('invoice_items.count as count'),
         )
             ->join('invoices', 'invoices.id', '=', 'invoice_items.invoice_id')
             ->join('suppliers', 'suppliers.id', '=', 'invoices.supplier_id')
@@ -521,8 +521,8 @@ class ReportsController extends Controller
             ->when(Request::input('end') ?? null, function ($query, $search) {
                 $query->where('invoices.date', '<=', $search);
             })
-            ->groupBy('suppliers.id')
-            ->orderBy('suppliers.name')
+            ->groupBy('invoice_items.id')
+            ->orderByDesc('invoices.date')
             ->get()
             ->transform(function ($supplier) {
                 return [
@@ -531,8 +531,9 @@ class ReportsController extends Controller
                     'invoice' => $supplier->invoice,
                     'date' => $supplier->date ? (new Carbon($supplier->date))->format('d.m.Y') : '',
                     'count' => $supplier->count / InvoiceItem::FLOAT_TO_INT_COUNT,
+                    'price' => $supplier->price / InvoiceItem::FLOAT_TO_INT_PRICE,
                     'measurement' => $supplier->measurement,
-                    'sum' => $supplier->sum / (InvoiceItem::FLOAT_TO_INT_COUNT * InvoiceItem::FLOAT_TO_INT_PRICE),
+                    'sum' => ($supplier->count * $supplier->price) / (InvoiceItem::FLOAT_TO_INT_COUNT * InvoiceItem::FLOAT_TO_INT_PRICE),
                 ];
             })->toArray();
 

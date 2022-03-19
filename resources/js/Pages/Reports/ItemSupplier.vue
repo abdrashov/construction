@@ -20,6 +20,7 @@
                     <th class="px-4 py-3 border-l border-r">Накладной</th>
                     <th class="px-4 py-3 border-l border-r">Дата</th>
                     <th class="px-4 py-3 border-l border-r">Количество</th>
+                    <th class="px-4 py-3 border-l border-r">Цена</th>
                     <th class="px-4 py-3 border-l border-r">Сумма</th>
                 </tr>
                 <tr v-for="(supplier, index) in suppliers" :key="supplier.id">
@@ -48,13 +49,18 @@
                     </td>
                     <td class="w-2/6 border-l border-t">
                         <div class="flex items-center px-4 py-1 whitespace-nowrap  font-medium">
+                            {{ supplier.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
+                        </div>
+                    </td>
+                    <td class="w-2/6 border-l border-t">
+                        <div class="flex items-center px-4 py-1 whitespace-nowrap  font-medium">
                             {{ supplier.sum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
                         </div>
                     </td>
                 </tr>
                 <tr v-if="suppliers.length !== 0" class="bg-amber-200">
                     <td class="px-4 py-3 font-semibold border-t" colspan="4">ИТОГО</td>
-                    <td class="border-l border-t">
+                    <td class="border-l border-t" colspan="2">
                         <div class="flex items-center px-4 whitespace-nowrap font-semibold">
                             {{ count_pay }}
                         </div>
@@ -66,7 +72,7 @@
                     </td>
                 </tr>
                 <tr v-if="suppliers.length === 0">
-                    <td class="px-6 py-4 border-t" colspan="6">Не найдено.</td>
+                    <td class="px-6 py-4 border-t" colspan="7">Не найдено.</td>
                 </tr>
             </table>
         </div>
