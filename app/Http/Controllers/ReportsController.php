@@ -539,10 +539,14 @@ class ReportsController extends Controller
 
         $sum_pay = 0;
         $count_pay = 0;
-
+        $max_lenght = 0;
         foreach ($suppliers as $supplier) {
             $sum_pay += $supplier['sum'];
             $count_pay += $supplier['count'];
+            $number = explode('.', $supplier['count']);
+            if (count($number) > 1 && strlen($number[1]) > $max_lenght) {
+                $max_lenght = strlen($number[1]);
+            }
         }
 
         return Inertia::render('Reports/ItemSupplier', [
@@ -551,7 +555,7 @@ class ReportsController extends Controller
             'suppliers' => $suppliers,
             'item_id' => $item_id,
             'sum_pay' => $sum_pay,
-            'count_pay' => $count_pay
+            'count_pay' => round($count_pay, $max_lenght) 
         ]);
     }
 
