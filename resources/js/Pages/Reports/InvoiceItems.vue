@@ -1,10 +1,10 @@
 <template>
     <div>
-        <Head title="Отчеты" />
+        <Head title="Отчеты по поставщикам" />
         <h1 class="mb-6 text-2xl font-semibold">
-            <Link class="text-sky-500 hover:text-sky-700" :href="`/reports?organization_id=${organization.id}`+(form.begin ? '&begin='+form.begin : '')+(form.end ? '&end='+form.end : '')">Отчеты</Link>
+            <Link class="text-sky-500 hover:text-sky-700" :href="`/reports?organization_id=${organization.id}`+(form.begin ? '&begin='+form.begin : '')+(form.end ? '&end='+form.end : '')">Отчеты по поставщикам</Link>
             <span class="font-medium text-sky-500">/</span>
-            <Link class="text-sky-500 hover:text-sky-700" :href="`/reports/${organization.id}/${supplier.id}/all?`+(form.begin ? 'begin='+form.begin : '')+(form.end ? '&end='+form.end : '')">
+            <Link class="text-sky-500 hover:text-sky-700" :href="`/reports/${organization.id}/${supplier.id}/${form.old}?`+(form.begin ? 'begin='+form.begin : '')+(form.end ? '&end='+form.end : '')">
             {{ organization.name }}
             </Link>
             <span class="font-medium text-sky-500">/</span>
@@ -12,6 +12,18 @@
         </h1>
 
         <div class="overflow-x-auto text-sm bg-white shadow">
+            <div class="flex items-center mb-1 mx-4 mt-2">
+                <span class="font-medium title-font w-1/3 text-sm text-gray-500 tracking-wider">Объект:</span>
+                <span class="font-medium title-font w-2/3 text-gray-900 text-base">{{ organization.name }}</span>
+            </div>
+            <div class="flex items-center mb-1 mx-4">
+                <span class="font-medium title-font w-1/3 text-sm text-gray-500 tracking-wider">Поставщик:</span>
+                <span class="font-medium title-font w-2/3 text-gray-900 text-base">{{ supplier.name }}</span>
+            </div>
+            <div class="flex items-center mb-2 mx-4">
+                <span class="font-medium title-font w-1/3 text-sm text-gray-500 tracking-wider">Накладной:</span>
+                <span class="font-medium title-font w-2/3 text-gray-900 text-base">{{ invoice.name }}</span>
+            </div>
             <table class="w-full">
                 <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
                     <th class="w-12 px-4 py-3">#</th>
@@ -27,13 +39,13 @@
                         </div>
                     </td>
                     <td class="border-t border-l">
-                        <div class="flex items-center px-4 py-2 font-medium text-gray-900">
+                        <div class="flex items-center px-4 py-1 font-medium text-gray-900">
                             {{ item.name }}
                             <icon v-if="item.deleted_at" name="trash" class="flex-shrink-0 w-3 h-3 ml-2 fill-gray-400" />
                         </div>
                     </td>
                     <td class="border-t border-l">
-                        <div class="flex items-center px-4 py-2 font-medium text-gray-700 whitespace-nowrap">
+                        <div class="flex items-center px-4 py-1 font-medium text-gray-700 whitespace-nowrap">
                             {{ item.count }}
                             <span class="pl-1 font-semibold text-gray-400">
                                 {{ item.measurement }}
@@ -41,18 +53,18 @@
                         </div>
                     </td>
                     <td class="border-t border-l">
-                        <div class="flex items-center px-4 py-2 font-medium text-gray-700 whitespace-nowrap">
+                        <div class="flex items-center px-4 py-1 font-medium text-gray-700 whitespace-nowrap">
                             {{ item.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
                         </div>
                     </td>
                     <td class="border-t border-l">
-                        <div class="flex items-center px-4 py-2 font-semibold text-indigo-800 whitespace-nowrap">
+                        <div class="flex items-center px-4 py-1 font-semibold text-indigo-800 whitespace-nowrap">
                             {{ (item.count * item.price).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
                         </div>
                     </td>
                 </tr>
                 <tr v-if="invoice_items.length !== 0" class="bg-amber-200">
-                    <td class="px-4 py-4 font-semibold border-t" colspan="4">ИТОГО</td>
+                    <td class="px-4 py-3 font-semibold border-t" colspan="4">ИТОГО</td>
                     <td class="border-t border-l">
                         <div class="flex items-center px-4 font-semibold whitespace-nowrap">
                             {{ invoice.sum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
@@ -107,6 +119,7 @@ export default {
             form: {
                 begin: this.filters.begin,
                 end: this.filters.end,
+                old: this.filters.old,
             },
         }
     },

@@ -1,8 +1,8 @@
 <template>
     <div>
-        <Head title="Отчеты" />
+        <Head title="Отчеты по поставщикам" />
         <h1 class="mb-6 text-2xl font-semibold">
-            <Link class="text-sky-500 hover:text-sky-700" :href="'/reports?organization_id='+organization.id+(form.begin ? '&begin='+form.begin : '')+(form.end ? '&end='+form.end : '')">Отчеты</Link>
+            <Link class="text-sky-500 hover:text-sky-700" :href="'/reports?organization_id='+organization.id+(form.begin ? '&begin='+form.begin : '')+(form.end ? '&end='+form.end : '')">Отчеты по поставщикам</Link>
             <span class="font-medium text-sky-500">/</span>
             {{ organization.name }}
         </h1>
@@ -13,6 +13,14 @@
             <button class="hidden w-8 ml-3 text-sm text-gray-500 hover:text-gray-700 focus:text-indigo-500 md:block" type="button" @click="reset">Сброс</button>
         </div>
         <div class="overflow-x-auto text-sm bg-white shadow">
+            <div class="flex items-center mb-1 mx-4 mt-2">
+                <span class="font-medium title-font w-1/3 text-sm text-gray-500 tracking-wider">Объект:</span>
+                <span class="font-medium title-font w-2/3 text-gray-900 text-base">{{ organization.name }}</span>
+            </div>
+            <div class="flex items-center mb-2 mx-4">
+                <span class="font-medium title-font w-1/3 text-sm text-gray-500 tracking-wider">Поставщик:</span>
+                <span class="font-medium title-font w-2/3 text-gray-900 text-base">{{ supplier.name }}</span>
+            </div>
             <table class="w-full">
                 <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
                     <th class="w-12 px-4 py-3">#</th>
@@ -28,22 +36,22 @@
                         </div>
                     </td>
                     <td class="border-t border-l">
-                        <Link class="flex items-center px-4 py-1 font-medium hover:underline" :href="`/reports/${organization.id}/${supplier.id}/${invoice.id}/items?`+(form.begin ? '&begin='+form.begin : '')+(form.end ? '&end='+form.end : '')">
+                        <Link class="flex items-center px-4 py-1 font-medium hover:underline" :href="`/reports/${organization.id}/${supplier.id}/${invoice.id}/items?old=pay`+(form.begin ? '&begin='+form.begin : '')+(form.end ? '&end='+form.end : '')">
                             {{ invoice.name }}
                         </Link>
                     </td>
                     <td class="border-t border-l">
-                        <Link class="flex items-center px-4 py-1 hover:underline" :href="`/reports/${organization.id}/${supplier.id}/${invoice.id}/items?`+(form.begin ? '&begin='+form.begin : '')+(form.end ? '&end='+form.end : '')">
+                        <Link class="flex items-center px-4 py-1 hover:underline" :href="`/reports/${organization.id}/${supplier.id}/${invoice.id}/items?old=pay`+(form.begin ? '&begin='+form.begin : '')+(form.end ? '&end='+form.end : '')">
                             {{ invoice.accepted }}
                         </Link>
                     </td>
                     <td class="w-2/6 border-t border-l">
-                        <Link class="flex items-center px-4 py-1 hover:underline whitespace-nowrap" :href="`/reports/${organization.id}/${supplier.id}/${invoice.id}/items?`+(form.begin ? '&begin='+form.begin : '')+(form.end ? '&end='+form.end : '')">
+                        <Link class="flex items-center px-4 py-1 hover:underline whitespace-nowrap" :href="`/reports/${organization.id}/${supplier.id}/${invoice.id}/items?old=pay`+(form.begin ? '&begin='+form.begin : '')+(form.end ? '&end='+form.end : '')">
                             {{ invoice.sum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
                         </Link>
                     </td>
                     <td class="border-t border-l">
-                        <Link class="flex items-center px-4 py-1 hover:underline" :href="`/reports/${organization.id}/${supplier.id}/${invoice.id}/items?`+(form.begin ? '&begin='+form.begin : '')+(form.end ? '&end='+form.end : '')">
+                        <Link class="flex items-center px-4 py-1 hover:underline" :href="`/reports/${organization.id}/${supplier.id}/${invoice.id}/items?old=pay`+(form.begin ? '&begin='+form.begin : '')+(form.end ? '&end='+form.end : '')">
                             {{ invoice.date }}
                         </Link>
                     </td>

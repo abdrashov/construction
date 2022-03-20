@@ -1,23 +1,28 @@
 <template>
     <div>
-        <Head title="Отчеты" />
-        <h1 class="mb-6 text-2xl font-semibold">Отчеты</h1>
+        <Head title="Отчеты по товарам" />
+        <h1 class="mb-6 text-2xl font-semibold">
+            Отчеты
+            <span v-for="organization in organizations" :key="`title${organization.id}`">
+                <span v-if="form.organization_id == organization.id"><span class="font-medium">/</span>{{ organization.name }}</span>
+            </span>
+        </h1>
 
         <ReportNavbar />
 
         <div class="items-center justify-between mb-6 md:flex">
             <div class="items-center w-full md:flex md:w-1/2">
-                <select v-model="form.organization_id" class="form-select-icon relative px-4 py-3 w-full rounded focus:shadow-outline appearance-none">
+                <select v-model="form.organization_id" class="form-select-icon bg-white relative px-4 py-3 w-full rounded focus:shadow-outline appearance-none">
                     <option :value="null">Выберите объект</option>
                     <option v-for="organization in organizations" :key="organization.id" :value="organization.id">{{ organization.name }}</option>
                 </select>
                 <button class="hidden ml-3 w-8 text-gray-500 hover:text-gray-700 focus:text-indigo-500 text-sm md:block" type="button" @click="reset">Сброс</button>
             </div>
-            <div class="flex">
-                <a target="_blank" :href="`/reports/export-item?` + getUrlParams()" class="flex items-center justify-end mr-2 px-2 py-2 text-white text-xs font-medium leading-5 bg-indigo-400 hover:bg-indigo-500 rounded-lg focus:outline-none duration-200">
-                    <icon name="export" class="w-5 h-5" />
+            <div class="flex mt-2 md:mt-0">
+                <a target="_blank" :href="`/reports/export-item?` + getUrlParams()" class="flex items-center justify-end mr-2 p-2 text-white text-xs font-medium leading-5 bg-indigo-400 hover:bg-indigo-500 rounded-lg focus:outline-none duration-200">
+                    <icon name="export" class="w-5 h-4" />
                 </a>
-                <button @click="form.modal = true" class="btn-gray mt-2 md:mt-0">
+                <button @click="form.modal = true" class="btn-gray">
                     <span>Фильтр/Поиск</span>
                 </button>
             </div>

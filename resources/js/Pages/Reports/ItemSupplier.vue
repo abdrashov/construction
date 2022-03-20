@@ -1,18 +1,28 @@
 <template>
     <div>
-        <Head title="Отчеты" />
+        <Head title="Отчеты по товарам" />
         <h1 class="mb-6 text-2xl font-semibold">
-            <Link class="text-sky-500 hover:text-sky-700" :href="'/reports/items?organization_id=' + organization.id + (form.begin ? '&begin=' + form.begin : '') + (form.end ? '&end=' + form.end : '')">Отчеты</Link>
+            <Link class="text-sky-500 hover:text-sky-700" :href="'/reports/items?organization_id=' + organization.id + (form.begin ? '&begin=' + form.begin : '') + (form.end ? '&end=' + form.end : '')">Отчеты по товарам</Link>
             <span class="text-sky-500 font-medium">/</span>
             {{ organization.name }}
         </h1>
+        
         <div class="flex items-center mb-6">
             <div class="w-full rounded shadow md:flex md:w-3/4">
                 <input class="relative px-4 py-3 w-full rounded focus:shadow-outline" autocomplete="off" type="text" name="search" placeholder="Поиск…" v-model="form.search" />
             </div>
             <button class="hidden ml-3 w-8 text-gray-500 hover:text-gray-700 focus:text-indigo-500 text-sm md:block" type="button" @click="reset">Сброс</button>
         </div>
+
         <div class="text-sm bg-white shadow overflow-x-auto">
+            <div class="flex items-center mb-1 mx-4 mt-2">
+                <span class="font-medium title-font w-1/3 text-sm text-gray-500 tracking-wider">Объект:</span>
+                <span class="font-medium title-font w-2/3 text-gray-900 text-base">{{ organization.name }}</span>
+            </div>
+            <div class="flex items-center mb-2 mx-4">
+                <span class="font-medium title-font w-1/3 text-sm text-gray-500 tracking-wider">Товар:</span>
+                <span class="font-medium title-font w-2/3 text-gray-900 text-base">{{ item.name }}</span>
+            </div>
             <table class="w-full">
                 <tr class="text-left text-gray-500 text-xs font-semibold tracking-wide bg-gray-50 border-b uppercase">
                     <th class="px-4 py-3 w-12">#</th>
@@ -107,10 +117,10 @@ export default {
     props: {
         filters: Object,
         organization: Object,
+        item: Object,
         suppliers: Object,
         sum_pay: Number,
         count_pay: Number,
-        item_id: String,
     },
     data() {
         return {
@@ -125,7 +135,7 @@ export default {
         form: {
             deep: true,
             handler: throttle(function () {
-                this.$inertia.get(`/reports/items/${this.organization.id}/${this.item_id}/supplier`, pickBy(this.form), { preserveState: true })
+                this.$inertia.get(`/reports/items/${this.organization.id}/${this.item.id}/supplier`, pickBy(this.form), { preserveState: true })
             }, 250),
         },
     },

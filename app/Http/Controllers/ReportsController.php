@@ -353,8 +353,12 @@ class ReportsController extends Controller
             Request::merge(['end' => (new Carbon(Request::input('end')))->format('Y-m-d')]);
         }
 
+        Request::merge([
+            'old' => in_array(Request::input('old'), ['all', 'pay', 'not_pay']) ? Request::input('old') : 'all'
+        ]);
+
         return Inertia::render('Reports/InvoiceItems', [
-            'filters' => Request::all('begin', 'end'),
+            'filters' => Request::all('begin', 'end', 'old'),
             'organization' => $organization,
             'supplier' => $supplier,
             'invoice' => [
@@ -482,7 +486,7 @@ class ReportsController extends Controller
         ]);
     }
 
-    public function itemSupplier(Organization $organization, $item_id)
+    public function itemSupplier(Organization $organization, Item $item)
     {
         if (!is_null(Request::input('begin'))) {
             Request::merge(['begin' => (new Carbon(Request::input('begin')))->format('Y-m-d')]);
@@ -505,7 +509,7 @@ class ReportsController extends Controller
             ->join('suppliers', 'suppliers.id', '=', 'invoices.supplier_id')
             ->where('invoices.organization_id', $organization->id)
             ->where('invoices.status', true)
-            ->where('invoice_items.item_id', $item_id)
+            ->where('invoice_items.item_id', $item->id)
             ->whereNull('invoices.deleted_at')
             ->whereNull('suppliers.deleted_at')
             ->whereNull('invoice_items.deleted_at')
@@ -553,9 +557,9 @@ class ReportsController extends Controller
             'filters' => Request::all('search', 'begin', 'end'),
             'organization' => $organization,
             'suppliers' => $suppliers,
-            'item_id' => $item_id,
+            'item' => $item,
             'sum_pay' => $sum_pay,
-            'count_pay' => round($count_pay, $max_lenght) 
+            'count_pay' => round($count_pay, $max_lenght)
         ]);
     }
 

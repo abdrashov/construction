@@ -1,13 +1,18 @@
 <template>
     <div>
-        <Head title="Отчеты" />
-        <h1 class="mb-6 text-2xl font-semibold">Отчеты</h1>
+        <Head title="Общий отчет" />
+        <h1 class="mb-6 text-2xl font-semibold">
+            Отчеты
+            <span v-for="organization in organizations" :key="`title${organization.id}`">
+                <span v-if="form.organization_id == organization.id"><span class="font-medium">/</span>{{ organization.name }}</span>
+            </span>
+        </h1>
 
         <ReportNavbar/>
 
         <div class="items-center justify-between mb-6 md:flex">
             <div class="items-center w-full md:flex md:w-1/2">
-                <select v-model="form.organization_id" class="relative w-full px-4 py-3 rounded appearance-none form-select-icon focus:shadow-outline">
+                <select v-model="form.organization_id" class="relative w-full px-4 py-3  bg-white rounded appearance-none form-select-icon focus:shadow-outline">
                     <option :value="null">Выберите объект</option>
                     <option v-for="organization in organizations" :key="organization.id" :value="organization.id">{{ organization.name }}</option>
                 </select>
