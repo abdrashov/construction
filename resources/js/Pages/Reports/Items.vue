@@ -12,14 +12,14 @@
 
         <div class="items-center justify-between mb-6 md:flex">
             <div class="items-center w-full md:flex md:w-1/2">
-                <select v-model="form.organization_id" class="form-select-icon bg-white relative px-4 py-3 w-full rounded focus:shadow-outline appearance-none">
+                <select v-model="form.organization_id" class="relative w-full px-4 py-3 bg-white rounded appearance-none form-select-icon focus:shadow-outline">
                     <option :value="null">Выберите объект</option>
                     <option v-for="organization in organizations" :key="organization.id" :value="organization.id">{{ organization.name }}</option>
                 </select>
-                <button class="hidden ml-3 w-8 text-gray-500 hover:text-gray-700 focus:text-indigo-500 text-sm md:block" type="button" @click="reset">Сброс</button>
+                <button class="hidden w-8 ml-3 text-sm text-gray-500 hover:text-gray-700 focus:text-indigo-500 md:block" type="button" @click="reset">Сброс</button>
             </div>
             <div class="flex mt-2 md:mt-0">
-                <a target="_blank" :href="`/reports/export-item?` + getUrlParams()" class="flex items-center justify-end mr-2 p-2 text-white text-xs font-medium leading-5 bg-indigo-400 hover:bg-indigo-500 rounded-lg focus:outline-none duration-200">
+                <a target="_blank" :href="`/reports/export-item?` + getUrlParams()" class="flex items-center justify-end p-2 mr-2 text-xs font-medium leading-5 text-white duration-200 bg-indigo-400 rounded-lg hover:bg-indigo-500 focus:outline-none">
                     <icon name="export" class="w-5 h-4" />
                 </a>
                 <button @click="form.modal = true" class="btn-gray">
@@ -27,47 +27,57 @@
                 </button>
             </div>
         </div>
-        <div class="text-sm bg-white shadow overflow-x-auto">
+        <div class="overflow-x-auto text-sm bg-white shadow">
             <table class="w-full">
-                <tr class="text-left text-gray-500 text-xs font-semibold tracking-wide bg-gray-50 border-b uppercase">
-                    <th class="px-4 py-3 w-10 border-r">#</th>
+                <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
+                    <th class="w-10 px-4 py-3 border-r">#</th>
                     <th class="px-4 py-3 border-l border-r">Название Товара</th>
                     <th class="px-4 py-3 border-l border-r">Количество</th>
-                    <th class="px-4 py-3 border-l border-r">Сумма</th>
-                    <th class="px-4 py-3 border-l">Итого</th>
+                    <th class="px-4 py-3 border-l">Сумма</th>
                 </tr>
-                <tr v-for="item in items" :key="item.id" class="hover:bg-amber-50 focus:bg-amber-50 duration-150">
-                    <td class="border-t" :colspan="item.count ? 1 : 5" :class="!item.count ? 'bg-sky-200' : ''">
-                        <div :class="'flex items-center px-4 py-1 ' + (item.count ? 'font-medium' : 'font-semibold')">
-                            {{ item.count ? item.index : item.name }}
+                <tr v-for="item in items" :key="item.id" :class="item.column == 'sum' ? 'bg-green-200' : 'duration-150 hover:bg-amber-50 focus:bg-amber-50'">
+                    <td v-if="item.column === 'name'" class="border-t bg-sky-200" colspan="4">
+                        <div class="flex items-center px-4 py-1 font-medium">
+                            {{ item.name }}
                         </div>
                     </td>
-                    <td v-if="item.count" class="border-l border-t">
-                        <Link :href="`/reports/items/${form.organization_id}/${item.item_id}/supplier` + getUrlDatas()" class="flex items-center px-4 py-1 hover:underline font-medium">
+                    <td v-if="item.column === 'content'" colspan="1" class="border-t">
+                        <div class="flex items-center px-4 py-1 font-semibold">
+                            {{ item.index }}
+                        </div>
+                    </td>
+                    <td v-if="item.column === 'content'" class="border-t border-l">
+                        <Link :href="`/reports/items/${form.organization_id}/${item.item_id}/supplier` + getUrlDatas()" class="flex items-center px-4 py-1 font-medium hover:underline">
                             {{ item.name }}
                         </Link>
                     </td>
-                    <td v-if="item.count" class="border-l border-t">
-                        <Link :href="`/reports/items/${form.organization_id}/${item.item_id}/supplier` + getUrlDatas()" class="flex items-center px-4 py-1 hover:underline font-medium">
+                    <td v-if="item.column === 'content'" class="border-t border-l">
+                        <Link :href="`/reports/items/${form.organization_id}/${item.item_id}/supplier` + getUrlDatas()" class="flex items-center px-4 py-1 font-medium hover:underline">
                             {{ item.count }}
                             {{ item.measurement }}
                         </Link>
                     </td>
-                    <td v-if="item.count" class="border-l border-t">
-                        <Link :href="`/reports/items/${form.organization_id}/${item.item_id}/supplier` + getUrlDatas()" class="flex items-center px-4 text-green-600 hover:underline whitespace-nowrap font-semibold">
+                    <td v-if="item.column === 'content'" class="border-t border-l">
+                        <Link :href="`/reports/items/${form.organization_id}/${item.item_id}/supplier` + getUrlDatas()" class="flex items-center px-4 font-semibold text-green-600 hover:underline whitespace-nowrap">
                             {{ item.sum?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
                         </Link>
                     </td>
-                    <td v-if="item.count" class="border-l border-t">
-                        <div class="flex items-center px-4 whitespace-nowrap font-semibold">
+                    <td v-if="item.column === 'sum'" class="px-4 py-2 font-semibold text-red-600 border-t" colspan="2">ИТОГО</td>
+                    <td v-if="item.column === 'sum'" class="py-2 border-t border-l">
+                        <div class="flex items-center px-4 font-semibold text-red-600 whitespace-nowrap">
+                            {{ item.category_count?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
+                        </div>
+                    </td>
+                    <td v-if="item.column === 'sum'" class="py-2 border-t border-l">
+                        <div class="flex items-center px-4 font-semibold text-red-600 whitespace-nowrap">
                             {{ item.category_sum?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
                         </div>
                     </td>
                 </tr>
                 <tr v-if="items.length !== 0" class="bg-amber-200">
-                    <td class="px-4 py-3 font-semibold border-t" colspan="3">ИТОГО</td>
-                    <td class="border-l border-t" colspan="2">
-                        <div class="flex items-center px-4 whitespace-nowrap font-semibold">
+                    <td class="px-4 py-3 font-semibold border-t" colspan="3">ВСЕГО</td>
+                    <td class="border-t border-l" colspan="2">
+                        <div class="flex items-center px-4 font-semibold whitespace-nowrap">
                             {{ sum_item?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
                         </div>
                     </td>
@@ -79,6 +89,12 @@
         </div>
         <ModalLeft @serach="getData" @close="form.modal = !form.modal" :isOpen="form.modal">
             <ul role="list" class="-my-6">
+                <li class="pb-4">
+                    <select-input v-model="form.supplier_id" class="w-full" label="Поставщик">
+                        <option :value="null"></option>
+                        <option v-for="supplier in suppliers" :key="supplier.id" :value="supplier.id">{{ supplier.name }}</option>
+                    </select-input>
+                </li>
                 <li class="pb-4">
                     <select-input v-model="form.item_category_id" class="w-full" label="Категория">
                         <option :value="null"></option>
@@ -148,11 +164,13 @@ export default {
         items: Object,
         sum_item: Number,
         item_categories: Object,
+        suppliers: Object,
     },
     data() {
         return {
             form: {
                 organization_id: this.filters.organization_id,
+                supplier_id: this.filters.supplier_id,
                 modal: false,
                 begin: this.filters.begin,
                 end: this.filters.end,
@@ -188,7 +206,7 @@ export default {
                 end = ('0' + d.getDate()).slice(-2) + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + d.getFullYear()
             }
 
-            return new URLSearchParams({ organization_id: this.form.organization_id, item_category_id: this.form.item_category_id, begin: begin, end: end }).toString()
+            return new URLSearchParams({ supplier_id: this.form.supplier_id, organization_id: this.form.organization_id, item_category_id: this.form.item_category_id, begin: begin, end: end }).toString()
         },
         getUrlDatas() {
             let begin = ''
@@ -203,6 +221,9 @@ export default {
                 let d = new Date(this.form.end)
                 end = ('0' + d.getDate()).slice(-2) + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + d.getFullYear()
                 url += url == '' ? '?' + new URLSearchParams({ end: end }).toString() : '&' + new URLSearchParams({ end: end }).toString()
+            }
+            if (this.form.supplier_id){
+                url += url == '' ? '?' + new URLSearchParams({ supplier_id: this.form.supplier_id }).toString() : '&' + new URLSearchParams({ supplier_id: this.form.supplier_id }).toString()
             }
 
             return url
