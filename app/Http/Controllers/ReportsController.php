@@ -440,6 +440,7 @@ class ReportsController extends Controller
         $item_category = 0;
         $item_category_count = 0;
         $valdate = 0;
+        $max_lenght = 0;
         for ($index = 0; $index < count($items); $index++) {
             if ($valdate != $items[$index]['item_category_id']) {
                 $item_categories[] = [
@@ -451,6 +452,10 @@ class ReportsController extends Controller
             $item_categories[] = ['column' => 'content', 'index' => $index + 1] + $items[$index];
             $item_category += $items[$index]['sum'];
             $item_category_count += $items[$index]['count'];
+            $number = explode('.', $item_category_count);
+            if (count($number) > 1 && strlen($number[1]) > $max_lenght) {
+                $max_lenght = strlen($number[1]);
+            }
 
             // if ($index - 1 >= 0 && $items[$index - 1]['item_category'] != $items[$index]['item_category']) {
             //     $valdate = true;
@@ -473,11 +478,12 @@ class ReportsController extends Controller
             if (empty($items[$index + 1]) || $items[$index]['item_category_id'] != $items[$index + 1]['item_category_id']) {
                 $item_categories[] = [
                     'column' => 'sum',
-                    'category_count' => $item_category_count,
+                    'category_count' => round($item_category_count, $max_lenght),
                     'category_sum' => $item_category,
                 ];
                 $item_category_count = 0;
                 $item_category = 0;
+                $max_lenght = 0;
             }
         }
 
@@ -489,8 +495,8 @@ class ReportsController extends Controller
         return Inertia::render('Reports/Items', [
             'filters' => Request::all('organization_id', 'begin', 'end', 'item_category_id', 'supplier_id'),
             'organizations' => Organization::get(),
-            'item_categories' => ItemCategory::get(),
-            'suppliers' => Supplier::get(),
+            'item_categories' => ItemCategory::orderBy('sort')->orderBy('name')->get(),
+            'suppliers' => Supplier::orderBy('name')->get(),
             'items' => $item_categories,
             'sum_item' => $sum_item,
         ]);
