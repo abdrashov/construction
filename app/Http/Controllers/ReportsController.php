@@ -73,12 +73,107 @@ class ReportsController extends Controller
             Request::merge(['end' => (new Carbon(Request::input('end')))->format('Y-m-d')]);
         }
 
+        // $reports = Supplier::filter(Request::only('search'))
+        //     ->select(
+        //         'organizations.id as id',
+        //         'suppliers.id as supplier_id',
+        //         'suppliers.name as supplier',
+        //         DB::raw('SUM(invoice_items.price * invoice_items.count) as pay_sum'),
+        //     )
+        //     ->join('invoices', 'suppliers.id', '=', 'invoices.supplier_id')
+        //     ->join('invoice_items', 'invoices.id', '=', 'invoice_items.invoice_id')
+        //     ->join('organizations', 'invoices.organization_id', '=', 'organizations.id')
+        //     ->where('organizations.id', Request::input('organization_id'))
+        //     ->whereNull('organizations.deleted_at')
+        //     ->whereNull('invoice_items.deleted_at')
+        //     ->where('invoices.status', true)
+        //     ->where('invoices.pay', true)
+        //     ->when(Request::input('begin') ?? null, function ($query, $search) {
+        //         $query->where('invoices.date', '>=', $search);
+        //     })
+        //     ->when(Request::input('end') ?? null, function ($query, $search) {
+        //         $query->where('invoices.date', '<=', $search);
+        //     })
+        //     ->whereNull('invoices.deleted_at')
+        //     ->groupBy('suppliers.id')
+        //     ->get()
+        //     ->transform(fn ($report) => [
+        //         'id' => $report->id,
+        //         'supplier_id' => $report->supplier_id,
+        //         'supplier' => $report->supplier,
+        //         'pay_sum' => $report->pay_sum / (InvoiceItem::FLOAT_TO_INT_PRICE * InvoiceItem::FLOAT_TO_INT_COUNT),
+        //         'not_pay_sum' => $report->not_pay_sum / (InvoiceItem::FLOAT_TO_INT_PRICE * InvoiceItem::FLOAT_TO_INT_COUNT),
+        //     ]);
+
+        // $not_reports = Supplier::filter(Request::only('search'))
+        //     ->select(
+        //         'organizations.id as id',
+        //         'suppliers.id as supplier_id',
+        //         'suppliers.name as supplier',
+        //         DB::raw('SUM(invoice_items.price * invoice_items.count) as not_pay_sum'),
+        //     )
+        //     ->join('invoices', 'suppliers.id', '=', 'invoices.supplier_id')
+        //     ->join('invoice_items', 'invoices.id', '=', 'invoice_items.invoice_id')
+        //     ->join('organizations', 'invoices.organization_id', '=', 'organizations.id')
+        //     ->where('organizations.id', Request::input('organization_id'))
+        //     ->whereNull('organizations.deleted_at')
+        //     ->whereNull('invoice_items.deleted_at')
+        //     ->where('invoices.status', true)
+        //     ->where('invoices.pay', false)
+        //     ->when(Request::input('begin') ?? null, function ($query, $search) {
+        //         $query->where('invoices.date', '>=', $search);
+        //     })
+        //     ->when(Request::input('end') ?? null, function ($query, $search) {
+        //         $query->where('invoices.date', '<=', $search);
+        //     })
+        //     ->whereNull('invoices.deleted_at')
+        //     ->groupBy('suppliers.id')
+        //     ->get()
+        //     ->transform(fn ($report) => [
+        //         'id' => $report->id,
+        //         'supplier_id' => $report->supplier_id,
+        //         'supplier' => $report->supplier,
+        //         'pay_sum' => $report->pay_sum / (InvoiceItem::FLOAT_TO_INT_PRICE * InvoiceItem::FLOAT_TO_INT_COUNT),
+        //         'not_pay_sum' => $report->not_pay_sum / (InvoiceItem::FLOAT_TO_INT_PRICE * InvoiceItem::FLOAT_TO_INT_COUNT),
+        //     ]);
+
+        // foreach ($reports as $key_1 => $report_1) {
+        //     foreach ($not_reports as $key_2 => $report_2) {
+        //         if ($report_1['supplier_id'] == $report_2['supplier_id']) {
+        //             $reports[$key_1] = [
+        //                 'id' => $report_1['id'],
+        //                 'supplier_id' => $report_1['supplier_id'],
+        //                 'supplier' => $report_1['supplier'],
+        //                 'pay_sum' => $report_1['pay_sum'] + $report_2['pay_sum'],
+        //                 'not_pay_sum' => $report_1['not_pay_sum'] + $report_2['not_pay_sum'],
+        //             ];
+        //             unset($not_reports[$key_2]);
+        //         }
+        //     }
+        // }
+
+        // $reports_merge = collect();
+        // $sum_pay = 0;
+        // $not_sum_pay = 0;
+
+        // foreach ($reports as $report) {
+        //     $reports_merge->push($report);
+        // }
+        // foreach ($not_reports as $not_report) {
+        //     $reports_merge->push($not_report);
+        // }
+        // foreach ($reports_merge as $reports_mer) {
+        //     $sum_pay += $reports_mer['pay_sum'];
+        //     $not_sum_pay += $reports_mer['not_pay_sum'];
+        // }
+
         $reports = Supplier::filter(Request::only('search'))
             ->select(
                 'organizations.id as id',
                 'suppliers.id as supplier_id',
                 'suppliers.name as supplier',
-                DB::raw('SUM(invoice_items.price * invoice_items.count) as pay_sum'),
+                'invoices.pay as pay',
+                DB::raw('SUM(invoice_items.price * invoice_items.count) as sum'),
             )
             ->join('invoices', 'suppliers.id', '=', 'invoices.supplier_id')
             ->join('invoice_items', 'invoices.id', '=', 'invoice_items.invoice_id')
@@ -87,7 +182,6 @@ class ReportsController extends Controller
             ->whereNull('organizations.deleted_at')
             ->whereNull('invoice_items.deleted_at')
             ->where('invoices.status', true)
-            ->where('invoices.pay', true)
             ->when(Request::input('begin') ?? null, function ($query, $search) {
                 $query->where('invoices.date', '>=', $search);
             })
@@ -95,114 +189,56 @@ class ReportsController extends Controller
                 $query->where('invoices.date', '<=', $search);
             })
             ->whereNull('invoices.deleted_at')
+            ->orderBy('suppliers.name')
             ->groupBy('suppliers.id')
+            ->groupBy('invoices.pay')
             ->get()
             ->transform(fn ($report) => [
                 'id' => $report->id,
                 'supplier_id' => $report->supplier_id,
                 'supplier' => $report->supplier,
-                'pay_sum' => $report->pay_sum / (InvoiceItem::FLOAT_TO_INT_PRICE * InvoiceItem::FLOAT_TO_INT_COUNT),
-                'not_pay_sum' => $report->not_pay_sum / (InvoiceItem::FLOAT_TO_INT_PRICE * InvoiceItem::FLOAT_TO_INT_COUNT),
-            ]);
+                'pay_sum' => $report->pay == 1 ? $report->sum / (InvoiceItem::FLOAT_TO_INT_PRICE * InvoiceItem::FLOAT_TO_INT_COUNT) : 0,
+                'not_pay_sum' => $report->pay == 0 ? $report->sum / (InvoiceItem::FLOAT_TO_INT_PRICE * InvoiceItem::FLOAT_TO_INT_COUNT) : 0,
+            ])
+            ->toArray();
 
-        $not_reports = Supplier::filter(Request::only('search'))
-            ->select(
-                'organizations.id as id',
-                'suppliers.id as supplier_id',
-                'suppliers.name as supplier',
-                DB::raw('SUM(invoice_items.price * invoice_items.count) as not_pay_sum'),
-            )
-            ->join('invoices', 'suppliers.id', '=', 'invoices.supplier_id')
-            ->join('invoice_items', 'invoices.id', '=', 'invoice_items.invoice_id')
-            ->join('organizations', 'invoices.organization_id', '=', 'organizations.id')
-            ->where('organizations.id', Request::input('organization_id'))
-            ->whereNull('organizations.deleted_at')
-            ->whereNull('invoice_items.deleted_at')
-            ->where('invoices.status', true)
-            ->where('invoices.pay', false)
-            ->when(Request::input('begin') ?? null, function ($query, $search) {
-                $query->where('invoices.date', '>=', $search);
-            })
-            ->when(Request::input('end') ?? null, function ($query, $search) {
-                $query->where('invoices.date', '<=', $search);
-            })
-            ->whereNull('invoices.deleted_at')
-            ->groupBy('suppliers.id')
-            ->get()
-            ->transform(fn ($report) => [
-                'id' => $report->id,
-                'supplier_id' => $report->supplier_id,
-                'supplier' => $report->supplier,
-                'pay_sum' => $report->pay_sum / (InvoiceItem::FLOAT_TO_INT_PRICE * InvoiceItem::FLOAT_TO_INT_COUNT),
-                'not_pay_sum' => $report->not_pay_sum / (InvoiceItem::FLOAT_TO_INT_PRICE * InvoiceItem::FLOAT_TO_INT_COUNT),
-            ]);
-
-        foreach ($reports as $key_1 => $report_1) {
-            foreach ($not_reports as $key_2 => $report_2) {
-                if ($report_1['supplier_id'] == $report_2['supplier_id']) {
-                    $reports[$key_1] = [
-                        'id' => $report_1['id'],
-                        'supplier_id' => $report_1['supplier_id'],
-                        'supplier' => $report_1['supplier'],
-                        'pay_sum' => $report_1['pay_sum'] + $report_2['pay_sum'],
-                        'not_pay_sum' => $report_1['not_pay_sum'] + $report_2['not_pay_sum'],
-                    ];
-                    unset($not_reports[$key_2]);
+        for ($i = 0; $i < count($reports); $i++) {
+            if (empty($reports[$i])) {
+                continue;
+            }
+            for ($j = 0; $j < count($reports); $j++) {
+                if (empty($reports[$j]) || $i == $j) {
+                    continue;
                 }
+                if ($reports[$i]['supplier_id'] != $reports[$j]['supplier_id']) {
+                    continue;
+                }
+                $reports[$i] = [
+                    'id' => $reports[$i]['id'],
+                    'supplier_id' => $reports[$i]['supplier_id'],
+                    'supplier' => $reports[$i]['supplier'],
+                    'pay_sum' => $reports[$i]['pay_sum'] + $reports[$j]['pay_sum'],
+                    'not_pay_sum' => $reports[$i]['not_pay_sum'] + $reports[$j]['not_pay_sum'],
+                ];
+
+                unset($reports[$j]);
             }
         }
 
-        $reports_merge = collect();
+
         $sum_pay = 0;
         $not_sum_pay = 0;
+        $reports = array_values($reports);
 
         foreach ($reports as $report) {
-            $reports_merge->push($report);
-        }
-        foreach ($not_reports as $not_report) {
-            $reports_merge->push($not_report);
-        }
-        foreach ($reports_merge as $reports_mer) {
-            $sum_pay += $reports_mer['pay_sum'];
-            $not_sum_pay += $reports_mer['not_pay_sum'];
+            $sum_pay += $report['pay_sum'];
+            $not_sum_pay += $report['not_pay_sum'];
         }
 
-        // $reports = Organization::filter(Request::only('search'))
-        //     ->select(
-        //         'organizations.id',
-        //         'organizations.name',
-        //         'organizations.created_at',
-        //         DB::raw(
-        //             '(SELECT COUNT(invoices.status) FROM `invoices` WHERE `organizations`.`id` = `invoices`.`organization_id` AND `invoices`.`status` = 1) as confirmed'
-        //         ),
-        //         DB::raw(
-        //             '(SELECT COUNT(invoices.status) FROM `invoices` WHERE `organizations`.`id` = `invoices`.`organization_id` AND `invoices`.`status` = 0) as not_confirmed'
-        //         ),
-        //         DB::raw(
-        //             'SUM(invoice_items.price * invoice_items.count) as sum_price'
-        //         ),
-        //         DB::raw(
-        //             'SUM(invoice_items.count) as sum_count'
-        //         )
-        //     )
-        //     ->leftJoin('invoices', 'organizations.id', '=', 'invoices.organization_id')
-        //     ->leftJoin('invoice_items', 'invoices.id', '=', 'invoice_items.invoice_id')
-        //     ->groupBy('organizations.id')
-        //     ->paginate(20)
-        //     ->withQueryString()
-        //     ->through(fn($report) => [
-        //         'id' => $report->id,
-        //         'name' => $report->name,
-        //         'created_at' => $report->created_at->format('Y-m-d'),
-        //         'confirmed' => $report->confirmed ?? 0,
-        //         'not_confirmed' => $report->not_confirmed ?? 0,
-        //         'sum_price' => $report->sum_price ?? 0,
-        //         'sum_count' => $report->sum_count ?? 0,
-        //     ]);
 
         return Inertia::render('Reports/Index', [
             'filters' => Request::all('search', 'organization_id', 'begin', 'end'),
-            'reports' => $reports_merge,
+            'reports' => $reports,
             'organizations' => Organization::get(),
             'sum_pay' => $sum_pay,
             'not_sum_pay' => $not_sum_pay,
