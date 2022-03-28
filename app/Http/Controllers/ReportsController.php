@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Expense;
+use App\Models\ExpenseCategory;
+use App\Models\ExpenseHistory;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Item;
@@ -193,7 +195,7 @@ class ReportsController extends Controller
             ->groupBy('suppliers.id')
             ->groupBy('invoices.pay')
             ->get()
-            ->transform(fn ($report) => [
+            ->transform(fn($report) => [
                 'id' => $report->id,
                 'supplier_id' => $report->supplier_id,
                 'supplier' => $report->supplier,
@@ -225,7 +227,6 @@ class ReportsController extends Controller
             }
         }
 
-
         $sum_pay = 0;
         $not_sum_pay = 0;
         $reports = array_values($reports);
@@ -234,7 +235,6 @@ class ReportsController extends Controller
             $sum_pay += $report['pay_sum'];
             $not_sum_pay += $report['not_pay_sum'];
         }
-
 
         return Inertia::render('Reports/Index', [
             'filters' => Request::all('search', 'organization_id', 'begin', 'end'),
@@ -266,7 +266,7 @@ class ReportsController extends Controller
                 $query->where('date', '<=', $search);
             })
             ->get()
-            ->transform(fn ($invoice) => [
+            ->transform(fn($invoice) => [
                 'id' => $invoice->id,
                 'name' => $invoice->name,
                 'pay' => $invoice->pay,
@@ -311,7 +311,7 @@ class ReportsController extends Controller
             })
             ->where('status', 1)
             ->get()
-            ->transform(fn ($invoice) => [
+            ->transform(fn($invoice) => [
                 'id' => $invoice->id,
                 'name' => $invoice->name,
                 'date' => $invoice->date->format('d.m.Y'),
@@ -356,7 +356,7 @@ class ReportsController extends Controller
             })
             ->where('status', 1)
             ->get()
-            ->transform(fn ($invoice) => [
+            ->transform(fn($invoice) => [
                 'id' => $invoice->id,
                 'name' => $invoice->name,
                 'date' => $invoice->date->format('d.m.Y'),
@@ -390,7 +390,7 @@ class ReportsController extends Controller
         }
 
         Request::merge([
-            'old' => in_array(Request::input('old'), ['all', 'pay', 'not_pay']) ? Request::input('old') : 'all'
+            'old' => in_array(Request::input('old'), ['all', 'pay', 'not_pay']) ? Request::input('old') : 'all',
         ]);
 
         return Inertia::render('Reports/InvoiceItems', [
@@ -408,7 +408,7 @@ class ReportsController extends Controller
                 'file' => $invoice->file ? '\\file\\' . $invoice->file : '',
                 'sum' => $invoice->invoiceItems()->select(DB::raw('SUM(count * price) as sum'))->value('sum') / (InvoiceItem::FLOAT_TO_INT_PRICE * InvoiceItem::FLOAT_TO_INT_COUNT),
             ],
-            'invoice_items' => $invoice->invoiceItems->transform(fn ($item) => [
+            'invoice_items' => $invoice->invoiceItems->transform(fn($item) => [
                 'id' => $item->id,
                 'name' => $item->name,
                 'count' => $item->count / InvoiceItem::FLOAT_TO_INT_COUNT,
@@ -461,7 +461,7 @@ class ReportsController extends Controller
             ->orderBy('item_categories.name')
             ->orderBy('invoice_items.name')
             ->get()
-            ->transform(fn ($item) => [
+            ->transform(fn($item) => [
                 'id' => $item->id,
                 'item_id' => $item->item_id,
                 'name' => $item->name,
@@ -476,7 +476,6 @@ class ReportsController extends Controller
         $item_category = 0;
         $item_category_count = 0;
         $valdate = 0;
-        $max_lenght = 0;
         for ($index = 0; $index < count($items); $index++) {
             if ($valdate != $items[$index]['item_category_id']) {
                 $item_categories[] = [
@@ -488,10 +487,6 @@ class ReportsController extends Controller
             $item_categories[] = ['column' => 'content', 'index' => $index + 1] + $items[$index];
             $item_category += $items[$index]['sum'];
             $item_category_count += $items[$index]['count'];
-            $number = explode('.', $item_category_count);
-            if (count($number) > 1 && strlen($number[1]) > $max_lenght) {
-                $max_lenght = strlen($number[1]);
-            }
 
             // if ($index - 1 >= 0 && $items[$index - 1]['item_category'] != $items[$index]['item_category']) {
             //     $valdate = true;
@@ -514,8 +509,8 @@ class ReportsController extends Controller
             if (empty($items[$index + 1]) || $items[$index]['item_category_id'] != $items[$index + 1]['item_category_id']) {
                 $item_categories[] = [
                     'column' => 'sum',
-                    'category_count' => round($item_category_count, $max_lenght),
-                    'category_sum' => $item_category,
+                    'category_count' => (string) $item_category_count,
+                    'category_sum' => (string) $item_category,
                 ];
                 $item_category_count = 0;
                 $item_category = 0;
@@ -534,7 +529,7 @@ class ReportsController extends Controller
             'item_categories' => ItemCategory::orderBy('sort')->orderBy('name')->get(),
             'suppliers' => Supplier::orderBy('name')->get(),
             'items' => $item_categories,
-            'sum_item' => $sum_item,
+            'sum_item' => (string) $sum_item,
         ]);
     }
 
@@ -611,7 +606,45 @@ class ReportsController extends Controller
             'suppliers' => $suppliers,
             'item' => $item,
             'sum_pay' => $sum_pay,
-            'count_pay' => round($count_pay, $max_lenght)
+            'count_pay' => round($count_pay, $max_lenght),
+        ]);
+    }
+
+    public function expense()
+    {
+        if (!is_null(Request::input('begin'))) {
+            Request::merge(['begin' => (new Carbon(Request::input('begin')))->format('Y-m-d')]);
+        }
+
+        if (!is_null(Request::input('end'))) {
+            Request::merge(['end' => (new Carbon(Request::input('end')))->format('Y-m-d')]);
+        }
+
+        $expense_histories = Expense::select(
+            'expense_histories.id',
+            'expense_histories.expense_id',
+            'expense_histories.name',
+            'expense_histories.price',
+            'expense_histories.date',
+            'expense_categories.name as category',
+        )
+            ->join('expense_categories', 'expenses.expense_category_id', '=', 'expense_categories.id')
+            ->join('expense_histories', 'expenses.id', '=', 'expense_histories.expense_id')
+            ->get()
+            ->transform(fn ($expense) => [
+                'id' => $expense->id,
+                'expense_id' => $expense->expense_id,
+                'name' => $expense->name,
+                'price' => $expense->price / ExpenseHistory::FLOAT_TO_INT_PRICE,
+                'date' => $expense->date->format('d.m.Y'),
+                'category' => $expense->category,
+            ]);
+
+        return Inertia::render('Reports/Expense', [
+            'filters' => Request::all('organization_id', 'begin', 'end', 'expense_category_id'),
+            'organizations' => Organization::get(),
+            'expense_categories' => ExpenseCategory::get(),
+            'expense_histories' => $expense_histories,
         ]);
     }
 
@@ -661,7 +694,7 @@ class ReportsController extends Controller
             ->whereNull('invoices.deleted_at')
             ->groupBy('suppliers.id')
             ->get()
-            ->transform(fn ($report) => [
+            ->transform(fn($report) => [
                 'id' => $report->id,
                 'supplier_id' => $report->supplier_id,
                 'supplier' => $report->supplier,
@@ -693,7 +726,7 @@ class ReportsController extends Controller
             ->whereNull('invoices.deleted_at')
             ->groupBy('suppliers.id')
             ->get()
-            ->transform(fn ($report) => [
+            ->transform(fn($report) => [
                 'id' => $report->id,
                 'supplier_id' => $report->supplier_id,
                 'supplier' => $report->supplier,
@@ -839,7 +872,7 @@ class ReportsController extends Controller
             ->orderBy('item_categories.name')
             ->orderBy('invoice_items.name')
             ->get()
-            ->transform(fn ($item) => [
+            ->transform(fn($item) => [
                 'id' => $item->id,
                 'name' => $item->name,
                 'item_category_id' => $item->item_category_id,
