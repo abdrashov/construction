@@ -43,6 +43,8 @@ class ReportsController extends Controller
             ->groupBy('invoices.organization_id')
             ->value('sum');
 
+        $invoice_sum = $invoice_sum / (InvoiceItem::FLOAT_TO_INT_PRICE * InvoiceItem::FLOAT_TO_INT_COUNT);
+
         $expense_sum = Expense::where('organization_id', Request::input('organization_id'))
             ->join('expense_histories', 'expenses.id', '=', 'expense_histories.expense_id')
             ->whereNull('expenses.deleted_at')
@@ -57,11 +59,14 @@ class ReportsController extends Controller
             ->groupBy('expenses.organization_id')
             ->value('sum');
 
+        $expense_sum = $expense_sum / Expense::FLOAT_TO_INT_PRICE;
+
         return Inertia::render('Reports/Common', [
             'filters' => Request::all('organization_id', 'begin', 'end'),
             'organizations' => Organization::get(),
-            'invoice_sum' => (float) $invoice_sum / (InvoiceItem::FLOAT_TO_INT_PRICE * InvoiceItem::FLOAT_TO_INT_COUNT),
-            'expense_sum' => (float) $expense_sum / Expense::FLOAT_TO_INT_PRICE,
+            'invoice_sum' => (string) $invoice_sum,
+            'expense_sum' => (string) $expense_sum,
+            'sum' => (string) ($invoice_sum + $expense_sum),
         ]);
     }
 
@@ -614,24 +619,41 @@ class ReportsController extends Controller
     {
         if (!is_null(Request::input('begin'))) {
             Request::merge(['begin' => (new Carbon(Request::input('begin')))->format('Y-m-d')]);
+        } else {
+            Request::merge(['begin' => Carbon::now()->format('Y-m-d')]);
         }
-
         if (!is_null(Request::input('end'))) {
             Request::merge(['end' => (new Carbon(Request::input('end')))->format('Y-m-d')]);
+        } else {
+            Request::merge(['end' => Carbon::now()->format('Y-m-d')]);
+        }
+        if (is_null(Request::input('organization_id'))) {
+            Request::merge(['organization_id' => 'null']);
         }
 
         $expense_histories = Expense::select(
             'expense_histories.id',
             'expense_histories.expense_id',
-            'expense_histories.name',
+            'expenses.name',
             'expense_histories.price',
             'expense_histories.date',
             'expense_categories.name as category',
         )
             ->join('expense_categories', 'expenses.expense_category_id', '=', 'expense_categories.id')
             ->join('expense_histories', 'expenses.id', '=', 'expense_histories.expense_id')
+            ->whereNull('expenses.deleted_at')
+            ->whereNull('expense_histories.deleted_at')
+            ->when(Request::input('organization_id') == 'general', function ($query) {
+                $query->whereNull('expenses.organization_id');
+            })
+            ->when(Request::input('organization_id') != 'general', function ($query, $search) {
+                $query->where('expenses.organization_id', Request::input('organization_id'));
+            })
+            ->where('expense_histories.date', '>=', Request::input('begin'))
+            ->where('expense_histories.date', '<=', Request::input('end'))
+            ->orderBy('expense_histories.date')
             ->get()
-            ->transform(fn ($expense) => [
+            ->transform(fn($expense) => [
                 'id' => $expense->id,
                 'expense_id' => $expense->expense_id,
                 'name' => $expense->name,
@@ -640,11 +662,17 @@ class ReportsController extends Controller
                 'category' => $expense->category,
             ]);
 
+        $sum_expense = 0;
+        foreach ($expense_histories as $expense) {
+            $sum_expense += $expense['price'];
+        }
+
         return Inertia::render('Reports/Expense', [
             'filters' => Request::all('organization_id', 'begin', 'end', 'expense_category_id'),
             'organizations' => Organization::get(),
             'expense_categories' => ExpenseCategory::get(),
             'expense_histories' => $expense_histories,
+            'sum_expense' => (string) $sum_expense,
         ]);
     }
 
@@ -973,5 +1001,101 @@ class ReportsController extends Controller
         //     'title' => 'Отчет',
         //     'reports' => $html
         // ]);
+    }
+
+    public function exportExpense()
+    {
+        if (!is_null(Request::input('begin'))) {
+            Request::merge(['begin' => (new Carbon(Request::input('begin')))->format('Y-m-d')]);
+        } else {
+            Request::merge(['begin' => Carbon::now()->format('Y-m-d')]);
+        }
+        if (!is_null(Request::input('end'))) {
+            Request::merge(['end' => (new Carbon(Request::input('end')))->format('Y-m-d')]);
+        } else {
+            Request::merge(['end' => Carbon::now()->format('Y-m-d')]);
+        }
+        if (is_null(Request::input('organization_id'))) {
+            Request::merge(['organization_id' => 'null']);
+        }
+
+        $expense_histories = Expense::select(
+            'expense_histories.id',
+            'expense_histories.expense_id',
+            'expenses.name',
+            'expense_histories.price',
+            'expense_histories.date',
+            'expense_categories.name as category',
+        )
+            ->join('expense_categories', 'expenses.expense_category_id', '=', 'expense_categories.id')
+            ->join('expense_histories', 'expenses.id', '=', 'expense_histories.expense_id')
+            ->whereNull('expenses.deleted_at')
+            ->whereNull('expense_histories.deleted_at')
+            ->when(Request::input('organization_id') == 'general', function ($query) {
+                $query->whereNull('expenses.organization_id');
+            })
+            ->when(Request::input('organization_id') != 'general', function ($query, $search) {
+                $query->where('expenses.organization_id', Request::input('organization_id'));
+            })
+            ->where('expense_histories.date', '>=', Request::input('begin'))
+            ->where('expense_histories.date', '<=', Request::input('end'))
+            ->orderBy('expense_histories.date')
+            ->get()
+            ->transform(fn($expense) => [
+                'id' => $expense->id,
+                'expense_id' => $expense->expense_id,
+                'name' => $expense->name,
+                'price' => $expense->price / ExpenseHistory::FLOAT_TO_INT_PRICE,
+                'date' => $expense->date->format('d.m.Y'),
+                'category' => $expense->category,
+            ]);
+
+        $sum_expense = 0;
+        foreach ($expense_histories as $expense) {
+            $sum_expense += $expense['price'];
+        }
+
+        $organization = Organization::findOrFail(Request::input('organization_id'));
+
+        $html = '';
+        $html = $html . '<table>';
+        $html = $html . '<tr>
+            <th>#</th>
+            <th>Названия</th>
+            <th>Категория</th>
+            <th>Дата</th>
+            <th>Сумма</th>
+        </tr>';
+        foreach ($expense_histories as $key => $expense) {
+            $html = $html . '<tr>';
+            $html = $html . '<td>';
+            $html = $html . $key+1;
+            $html = $html . '</td>';
+            $html = $html . '<td>';
+            $html = $html . $expense['name'];
+            $html = $html . '</td>';
+            $html = $html . '<td>';
+            $html = $html . $expense['category'];
+            $html = $html . '</td>';
+            $html = $html . '<td>';
+            $html = $html . $expense['price'];
+            $html = $html . '</td>';
+            $html = $html . '<td>';
+            $html = $html . $expense['date'];
+            $html = $html . '</td>';
+            $html = $html . '</tr>';
+        }
+        $html = $html . '<tr>
+            <th colspan="3">ВСЕГО</th>
+            <th colspan="2">' . $sum_expense . '</th>
+        </tr>';
+        $html = $html . '</table>';
+
+        return view('report', [
+            'title' => $organization->name,
+            'begin' => Request::input('begin'),
+            'end' => Request::input('end'),
+            'report' => $html,
+        ]);
     }
 }

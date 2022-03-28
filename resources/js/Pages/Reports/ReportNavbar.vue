@@ -1,5 +1,5 @@
 <template>
-    <div class="mb-2 flex overflow-x-auto">
+    <div class="flex mb-2 overflow-x-auto">
         <Link href="/reports/common" :class="`${isUrl('reports/common') ? 'px-5 cursor-pointer py-3 text-sm font-semibold leading-4 text-white bg-blue-400 rounded whitespace-nowrap' : 'btn-white'}`">
             <span>Общий</span>
         </Link>
@@ -8,6 +8,9 @@
         </Link>
         <Link href="/reports/items" :class="`${isUrl('reports/items') ? 'px-5 cursor-pointer py-3 text-sm font-semibold leading-4 text-white bg-blue-400 rounded whitespace-nowrap' : 'btn-white'} ml-2`">
             <span>По товарам</span>
+        </Link>
+        <Link href="/reports/expense" :class="`${isUrl('reports/expense') ? 'px-5 cursor-pointer py-3 text-sm font-semibold leading-4 text-white bg-blue-400 rounded whitespace-nowrap' : 'btn-white'} ml-2`">
+            <span>По расходам</span>
         </Link>
     </div>
 </template>

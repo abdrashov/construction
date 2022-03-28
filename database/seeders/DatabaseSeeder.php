@@ -31,34 +31,34 @@ class DatabaseSeeder extends Seeder
             'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
         ]);
 
-        User::factory(8)->create();
+        // User::factory(8)->create();
 
-        Measurement::create([
-            'name' => 'кг',
-        ]);
-        Measurement::create([
-            'name' => 'т',
-        ]);
-        Measurement::create([
-            'name' => 'м',
-        ]);
+        // Measurement::create([
+        //     'name' => 'кг',
+        // ]);
+        // Measurement::create([
+        //     'name' => 'т',
+        // ]);
+        // Measurement::create([
+        //     'name' => 'м',
+        // ]);
 
-        Item::factory(100)->create();
-        Supplier::factory(5)->create();
-        Organization::factory(2)->create();
-        Invoice::factory(20)->create();
-        InvoiceItem::factory(100)->create();
-        ExpenseCategory::create([
-            'name' => 'Услуга',
-        ]);
-        ExpenseCategory::create([
-            'name' => 'Зарплата',
-        ]);
-        ExpenseCategory::create([
-            'name' => 'Прочие',
-            'sort' => '1',
-        ]);
-        Expense::factory(10)->create();
-        ExpenseHistory::factory(30)->create();
+        // Item::factory(100)->create();
+        // Supplier::factory(5)->create();
+        // Organization::factory(2)->create();
+        // Invoice::factory(20)->create();
+        // InvoiceItem::factory(100)->create();
+        // ExpenseCategory::create([
+        //     'name' => 'Услуга',
+        // ]);
+        // ExpenseCategory::create([
+        //     'name' => 'Зарплата',
+        // ]);
+        // ExpenseCategory::create([
+        //     'name' => 'Прочие',
+        //     'sort' => '1',
+        // ]);
+        // Expense::factory(10)->create();
+        // ExpenseHistory::factory(30)->create();
     }
 }

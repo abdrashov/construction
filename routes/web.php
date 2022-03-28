@@ -116,16 +116,20 @@ Route::middleware('auth')->group(function () {
             Route::get('{organization}/{supplier}/{invoice}/items', 'invoiceItem')
                 ->name('.invoice.item');
 
-
             Route::get('items', 'items')
                 ->name('.items');
             Route::get('items/{organization}/{item}/supplier', 'itemSupplier')
                 ->name('.items.supplier');
 
+            Route::get('expense', 'expense')
+                ->name('.expense');
+
             Route::get('export-index', 'exportIndex')
                 ->name('.export-index');
             Route::get('export-item', 'exportItem')
                 ->name('.export-item');
+            Route::get('export-expense', 'exportExpense')
+                ->name('.export-expense');
         });
     });
 

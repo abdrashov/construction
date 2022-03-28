@@ -27,7 +27,7 @@ class ExpenseCommonController extends Controller
 
         $expenses = Expense::whereNull('organization_id')
             ->orderByDesc('date')
-            ->join('expense_histories', 'expenses.id', '=', 'expense_histories.expense_id')
+            ->leftJoin('expense_histories', 'expenses.id', '=', 'expense_histories.expense_id')
             ->when(Request::input('begin') ?? null, function ($query, $search) {
                 $query->where('expense_histories.date', '>=', $search);
             })->when(Request::input('end') ?? null, function ($query, $search) {

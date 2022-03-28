@@ -12,7 +12,7 @@ class Expense extends Model
     use HasFactory;
     use SoftDeletes;
     use SpatieLogsActivity;
-    
+
     public const FLOAT_TO_INT_PRICE = 100;
 
     protected $fillable = [
@@ -22,22 +22,22 @@ class Expense extends Model
     protected $dates = [
         'date',
     ];
-    
+
     public function expenseHistories()
     {
         return $this->hasMany(ExpenseHistory::class);
     }
-    
+
     public function organization()
     {
         return $this->belongsTo(Organization::class);
     }
-    
+
     public function category()
     {
         return $this->belongsTo(ExpenseCategory::class, 'expense_category_id');
     }
-    
+
     public function user()
     {
         return $this->belongsTo(User::class);
