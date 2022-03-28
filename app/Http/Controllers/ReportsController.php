@@ -1075,8 +1075,6 @@ class ReportsController extends Controller
             $sum_expense += $expense['price'];
         }
 
-        $organization = Organization::find(Request::input('organization_id'));
-
         $html = '';
         $html = $html . '<table>';
         $html = $html . '<tr>
@@ -1089,7 +1087,7 @@ class ReportsController extends Controller
         foreach ($expense_histories as $key => $expense) {
             $html = $html . '<tr>';
             $html = $html . '<td>';
-            $html = $html . $key+1;
+            $html = $html . $key + 1;
             $html = $html . '</td>';
             $html = $html . '<td>';
             $html = $html . $expense['name'];
@@ -1112,7 +1110,7 @@ class ReportsController extends Controller
         $html = $html . '</table>';
 
         return view('report', [
-            'title' => $organization->name ?? 'Общий',
+            'title' => Request::input('organization_id') == 'general' ? 'Общий' : Organization::findOrFail(Request::input('organization_id'))->name,
             'begin' => Request::input('begin'),
             'end' => Request::input('end'),
             'report' => $html,
