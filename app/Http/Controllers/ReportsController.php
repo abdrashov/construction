@@ -631,16 +631,17 @@ class ReportsController extends Controller
             Request::merge(['organization_id' => 'null']);
         }
 
-        $expense_histories = Expense::select(
+        $expense_histories = ExpenseHistory::select(
             'expense_histories.id',
             'expense_histories.expense_id',
             'expenses.name',
+            'expense_histories.name as note',
             'expense_histories.price',
             'expense_histories.date',
             'expense_categories.name as category',
         )
-            ->join('expense_categories', 'expenses.expense_category_id', '=', 'expense_categories.id')
-            ->join('expense_histories', 'expenses.id', '=', 'expense_histories.expense_id')
+            ->leftJoin('expenses', 'expense_histories.expense_id', '=', 'expenses.id')
+            ->leftJoin('expense_categories', 'expenses.expense_category_id', '=', 'expense_categories.id')
             ->whereNull('expenses.deleted_at')
             ->whereNull('expense_histories.deleted_at')
             ->when(Request::input('organization_id') == 'general', function ($query) {
@@ -654,12 +655,14 @@ class ReportsController extends Controller
             })
             ->where('expense_histories.date', '>=', Request::input('begin'))
             ->where('expense_histories.date', '<=', Request::input('end'))
+            ->groupBy('expense_histories.id')
             ->orderByDesc('expense_histories.date')
             ->get()
             ->transform(fn($expense) => [
                 'id' => $expense->id,
                 'expense_id' => $expense->expense_id,
                 'name' => $expense->name,
+                'note' => $expense->note,
                 'price' => $expense->price / ExpenseHistory::FLOAT_TO_INT_PRICE,
                 'date' => $expense->date->format('d.m.Y'),
                 'category' => $expense->category,
@@ -1036,16 +1039,17 @@ class ReportsController extends Controller
             Request::merge(['organization_id' => 'null']);
         }
 
-        $expense_histories = Expense::select(
+        $expense_histories = ExpenseHistory::select(
             'expense_histories.id',
             'expense_histories.expense_id',
             'expenses.name',
+            'expense_histories.name as note',
             'expense_histories.price',
             'expense_histories.date',
             'expense_categories.name as category',
         )
-            ->join('expense_categories', 'expenses.expense_category_id', '=', 'expense_categories.id')
-            ->join('expense_histories', 'expenses.id', '=', 'expense_histories.expense_id')
+            ->leftJoin('expenses', 'expense_histories.expense_id', '=', 'expenses.id')
+            ->leftJoin('expense_categories', 'expenses.expense_category_id', '=', 'expense_categories.id')
             ->whereNull('expenses.deleted_at')
             ->whereNull('expense_histories.deleted_at')
             ->when(Request::input('organization_id') == 'general', function ($query) {
@@ -1059,12 +1063,14 @@ class ReportsController extends Controller
             })
             ->where('expense_histories.date', '>=', Request::input('begin'))
             ->where('expense_histories.date', '<=', Request::input('end'))
+            ->groupBy('expense_histories.id')
             ->orderByDesc('expense_histories.date')
             ->get()
             ->transform(fn($expense) => [
                 'id' => $expense->id,
                 'expense_id' => $expense->expense_id,
                 'name' => $expense->name,
+                'note' => $expense->note,
                 'price' => $expense->price / ExpenseHistory::FLOAT_TO_INT_PRICE,
                 'date' => $expense->date->format('d.m.Y'),
                 'category' => $expense->category,
@@ -1080,6 +1086,7 @@ class ReportsController extends Controller
         $html = $html . '<tr>
             <th>#</th>
             <th>Названия</th>
+            <th>Заметка</th>
             <th>Категория</th>
             <th>Дата</th>
             <th>Сумма</th>
@@ -1091,6 +1098,9 @@ class ReportsController extends Controller
             $html = $html . '</td>';
             $html = $html . '<td>';
             $html = $html . $expense['name'];
+            $html = $html . '</td>';
+            $html = $html . '<td>';
+            $html = $html . $expense['note'];
             $html = $html . '</td>';
             $html = $html . '<td>';
             $html = $html . $expense['category'];
@@ -1105,7 +1115,7 @@ class ReportsController extends Controller
         }
         $html = $html . '<tr>
             <th colspan="3">ВСЕГО</th>
-            <th colspan="2">' . $sum_expense . '</th>
+            <th colspan="6">' . $sum_expense . '</th>
         </tr>';
         $html = $html . '</table>';
 

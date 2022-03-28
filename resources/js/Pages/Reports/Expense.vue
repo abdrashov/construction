@@ -33,9 +33,10 @@
                 <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
                     <th class="w-10 px-4 py-3 border-r">#</th>
                     <th class="px-4 py-3 border-l border-r">Названия</th>
+                    <th class="px-4 py-3 border-l border-r">Заметка</th>
                     <th class="px-4 py-3 border-l border-r">Категория</th>
-                    <th class="px-4 py-3 border-l border-r">Дата</th>
-                    <th class="px-4 py-3 border-l">Сумма</th>
+                    <th class="px-4 py-3 border-l border-r">Сумма</th>
+                    <th class="px-4 py-3 border-l">Дата</th>
                 </tr>
                 <tr v-for="(expense, index) in expense_histories" :key="expense.id">
                     <td class="border-t">
@@ -46,6 +47,11 @@
                     <td class="border-t border-l">
                         <div  class="flex items-center px-4 py-1 font-medium">
                             {{ expense.name }}
+                        </div>
+                    </td>
+                    <td class="border-t border-l">
+                        <div  class="flex items-center px-4 py-1 font-medium">
+                            {{ expense.note }}
                         </div>
                     </td>
                     <td class="border-t border-l">
@@ -66,14 +72,14 @@
                 </tr>
                 <tr v-if="expense_histories.length !== 0" class="bg-amber-200">
                     <td class="px-4 py-3 font-semibold border-t" colspan="3">ИТОГО</td>
-                    <td class="border-t border-l" colspan="2">
+                    <td class="border-t border-l" colspan="3">
                         <div class="flex items-center px-4 font-semibold whitespace-nowrap">
                             {{ sum_expense?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
                         </div>
                     </td>
                 </tr>
                 <tr v-if="expense_histories.length === 0">
-                    <td class="px-4 py-3 border-t" colspan="5">Не найдено.</td>
+                    <td class="px-4 py-3 border-t" colspan="6">Не найдено.</td>
                 </tr>
             </table>
         </div>
