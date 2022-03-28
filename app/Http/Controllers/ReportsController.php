@@ -646,12 +646,15 @@ class ReportsController extends Controller
             ->when(Request::input('organization_id') == 'general', function ($query) {
                 $query->whereNull('expenses.organization_id');
             })
-            ->when(Request::input('organization_id') != 'general', function ($query, $search) {
+            ->when(Request::input('organization_id') != 'general', function ($query) {
                 $query->where('expenses.organization_id', Request::input('organization_id'));
+            })
+            ->when(Request::input('expense_category_id') ?? null, function ($query, $search) {
+                $query->where('expenses.expense_category_id', $search);
             })
             ->where('expense_histories.date', '>=', Request::input('begin'))
             ->where('expense_histories.date', '<=', Request::input('end'))
-            ->orderBy('expense_histories.date')
+            ->orderByDesc('expense_histories.date')
             ->get()
             ->transform(fn($expense) => [
                 'id' => $expense->id,
@@ -1005,16 +1008,30 @@ class ReportsController extends Controller
 
     public function exportExpense()
     {
+        if (Request::input('begin') == 'null') {
+            Request::merge(['begin' => null]);
+        }
+
+        if (Request::input('end') == 'null') {
+            Request::merge(['end' => null]);
+        }
+
+        if (Request::input('expense_category_id') == 'null') {
+            Request::merge(['expense_category_id' => null]);
+        }
+
         if (!is_null(Request::input('begin'))) {
             Request::merge(['begin' => (new Carbon(Request::input('begin')))->format('Y-m-d')]);
         } else {
             Request::merge(['begin' => Carbon::now()->format('Y-m-d')]);
         }
+
         if (!is_null(Request::input('end'))) {
             Request::merge(['end' => (new Carbon(Request::input('end')))->format('Y-m-d')]);
         } else {
             Request::merge(['end' => Carbon::now()->format('Y-m-d')]);
         }
+
         if (is_null(Request::input('organization_id'))) {
             Request::merge(['organization_id' => 'null']);
         }
@@ -1034,12 +1051,15 @@ class ReportsController extends Controller
             ->when(Request::input('organization_id') == 'general', function ($query) {
                 $query->whereNull('expenses.organization_id');
             })
-            ->when(Request::input('organization_id') != 'general', function ($query, $search) {
+            ->when(Request::input('organization_id') != 'general', function ($query) {
                 $query->where('expenses.organization_id', Request::input('organization_id'));
+            })
+            ->when(Request::input('expense_category_id') ?? null, function ($query, $search) {
+                $query->where('expenses.expense_category_id', $search);
             })
             ->where('expense_histories.date', '>=', Request::input('begin'))
             ->where('expense_histories.date', '<=', Request::input('end'))
-            ->orderBy('expense_histories.date')
+            ->orderByDesc('expense_histories.date')
             ->get()
             ->transform(fn($expense) => [
                 'id' => $expense->id,
@@ -1055,7 +1075,7 @@ class ReportsController extends Controller
             $sum_expense += $expense['price'];
         }
 
-        $organization = Organization::findOrFail(Request::input('organization_id'));
+        $organization = Organization::find(Request::input('organization_id'));
 
         $html = '';
         $html = $html . '<table>';
@@ -1092,7 +1112,7 @@ class ReportsController extends Controller
         $html = $html . '</table>';
 
         return view('report', [
-            'title' => $organization->name,
+            'title' => $organization->name ?? 'Общий',
             'begin' => Request::input('begin'),
             'end' => Request::input('end'),
             'report' => $html,
