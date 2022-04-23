@@ -173,6 +173,8 @@ Route::middleware('auth')->group(function () {
             Route::post('', 'store')->name('.store');
             Route::put('{invoice}', 'update')->name('.update');
             Route::get('create', 'create')->name('.create');
+            Route::delete('{invoice}', 'destroy')->name('.destroy')
+                ->middleware('role:Супер Администратор');
         });
 
         // InvoiceItem
@@ -181,6 +183,7 @@ Route::middleware('auth')->group(function () {
             Route::post('confirm', 'confirm')->name('.confirm');
             Route::put('', 'update')->name('.update');
             Route::delete('', 'delete')->name('.delete');
+            Route::post('/restore', 'restore')->name('.restore');
             Route::post('{item}', 'store')->name('.store');
             Route::get('pay', 'pay')->name('.pay');
         });

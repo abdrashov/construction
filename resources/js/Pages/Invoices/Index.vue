@@ -141,8 +141,19 @@
                     </td>
                     <td class="w-16 border-t border-l">
                         <div class="flex items-center justify-end px-4 py-1">
+                            <button
+                                v-if="auth.user.role === 'Супер Администратор' && !invoice.deleted_at" 
+                                type="submit"
+                                class="flex items-center justify-end px-2 py-2 text-xs font-medium leading-5 text-gray-500 duration-200 bg-gray-100 rounded-lg focus:shadow-outline-gray hover:text-red-400 hover:bg-red-100 focus:outline-none"
+                                aria-label="Delete"
+                                @click="destroyInvoice(invoice.id, invoice.name)"
+                            >
+                                <svg class="w-4 h-4" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                </svg>
+                            </button>
                             <Link
-                                class="flex items-center justify-end px-2 py-2 ml-2 text-xs font-medium leading-5 text-gray-500 duration-200 bg-gray-100 rounded-lg focus:shadow-outline-gray hover:text-orange-400 hover:bg-orange-100 focus:outline-none"
+                                class="flex items-center justify-end px-2 py-2 ml-1 text-xs font-medium leading-5 text-gray-500 duration-200 bg-gray-100 rounded-lg focus:shadow-outline-gray hover:text-orange-400 hover:bg-orange-100 focus:outline-none"
                                 :href="`/invoices/${invoice.id}/invoice-items`"
                             >
                                 <icon name="right" class="w-4 h-4" />
@@ -191,11 +202,18 @@
                         <option value="false">Не подтвержден</option>
                     </select-input>
                 </li>
-                <li>
+                <li class="pb-4">
                     <select-input v-model="search.pay" class="w-full" label="Оплата">
                         <option :value="null" />
                         <option value="true">Оплачен</option>
                         <option value="false">Не оплачен</option>
+                    </select-input>
+                </li>
+                <li>
+                    <select-input v-model="search.trashed" class="w-full" label="Удаленные">
+                    <option :value="null" />
+                    <option value="with">Все</option>
+                    <option value="only">Только Удаленные</option>
                     </select-input>
                 </li>
             </ul>
@@ -254,6 +272,7 @@ export default {
                 accepted: this.filters.accepted,
                 status: this.filters.status,
                 pay: this.filters.pay,
+                trashed: this.filters.trashed,
             },
         }
     },
@@ -313,6 +332,21 @@ export default {
         deleteUser(index) {
             this.user_form = this.user_form.filter((value, key) => {
                 return key !== index
+            })
+        },
+        destroyInvoice(id, title) {
+            this.$swal({
+                title: `Вы уверены, что хотите удалить накладной: ${title}?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#19ab4f',
+                cancelButtonColor: '#838383',
+                confirmButtonText: 'Да, удалить!',
+                cancelButtonText: 'Отмена',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    this.$inertia.delete(`/organizations/${this.organization.id}/invoices/${id}`)
+                }
             })
         },
     },

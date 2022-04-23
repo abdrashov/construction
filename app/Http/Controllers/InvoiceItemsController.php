@@ -13,7 +13,7 @@ use Inertia\Inertia;
 
 class InvoiceItemsController extends Controller
 {
-    public function Index(Invoice $invoice)
+    public function index(Invoice $invoice)
     {
         if (!$invoice->status) {
 
@@ -31,10 +31,11 @@ class InvoiceItemsController extends Controller
                     'date' => $invoice->date->format('Y-m-d'),
                     'supplier_id' => $invoice->supplier_id,
                     'accepted' => $invoice->accepted,
+                    'deleted_at' => $invoice->deleted_at,
                     'file' => $invoice->file ? '/file/' . $invoice->file : '',
-                    'sum' => $invoice->invoiceItems()->select(DB::raw('SUM(count * price) as sum'))->value('sum') / (InvoiceItem::FLOAT_TO_INT_PRICE * InvoiceItem::FLOAT_TO_INT_COUNT),
+                    'sum' => $invoice->invoiceItems()->withTrashed()->select(DB::raw('SUM(count * price) as sum'))->value('sum') / (InvoiceItem::FLOAT_TO_INT_PRICE * InvoiceItem::FLOAT_TO_INT_COUNT),
                 ],
-                'invoice_items' => $invoice->invoiceItems->transform(fn($item) => [
+                'invoice_items' => $invoice->invoiceItems()->withTrashed()->get()->transform(fn ($item) => [
                     'id' => $item->id,
                     'name' => $item->name,
                     'count' => $item->count / InvoiceItem::FLOAT_TO_INT_COUNT,
@@ -45,7 +46,7 @@ class InvoiceItemsController extends Controller
                     ->with('measurement')
                     ->paginate(10)
                     ->withQueryString()
-                    ->through(fn($item) => [
+                    ->through(fn ($item) => [
                         'id' => $item->id,
                         'name' => $item->name,
                         'measurement' => $item->measurement ? $item->measurement->name : 'Удален!',
@@ -65,12 +66,13 @@ class InvoiceItemsController extends Controller
                 'status' => $invoice->status,
                 'pay' => $invoice->pay,
                 'date' => $invoice->date->format('d.m.Y'),
+                'deleted_at' => $invoice->deleted_at,
                 'supplier' => $invoice->supplier,
                 'accepted' => $invoice->accepted,
                 'file' => $invoice->file ? '\\file\\' . $invoice->file : '',
-                'sum' => $invoice->invoiceItems()->select(DB::raw('SUM(count * price) as sum'))->value('sum') / (InvoiceItem::FLOAT_TO_INT_PRICE * InvoiceItem::FLOAT_TO_INT_COUNT),
+                'sum' => $invoice->invoiceItems()->withTrashed()->select(DB::raw('SUM(count * price) as sum'))->value('sum') / (InvoiceItem::FLOAT_TO_INT_PRICE * InvoiceItem::FLOAT_TO_INT_COUNT),
             ],
-            'invoice_items' => $invoice->invoiceItems->transform(fn($item) => [
+            'invoice_items' => $invoice->invoiceItems()->withTrashed()->get()->transform(fn ($item) => [
                 'id' => $item->id,
                 'name' => $item->name,
                 'count' => $item->count / InvoiceItem::FLOAT_TO_INT_COUNT,
@@ -153,5 +155,13 @@ class InvoiceItemsController extends Controller
         ]);
 
         return Redirect::route('invoices', $invoice->organization_id)->with('success', 'Успешно сохранено.');
+    }
+
+    public function restore(Invoice $invoice)
+    {
+        $invoice->restore();
+        $invoice->invoiceItems()->restore();
+
+        return Redirect::back()->with('success', 'Накладной восстановлена.');
     }
 }

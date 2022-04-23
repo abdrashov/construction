@@ -8,6 +8,8 @@
             <span class="text-sky-500 font-medium">/</span>
             {{ invoice.name }}
         </h1>
+        
+        <trashed-message v-if="invoice.deleted_at" class="mb-6" @restore="restore"> Эта накладной была удалена. </trashed-message>
 
         <div class="w-full bg-white shadow overflow-hidden">
             <div class="items-start lg:flex">
@@ -141,6 +143,21 @@ export default {
             }).then((result) => {
                 if (result.isConfirmed) {
                     this.$inertia.get(`/invoices/${this.invoice.id}/invoice-items/pay`)
+                }
+            })
+        },
+        restore() {
+            this.$swal({
+                title: 'Вы уверены, что хотите восстановить эту накладной?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#19ab4f',
+                cancelButtonColor: '#838383',
+                confirmButtonText: 'Да, восстановить!',
+                cancelButtonText: 'Отмена',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    this.$inertia.post(`/invoices/${this.invoice.id}/invoice-items/restore`)
                 }
             })
         },

@@ -18,7 +18,7 @@ class InvoicesController extends Controller
     public function Index(Organization $organization)
     {
         return Inertia::render('Invoices/Index', [
-            'filters' => Request::all('name', 'date', 'supplier_id', 'accepted', 'status', 'pay'),
+            'filters' => Request::all('name', 'date', 'supplier_id', 'accepted', 'status', 'pay', 'trashed'),
             'suppliers' => Supplier::orderBy('name')->get(),
             'organization' => [
                 'id' => $organization->id,
@@ -27,7 +27,7 @@ class InvoicesController extends Controller
                 'users' => $organization->users,
                 'deleted_at' => $organization->deleted_at,
                 'invoices' => $organization->invoices()
-                    ->filter(Request::only('name', 'date', 'supplier_id', 'accepted', 'status', 'pay'))
+                    ->filter(Request::only('name', 'date', 'supplier_id', 'accepted', 'status', 'pay', 'trashed'))
                     ->orderByDesc('date')
                     ->with('user')
                     ->withCount([
@@ -42,6 +42,7 @@ class InvoicesController extends Controller
                         'name' => $invoice->name,
                         'status' => $invoice->status,
                         'pay' => $invoice->pay,
+                        'deleted_at' => $invoice->deleted_at,
                         'sum' => $invoice->invoice_items_count / (InvoiceItem::FLOAT_TO_INT_PRICE * InvoiceItem::FLOAT_TO_INT_COUNT),
                         'date' => $invoice->date->format('d.m.Y'),
                         'fullname' => $invoice->user->last_name . ' ' .  $invoice->user->first_name,
@@ -124,5 +125,13 @@ class InvoicesController extends Controller
         }
 
         return Redirect::back()->with('success', 'Накладной, обновлено.');
+    }
+
+    public function destroy(Organization $organization, Invoice $invoice)
+    {
+        $invoice->invoiceItems()->delete();
+        $invoice->delete();
+
+        return Redirect::back()->with('success', 'Накладной, удален.');
     }
 }

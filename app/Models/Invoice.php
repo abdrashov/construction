@@ -38,6 +38,11 @@ class Invoice extends Model
         return $this->hasMany(InvoiceItem::class);
     }
 
+    public function resolveRouteBinding($value, $field = null)
+    {
+        return $this->where($field ?? 'id', $value)->withTrashed()->firstOrFail();
+    }
+
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['name'] ?? null, function ($query, $search) {
@@ -53,6 +58,12 @@ class Invoice extends Model
             $query->where('pay', $search == "true" ? 1 : 0);
         })->when($filters['status'] ?? null, function ($query, $search) {
             $query->where('status', $search == "true" ? 1 : 0);
+        })->when($filters['trashed'] ?? null, function ($query, $trashed) {
+            if ($trashed === 'with') {
+                $query->withTrashed();
+            } elseif ($trashed === 'only') {
+                $query->onlyTrashed();
+            }
         });
     }
 }
