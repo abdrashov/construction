@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuditLogsController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\EstimateController;
 use App\Http\Controllers\ExpenseCommonController;
 use App\Http\Controllers\ExpenseCommonHistoryController;
 use App\Http\Controllers\ExpenseController;
@@ -143,6 +144,15 @@ Route::middleware('auth')->group(function () {
             Route::get('create', 'create')->name('.create');
         });
 
+        // Estimate
+        Route::prefix('organizations/{organization}/estimates')->name('estimates')->controller(EstimateController::class)->group(function () {
+            Route::get('', 'index');
+            Route::post('{item}', 'storeItem');
+            Route::post('', 'store')->name('.store');
+            Route::put('', 'update')->name('.update');
+            Route::get('create', 'create')->name('.create');
+        });
+        
         // ExpenseHistory
         Route::prefix('organizations/expenses/{expense}')->name('expenses-history')->controller(ExpenseHistoryController::class)->group(function () {
             Route::get('', 'index');

@@ -65,6 +65,9 @@
                 <Link class="mr-2 btn-indigo" :href="`/organizations/${organization.id}/expense`">
                     <span>Расходы</span>
                 </Link>
+                <Link class="mr-2 btn-sky" :href="`/organizations/${organization.id}/estimates`">
+                    <span>Смета</span>
+                </Link>
                 <Link class="btn-blue" :href="`/organizations/${organization.id}/invoices/create`">
                     <span>Создать</span>
                     <span class="hidden md:inline">&nbsp;Накладной</span>
