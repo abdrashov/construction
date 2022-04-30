@@ -59,7 +59,7 @@
                     </td>
                     <td class="border-t border-l">
                         <div class="flex items-center px-4 py-1 font-semibold text-indigo-800 whitespace-nowrap">
-                            {{ (item.count * item.price).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
+                            {{ item.sum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
                         </div>
                     </td>
                 </tr>

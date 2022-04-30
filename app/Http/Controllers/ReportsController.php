@@ -281,8 +281,8 @@ class ReportsController extends Controller
             'filters' => Request::all('search', 'organization_id', 'begin', 'end'),
             'reports' => $reports,
             'organizations' => Organization::get(),
-            'sum_pay' => $sum_pay,
-            'not_sum_pay' => $not_sum_pay,
+            'sum_pay' => (string) $sum_pay,
+            'not_sum_pay' => (string) $not_sum_pay,
         ]);
     }
 
@@ -454,6 +454,7 @@ class ReportsController extends Controller
                 'name' => $item->name,
                 'count' => $item->count / InvoiceItem::FLOAT_TO_INT_COUNT,
                 'price' => $item->price / InvoiceItem::FLOAT_TO_INT_PRICE,
+                'sum' => ($item->count * $item->price) / (InvoiceItem::FLOAT_TO_INT_PRICE * InvoiceItem::FLOAT_TO_INT_COUNT),
                 'measurement' => $item->measurement,
             ]),
         ]);

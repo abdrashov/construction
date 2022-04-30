@@ -80,7 +80,7 @@
                     </td>
                     <td class="border-l border-t">
                         <div class="flex items-center px-4 whitespace-nowrap font-semibold">
-                            {{ (sum_pay + not_sum_pay).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
+                            {{ (parseFloat(sum_pay) + parseFloat(not_sum_pay)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
                         </div>
                     </td>
                 </tr>
