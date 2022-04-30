@@ -306,6 +306,7 @@ class ReportsController extends Controller
             ->when(Request::input('end') ?? null, function ($query, $search) {
                 $query->where('date', '<=', $search);
             })
+            ->orderByDesc('date')
             ->get()
             ->transform(fn($invoice) => [
                 'id' => $invoice->id,
@@ -350,6 +351,7 @@ class ReportsController extends Controller
             ->when(Request::input('end') ?? null, function ($query, $search) {
                 $query->where('date', '<=', $search);
             })
+            ->orderByDesc('date')
             ->where('status', 1)
             ->get()
             ->transform(fn($invoice) => [
@@ -395,6 +397,7 @@ class ReportsController extends Controller
             ->when(Request::input('end') ?? null, function ($query, $search) {
                 $query->where('date', '<=', $search);
             })
+            ->orderByDesc('date')
             ->where('status', 1)
             ->get()
             ->transform(fn($invoice) => [
