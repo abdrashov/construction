@@ -148,9 +148,8 @@ Route::middleware('auth')->group(function () {
         Route::prefix('organizations/{organization}/estimates')->name('estimates')->controller(EstimateController::class)->group(function () {
             Route::get('', 'index');
             Route::post('{item}', 'storeItem');
-            Route::post('', 'store')->name('.store');
             Route::put('', 'update')->name('.update');
-            Route::get('create', 'create')->name('.create');
+            Route::delete('{estimate}', 'destroy')->name('.destroy');
         });
         
         // ExpenseHistory

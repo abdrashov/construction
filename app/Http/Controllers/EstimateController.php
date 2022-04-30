@@ -13,7 +13,7 @@ use Inertia\Inertia;
 
 class EstimateController extends Controller
 {
-    public function Index(Organization $organization)
+    public function index(Organization $organization)
     {
         $estimates = Estimate::where('organization_id', $organization->id)
             ->get()
@@ -77,5 +77,11 @@ class EstimateController extends Controller
         }
 
         return Redirect::back()->with('success', 'Успешно сохранено.');
+    }
+
+    public function destroy($organization, Estimate $estimate)
+    {
+        $estimate->delete();
+        return Redirect::back()->with('success', 'Товар, удален.');
     }
 }
