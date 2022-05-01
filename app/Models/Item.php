@@ -27,6 +27,11 @@ class Item extends Model
         return $this->belongsTo(Measurement::class);
     }
 
+    public function estimate()
+    {
+        return $this->hasOne(Estimate::class, 'item_id');
+    }
+
     public function itemCategory()
     {
         return $this->belongsTo(ItemCategory::class);

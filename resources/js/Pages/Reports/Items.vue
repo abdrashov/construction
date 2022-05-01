@@ -32,11 +32,12 @@
                 <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
                     <th class="w-10 px-4 py-3 border-r">#</th>
                     <th class="px-4 py-3 border-l border-r">Название Товара</th>
+                    <th class="px-4 py-3 border-l border-r">Смета</th>
                     <th class="px-4 py-3 border-l border-r">Количество</th>
                     <th class="px-4 py-3 border-l">Сумма</th>
                 </tr>
                 <tr v-for="item in items" :key="item.id" :class="item.column == 'sum' ? 'bg-green-200' : 'duration-150 hover:bg-amber-50 focus:bg-amber-50'">
-                    <td v-if="item.column === 'name'" class="border-t bg-sky-200" colspan="4">
+                    <td v-if="item.column === 'name'" class="border-t bg-sky-200" colspan="5">
                         <div class="flex items-center px-4 py-1 font-medium">
                             {{ item.name }}
                         </div>
@@ -47,22 +48,33 @@
                         </div>
                     </td>
                     <td v-if="item.column === 'content'" class="border-t border-l">
-                        <Link :href="`/reports/items/${form.organization_id}/${item.item_id}/supplier` + getUrlDatas()" class="flex items-center px-4 py-1 font-medium hover:underline">
+                        <Link :href="`/reports/items/${form.organization_id}/${item.id}/supplier` + getUrlDatas()" class="flex items-center px-4 py-1 font-medium hover:underline">
                             {{ item.name }}
                         </Link>
                     </td>
                     <td v-if="item.column === 'content'" class="border-t border-l">
-                        <Link :href="`/reports/items/${form.organization_id}/${item.item_id}/supplier` + getUrlDatas()" class="flex items-center px-4 py-1 font-medium hover:underline">
+                        <Link v-if="item.estimate" :href="`/reports/items/${form.organization_id}/${item.id}/supplier` + getUrlDatas()" class="flex items-center px-4 py-1 font-medium hover:underline">
+                            {{ item.estimate }} 
+                            {{ item.measurement }}
+                        </Link>
+                    </td>
+                    <td v-if="item.column === 'content'" class="border-t border-l">
+                        <Link :href="`/reports/items/${form.organization_id}/${item.id}/supplier` + getUrlDatas()" class="flex items-center px-4 py-1 font-medium hover:underline">
                             {{ item.count }}
                             {{ item.measurement }}
                         </Link>
                     </td>
                     <td v-if="item.column === 'content'" class="border-t border-l">
-                        <Link :href="`/reports/items/${form.organization_id}/${item.item_id}/supplier` + getUrlDatas()" class="flex items-center px-4 font-semibold text-green-600 hover:underline whitespace-nowrap">
+                        <Link :href="`/reports/items/${form.organization_id}/${item.id}/supplier` + getUrlDatas()" class="flex items-center px-4 font-semibold text-green-600 hover:underline whitespace-nowrap">
                             {{ item.sum?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
                         </Link>
                     </td>
                     <td v-if="item.column === 'sum'" class="px-4 py-2 font-semibold text-red-600 border-t" colspan="2">ИТОГО</td>
+                    <td v-if="item.column === 'sum'" class="py-2 border-t border-l">
+                        <div class="flex items-center px-4 font-semibold text-red-600 whitespace-nowrap">
+                            {{ item.estimate_count?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
+                        </div>
+                    </td>
                     <td v-if="item.column === 'sum'" class="py-2 border-t border-l">
                         <div class="flex items-center px-4 font-semibold text-red-600 whitespace-nowrap">
                             {{ item.category_count?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
@@ -75,7 +87,7 @@
                     </td>
                 </tr>
                 <tr v-if="items.length !== 0" class="bg-amber-200">
-                    <td class="px-4 py-3 font-semibold border-t" colspan="3">ВСЕГО</td>
+                    <td class="px-4 py-3 font-semibold border-t" colspan="4">ВСЕГО</td>
                     <td class="border-t border-l" colspan="2">
                         <div class="flex items-center px-4 font-semibold whitespace-nowrap">
                             {{ sum_item?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
@@ -83,7 +95,7 @@
                     </td>
                 </tr>
                 <tr v-if="items.length === 0">
-                    <td class="px-4 py-3 border-t" colspan="5">Не найдено.</td>
+                    <td class="px-4 py-3 border-t" colspan="6">Не найдено.</td>
                 </tr>
             </table>
         </div>

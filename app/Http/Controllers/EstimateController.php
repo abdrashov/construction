@@ -26,7 +26,7 @@ class EstimateController extends Controller
             ]);
 
         return Inertia::render('Estimate/Index', [
-            'filters' => Request::only('begin'),
+            'filters' => Request::only('search', 'page'),
             'organization' => [
                 'id' => $organization->id,
                 'name' => $organization->name,
