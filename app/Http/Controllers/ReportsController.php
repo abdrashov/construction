@@ -529,7 +529,7 @@ class ReportsController extends Controller
             })
             ->orderBy('name')
             ->with('itemCategory', 'measurement')
-            ->with(['estimate' => function($query){
+            ->with(['estimate' => function ($query) {
                 $query->where('organization_id', Request::input('organization_id'));
             }])
             ->get()
@@ -940,51 +940,94 @@ class ReportsController extends Controller
             Request::merge(['end' => (new Carbon(Request::input('end')))->format('Y-m-d')]);
         }
 
-        $items = InvoiceItem::select(
-            'invoice_items.id',
-            'invoice_items.name',
-            'item_categories.id as item_category_id',
-            'item_categories.name as item_category',
-            'invoice_items.measurement',
-            DB::raw('SUM(invoice_items.count) as count'),
-            DB::raw('SUM(invoice_items.count * invoice_items.price) as sum'),
-        )
-            ->join('invoices', 'invoice_items.invoice_id', '=', 'invoices.id')
-            ->join('items', 'invoice_items.item_id', '=', 'items.id')
-            ->join('item_categories', 'items.item_category_id', '=', 'item_categories.id')
-            ->where('invoices.organization_id', Request::input('organization_id'))
-            ->where('invoices.status', true)
-            ->when(Request::input('begin') ?? null, function ($query, $search) {
-                $query->where('invoices.date', '>=', $search);
+
+        $items = Item::withCount([
+            'invoiceItems AS invoice_items_count' => function ($query) {
+                $query->select(DB::raw("SUM(count) as invoice_items_count"))
+                    ->whereHas('invoice', function ($query) {
+                        $query->where('organization_id', Request::input('organization_id'))
+                            ->where('status', true);
+                        $query->when(Request::input('begin') ?? null, function ($query, $search) {
+                            $query->where('date', '>=', $search);
+                        });
+                        $query->when(Request::input('end') ?? null, function ($query, $search) {
+                            $query->where('date', '<=', $search);
+                        });
+                        $query->when(Request::input('supplier_id') ?? null, function ($query, $search) {
+                            $query->where('supplier_id', $search);
+                        });
+                    });
+            }
+        ])
+            ->withCount([
+                'invoiceItems AS invoice_items_sum' => function ($query) {
+                    $query->select(DB::raw("SUM(count * price) as invoice_items_sum"))
+                        ->whereHas('invoice', function ($query) {
+                            $query->where('organization_id', Request::input('organization_id'))
+                                ->where('status', true);
+                            $query->when(Request::input('begin') ?? null, function ($query, $search) {
+                                $query->where('date', '>=', $search);
+                            });
+                            $query->when(Request::input('end') ?? null, function ($query, $search) {
+                                $query->where('date', '<=', $search);
+                            });
+                            $query->when(Request::input('supplier_id') ?? null, function ($query, $search) {
+                                $query->where('supplier_id', $search);
+                            });
+                        });
+                }
+            ])
+            ->whereHas('invoiceItems', function ($query) {
+                $query->whereHas('invoice', function ($query) {
+                    $query->when(Request::input('begin') ?? null, function ($query, $search) {
+                        $query->where('date', '>=', $search);
+                    });
+                    $query->when(Request::input('end') ?? null, function ($query, $search) {
+                        $query->where('date', '<=', $search);
+                    });
+                    $query->when(Request::input('supplier_id') ?? null, function ($query, $search) {
+                        $query->where('supplier_id', $search);
+                    });
+                });
             })
-            ->when(Request::input('end') ?? null, function ($query, $search) {
-                $query->where('invoices.date', '<=', $search);
+            ->whereHas('itemCategory', function ($query) {
+                $query->when(Request::input('item_category_id') ?? null, function ($query, $search) {
+                    $query->where('item_categories.id', $search);
+                });
             })
-            ->when(Request::input('item_category_id') ?? null, function ($query, $search) {
-                $query->where('item_categories.id', $search);
-            })
-            ->when(Request::input('supplier_id') ?? null, function ($query, $search) {
-                $query->where('invoices.supplier_id', $search);
-            })
-            ->whereNull('invoices.deleted_at')
-            ->groupBy('invoice_items.item_id')
-            ->orderBy('item_categories.sort')
-            ->orderBy('item_categories.name')
-            ->orderBy('invoice_items.name')
+            ->orderBy('name')
+            ->with('itemCategory', 'measurement')
+            ->with(['estimate' => function ($query) {
+                $query->where('organization_id', Request::input('organization_id'));
+            }])
             ->get()
+            ->sortBy('itemCategory.name')
+            ->sortBy('itemCategory.sort')
+            ->filter(function ($item) {
+                return $item->estimate?->count === 0 || $item->estimate?->count > 0 || $item->invoice_items_count > 0 || $item->invoice_items_sum  > 0;
+            })
             ->transform(fn ($item) => [
                 'id' => $item->id,
                 'name' => $item->name,
-                'item_category_id' => $item->item_category_id,
-                'item_category' => $item->item_category,
-                'measurement' => $item->measurement,
-                'count' => $item->count / InvoiceItem::FLOAT_TO_INT_COUNT,
-                'sum' => $item->sum / (InvoiceItem::FLOAT_TO_INT_COUNT * InvoiceItem::FLOAT_TO_INT_PRICE),
+                'item_category_id' => $item->itemCategory->id,
+                'item_category' => $item->itemCategory->name,
+                'estimate' => ($item->estimate ? ($item->estimate->count / InvoiceItem::FLOAT_TO_INT_COUNT) : null),
+                'measurement' => $item->measurement->name,
+                'count' => $item->invoice_items_count / InvoiceItem::FLOAT_TO_INT_COUNT,
+                'sum' => $item->invoice_items_sum / (InvoiceItem::FLOAT_TO_INT_COUNT * InvoiceItem::FLOAT_TO_INT_PRICE),
             ])->toArray();
+
+        $items = array_values($items);
 
         $item_categories = [];
         $item_category = 0;
         $item_category_count = 0;
+        $valdate = 0;
+
+        $item_categories = [];
+        $item_category = 0;
+        $item_category_count = 0;
+        $estimate_count = 0;
         $valdate = 0;
         for ($index = 0; $index < count($items); $index++) {
             if ($valdate != $items[$index]['item_category_id']) {
@@ -997,16 +1040,19 @@ class ReportsController extends Controller
             $item_categories[] = ['column' => 'content', 'index' => $index + 1] + $items[$index];
             $item_category += $items[$index]['sum'];
             $item_category_count += $items[$index]['count'];
+            $estimate_count += $items[$index]['estimate'];
 
             $valdate = $items[$index]['item_category_id'];
 
             if (empty($items[$index + 1]) || $items[$index]['item_category_id'] != $items[$index + 1]['item_category_id']) {
                 $item_categories[] = [
                     'column' => 'sum',
-                    'category_count' => $item_category_count,
-                    'category_sum' => $item_category,
+                    'category_count' => (string) $item_category_count,
+                    'estimate_count' => (string) $estimate_count,
+                    'category_sum' => (string) $item_category,
                 ];
                 $item_category_count = 0;
+                $estimate_count = 0;
                 $item_category = 0;
             }
         }
@@ -1023,7 +1069,8 @@ class ReportsController extends Controller
         $html = $html . '<tr>
             <th>#</th>
             <th>Название Товара</th>
-            <th>Использовался</th>
+            <th>Смета</th>
+            <th>Количество</th>
             <th>Сумма</th>
         </tr>';
         foreach ($item_categories as $item_category) {
@@ -1036,18 +1083,27 @@ class ReportsController extends Controller
                 $html = $html . $item_category['name'];
                 $html = $html . '</td>';
                 $html = $html . '<td>';
+                if ($item_category['estimate']) {
+                    $html = $html . $item_category['estimate'];
+                    $html = $html . ' '. $item_category['measurement'];
+                }
+                $html = $html . '</td>';
+                $html = $html . '<td>';
                 $html = $html . $item_category['count'];
-                $html = $html . $item_category['measurement'];
+                $html = $html . ' '. $item_category['measurement'];
                 $html = $html . '</td>';
                 $html = $html . '<td>';
                 $html = $html . $item_category['sum'];
                 $html = $html . '</td>';
             } else if ($item_category['column'] == 'name') {
-                $html = $html . '<td colspan="5">';
+                $html = $html . '<td colspan="6">';
                 $html = $html . $item_category['name'];
                 $html = $html . '</td>';
             } else if ($item_category['column'] == 'sum') {
                 $html = $html . '<th colspan="2">Итого</th>';
+                $html = $html . '<th>';
+                $html = $html . $item_category['estimate_count'];
+                $html = $html . '</th>';
                 $html = $html . '<th>';
                 $html = $html . $item_category['category_count'];
                 $html = $html . '</th>';
@@ -1058,7 +1114,7 @@ class ReportsController extends Controller
             $html = $html . '</tr>';
         }
         $html = $html . '<tr>
-            <th colspan="3">ВСЕГО</th>
+            <th colspan="4">ВСЕГО</th>
             <th colspan="2">' . $sum_item . '</th>
         </tr>';
         $html = $html . '</table>';
