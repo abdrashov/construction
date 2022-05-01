@@ -13,8 +13,6 @@ class Estimate extends Model
         'organization_id',
         'item_id',
         'count',
-        'price',
-        'measurement',
     ];
 
     public function item()

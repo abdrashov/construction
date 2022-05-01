@@ -23,9 +23,6 @@ class CreateEstimatesTable extends Migration
             $table->foreign('item_id')->references('id')->on('items');
 
             $table->bigInteger('count')->default(0)->unsigned();
-            $table->bigInteger('price')->default(0)->unsigned();
-
-            $table->string('measurement')->nullable();
             
             $table->timestamps();
         });

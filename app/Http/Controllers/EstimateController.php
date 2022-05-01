@@ -22,7 +22,7 @@ class EstimateController extends Controller
                 'name' => $estimate->item->name,
                 'item_id' => $estimate->item_id,
                 'count' => $estimate->count / InvoiceItem::FLOAT_TO_INT_COUNT,
-                'measurement' => $estimate->measurement,
+                'measurement' => $estimate->item->measurement->name,
             ]);
 
         return Inertia::render('Estimate/Index', [
@@ -51,7 +51,6 @@ class EstimateController extends Controller
             Estimate::create([
                 'organization_id' => $organization->id,
                 'item_id' => $item->id,
-                'measurement' => $item->measurement ? $item->measurement->name : 'Удален!',
             ]);
 
         $item->update(['sort' => $item->sort + 1]);
