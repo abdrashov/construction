@@ -8,7 +8,7 @@
             <span class="font-medium text-sky-500">/</span>
             {{ form_invoice.name }}
         </h1>
-        
+
         <trashed-message v-if="invoice.deleted_at" class="mb-6" @restore="restore"> Эта накладной была удалена. </trashed-message>
 
         <div class="w-full overflow-hidden bg-white shadow">
@@ -94,7 +94,7 @@
                     </td>
                     <td class="w-2/6 border-t border-l">
                         <div class="flex items-center w-full px-4 py-1 font-medium whitespace-nowrap">
-                            {{ (item.count * item.price).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
+                            {{ (Math.round(item.count * item.price)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }}
                         </div>
                     </td>
                     <td class="w-16 border-t border-l">

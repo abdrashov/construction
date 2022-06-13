@@ -33,9 +33,13 @@ class InvoiceItemsController extends Controller
                     'accepted' => $invoice->accepted,
                     'deleted_at' => $invoice->deleted_at,
                     'file' => $invoice->file ? '/file/' . $invoice->file : '',
-                    'sum' => $invoice->invoiceItems()->withTrashed()->select(DB::raw('SUM(count * price) as sum'))->value('sum') / (InvoiceItem::FLOAT_TO_INT_PRICE * InvoiceItem::FLOAT_TO_INT_COUNT),
+                    'sum' => $invoice->invoiceItems()->when($invoice->deleted_at ?? null, function ($query) {
+                        $query->withTrashed();
+                    })->select(DB::raw('SUM(count * price) as sum'))->value('sum') / (InvoiceItem::FLOAT_TO_INT_PRICE * InvoiceItem::FLOAT_TO_INT_COUNT),
                 ],
-                'invoice_items' => $invoice->invoiceItems()->withTrashed()->get()->transform(fn ($item) => [
+                'invoice_items' => $invoice->invoiceItems()->when($invoice->deleted_at ?? null, function ($query) {
+                    $query->withTrashed();
+                })->get()->transform(fn($item) => [
                     'id' => $item->id,
                     'name' => $item->name,
                     'count' => $item->count / InvoiceItem::FLOAT_TO_INT_COUNT,
@@ -46,7 +50,7 @@ class InvoiceItemsController extends Controller
                     ->with('measurement')
                     ->paginate(10)
                     ->withQueryString()
-                    ->through(fn ($item) => [
+                    ->through(fn($item) => [
                         'id' => $item->id,
                         'name' => $item->name,
                         'measurement' => $item->measurement ? $item->measurement->name : 'Удален!',
@@ -72,7 +76,7 @@ class InvoiceItemsController extends Controller
                 'file' => $invoice->file ? '\\file\\' . $invoice->file : '',
                 'sum' => $invoice->invoiceItems()->withTrashed()->select(DB::raw('SUM(count * price) as sum'))->value('sum') / (InvoiceItem::FLOAT_TO_INT_PRICE * InvoiceItem::FLOAT_TO_INT_COUNT),
             ],
-            'invoice_items' => $invoice->invoiceItems()->withTrashed()->get()->transform(fn ($item) => [
+            'invoice_items' => $invoice->invoiceItems()->withTrashed()->get()->transform(fn($item) => [
                 'id' => $item->id,
                 'name' => $item->name,
                 'count' => $item->count / InvoiceItem::FLOAT_TO_INT_COUNT,
@@ -103,7 +107,6 @@ class InvoiceItemsController extends Controller
             'items.*.price' => ['nullable', 'numeric', 'min:0', 'max:5000000000'],
             'items.*.count' => ['nullable', 'numeric', 'min:0', 'max:5000000000'],
         ]);
-
 
         foreach (Request::input('items') as $item) {
             InvoiceItem::findOrFail($item['id'])->update([
@@ -151,7 +154,7 @@ class InvoiceItemsController extends Controller
     public function pay(Invoice $invoice)
     {
         $invoice->update([
-            'pay' => true
+            'pay' => true,
         ]);
 
         return Redirect::route('invoices', $invoice->organization_id)->with('success', 'Успешно сохранено.');
