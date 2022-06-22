@@ -33,9 +33,9 @@ class InvoiceItemsController extends Controller
                     'accepted' => $invoice->accepted,
                     'deleted_at' => $invoice->deleted_at,
                     'file' => $invoice->file ? '/file/' . $invoice->file : '',
-                    'sum' => $invoice->invoiceItems()->when($invoice->deleted_at ?? null, function ($query) {
+                    'sum' => round($invoice->invoiceItems()->when($invoice->deleted_at ?? null, function ($query) {
                         $query->withTrashed();
-                    })->select(DB::raw('SUM(count * price) as sum'))->value('sum') / (InvoiceItem::FLOAT_TO_INT_PRICE * InvoiceItem::FLOAT_TO_INT_COUNT),
+                    })->select(DB::raw('SUM(count * price) as sum'))->value('sum') / (InvoiceItem::FLOAT_TO_INT_PRICE * InvoiceItem::FLOAT_TO_INT_COUNT), 2),
                 ],
                 'invoice_items' => $invoice->invoiceItems()->when($invoice->deleted_at ?? null, function ($query) {
                     $query->withTrashed();
@@ -74,9 +74,13 @@ class InvoiceItemsController extends Controller
                 'supplier' => $invoice->supplier,
                 'accepted' => $invoice->accepted,
                 'file' => $invoice->file ? '\\file\\' . $invoice->file : '',
-                'sum' => $invoice->invoiceItems()->withTrashed()->select(DB::raw('SUM(count * price) as sum'))->value('sum') / (InvoiceItem::FLOAT_TO_INT_PRICE * InvoiceItem::FLOAT_TO_INT_COUNT),
+                'sum' => round($invoice->invoiceItems()->when($invoice->deleted_at ?? null, function ($query) {
+                    $query->withTrashed();
+                })->select(DB::raw('SUM(count * price) as sum'))->value('sum') / (InvoiceItem::FLOAT_TO_INT_PRICE * InvoiceItem::FLOAT_TO_INT_COUNT), 2),
             ],
-            'invoice_items' => $invoice->invoiceItems()->withTrashed()->get()->transform(fn($item) => [
+            'invoice_items' => $invoice->invoiceItems()->when($invoice->deleted_at ?? null, function ($query) {
+                $query->withTrashed();
+            })->get()->transform(fn($item) => [
                 'id' => $item->id,
                 'name' => $item->name,
                 'count' => $item->count / InvoiceItem::FLOAT_TO_INT_COUNT,
